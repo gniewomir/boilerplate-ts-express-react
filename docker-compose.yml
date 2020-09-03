@@ -1,0 +1,61 @@
+version: '3.3'
+
+services:
+
+  database:
+    container_name: ${PROJECT_NAME}-database
+    restart: unless-stopped
+    build:
+      context: services/database
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dist
+    networks:
+      - internal
+
+  api:
+    container_name: ${PROJECT_NAME}-api
+    restart: unless-stopped
+    build:
+      context: services/api
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dist
+    networks:
+      - internal
+    depends_on:
+      - database
+
+  web:
+    container_name: ${PROJECT_NAME}-web
+    restart: unless-stopped
+    build:
+      context: services/web
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dist
+    networks:
+      - internal
+    depends_on:
+      - api
+
+  webserver:
+    container_name: ${PROJECT_NAME}-webserver
+    restart: unless-stopped
+    build:
+      context: services/webserver
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dist
+    ports:
+      - "8000:80"
+    networks:
+      - internal
+      - web
+    depends_on:
+      - web
+
+networks:
+  internal:
+  web:
+    external: true
