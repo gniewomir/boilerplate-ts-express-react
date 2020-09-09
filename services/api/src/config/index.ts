@@ -20,4 +20,7 @@ export default {
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD
     },
+    logging: {
+        level: 'silly'
+    }
 };
