@@ -2,8 +2,13 @@ import UserRepository from "./user";
 import * as faker from 'faker';
 import {User} from "../entity/User";
 import postgres from "../loaders/postgres";
+import {IUserRepository} from "../interface/IUserRepository";
 
 describe('The user repository', () => {
+    it('implements correct interface', async () => {
+        const postgresConnection = await postgres();
+        ((repository: IUserRepository): IUserRepository => repository)(postgresConnection.getCustomRepository(UserRepository));
+    })
     describe('createAndSave', () => {
         it('should create user', async () => {
             const postgresConnection = await postgres();
