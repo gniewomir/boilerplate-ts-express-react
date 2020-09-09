@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express from 'express';
-import app from '../../loaders';
+import app from '../../loader';
 
 describe('User routes', () => {
     describe('POST /api/user', () => {

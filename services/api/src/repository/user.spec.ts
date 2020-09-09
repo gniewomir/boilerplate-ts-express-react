@@ -1,7 +1,7 @@
 import UserRepository from "./user";
 import * as faker from 'faker';
 import {User} from "../entity/User";
-import postgres from "../loaders/postgres";
+import postgres from "../loader/postgres";
 import {IUserRepository} from "../interface/IUserRepository";
 
 describe('The user repository', () => {
