@@ -11,4 +11,6 @@ export default async (app: express.Application) => {
     app.head("/api/status", (req, res) => {
         res.status(200).end();
     });
+
+    return app;
 };
