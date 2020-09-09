@@ -3,7 +3,7 @@ import {Connection, createConnection, EntityMetadata, getConnection} from "typeo
 import config from "../config";
 import {User} from "../entity/User";
 
-const createPostgresConnection = async () => {
+const createPostgresConnection = async (): Promise<Connection> => {
     return await createConnection({
         type: "postgres",
         host: config.database.host,
@@ -16,6 +16,7 @@ const createPostgresConnection = async () => {
         ],
         synchronize: config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing',
         dropSchema: config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing',
+        migrationsRun: config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing',
         logging: false
     });
 };
