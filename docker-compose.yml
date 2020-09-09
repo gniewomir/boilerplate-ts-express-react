@@ -10,8 +10,21 @@ services:
       dockerfile: Dockerfile
     env_file:
       - services/postgres/.env
-    ports: # TODO: remove for non-development config
+    ports:
       - "5432:5432"
+    networks:
+      - internal
+
+  postgres-testing:
+    container_name: recruitment-postgres-testing
+    restart: unless-stopped
+    build:
+      context: services/postgres
+      dockerfile: Dockerfile
+    env_file:
+      - services/postgres/.env.testing
+    ports:
+      - "5433:5432"
     networks:
       - internal
 
@@ -34,6 +47,7 @@ services:
       - internal
     depends_on:
       - postgres
+      - postgres-testing
 
   web:
     container_name: recruitment-web
@@ -52,7 +66,7 @@ services:
     build:
       context: services/webserver
       dockerfile: Dockerfile
-    ports: # TODO: remove for non-development config
+    ports:
       - "8000:80"
     networks:
       - internal

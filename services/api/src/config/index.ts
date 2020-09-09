@@ -8,7 +8,10 @@ if (envFound.error) {
 }
 
 export default {
-    port: parseInt(process.env.API_PORT, 10),
+    api: {
+        port: parseInt(process.env.API_PORT, 10),
+        prefix: '/api'
+    },
     database: {
         host: process.env.DB_HOST,
         port: parseInt(process.env.DB_PORT, 10),
@@ -16,6 +19,4 @@ export default {
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD
     },
-    test: true
-
 };

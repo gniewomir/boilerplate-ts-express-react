@@ -8,13 +8,15 @@
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node .",
+    "pretest": "NODE_ENV=testing DB_HOST=localhost DB_PORT=5433 DB_USER=testing DB_PASSWORD=testing DB_NAME=testing npm run typeorm schema:drop && npm run typeorm migration:run",
+    "test": "NODE_ENV=testing DB_HOST=localhost DB_PORT=5433 DB_USER=testing DB_PASSWORD=testing DB_NAME=testing jest --runInBand --detectOpenHandles",
     "watch": "./node_modules/.bin/nodemon -e 'ts' --watch 'src' --ignore 'src/**/*.spec.ts' --exec 'ts-node ./src/api.ts'",
-    "test": "jest",
     "typeorm": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "pg": "^8.3.3",

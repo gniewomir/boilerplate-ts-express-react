@@ -6,5 +6,5 @@ import express from 'express';
     const app = express();
     const loaders = await import('./loaders');
     await loaders.default(app);
-    app.listen(config.port);
+    app.listen(config.api.port);
 })();
