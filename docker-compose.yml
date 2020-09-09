@@ -40,6 +40,7 @@ services:
     volumes:
       - ./services/api/src:/app/src
       - ./services/api/tsconfig.json:/app/tsconfig.json
+      - ./services/api/ormconfig.json:/app/ormconfig.json
       - ./services/api/package.json:/app/package.json
       - ./services/api/package-lock.json:/app/package-lock.json
       - ./services/api/.env.dist:/app/.env
