@@ -1,7 +1,9 @@
-import {Connection, createConnection, EntityMetadata, getConnection} from "typeorm";
+import {Connection, createConnection, getConnection} from "typeorm";
 
 import config from "../config";
 import {User} from "../entity/User";
+
+const usingTestDatabase = config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing';
 
 const createPostgresConnection = async (): Promise<Connection> => {
     return await createConnection({
@@ -14,9 +16,9 @@ const createPostgresConnection = async (): Promise<Connection> => {
         entities: [
             User
         ],
-        synchronize: config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing',
-        dropSchema: config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing',
-        migrationsRun: config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing',
+        synchronize: usingTestDatabase,
+        dropSchema: usingTestDatabase,
+        migrationsRun: usingTestDatabase,
         logging: false
     });
 };
@@ -25,13 +27,12 @@ export default async (): Promise<Connection> => {
     try {
         return await createPostgresConnection();
     } catch (error) {
-        // FIXME: throw error if it is not "already have active connection" error
 
-        if (config.env === 'testing') {
+        if (error.name === 'AlreadyHasActiveConnectionError' && usingTestDatabase) {
             await getConnection().close();
             return await createPostgresConnection();
         }
 
-        return getConnection();
+        throw error;
     }
 }
