@@ -4,6 +4,6 @@ import expressLoader from "./express";
 import postgresLoader from "./postgres";
 
 export default async (app: express.Application) => {
-    const postgresConnection = await postgresLoader(app);
+    const postgresConnection = await postgresLoader();
     return await expressLoader(app);
 }

@@ -8,6 +8,7 @@ if (envFound.error) {
 }
 
 export default {
+    env: process.env.NODE_ENV,
     api: {
         port: parseInt(process.env.API_PORT, 10),
         prefix: '/api'

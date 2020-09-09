@@ -7,15 +7,16 @@
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "node .",
-    "pretest": "NODE_ENV=testing DB_HOST=localhost DB_PORT=5433 DB_USER=testing DB_PASSWORD=testing DB_NAME=testing npm run typeorm schema:drop && npm run typeorm migration:run",
-    "test": "NODE_ENV=testing DB_HOST=localhost DB_PORT=5433 DB_USER=testing DB_PASSWORD=testing DB_NAME=testing jest --runInBand --detectOpenHandles",
+    "test": "NODE_ENV=testing DB_HOST=localhost DB_PORT=5433 DB_USER=testing DB_PASSWORD=testing DB_NAME=testing jest --detectOpenHandles",
     "watch": "./node_modules/.bin/nodemon -e 'ts' --watch 'src' --ignore 'src/**/*.spec.ts' --exec 'ts-node ./src/api.ts'",
-    "typeorm": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js"
+    "typeorm": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js",
+    "db:drop": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js schema:drop",
+    "db:migrate": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js migration:run"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "argon2": "^0.27.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -24,11 +25,13 @@
     "typeorm": "^0.2.25"
   },
   "devDependencies": {
+    "@types/faker": "^5.1.0",
     "@types/express": "^4.17.8",
     "@types/jest": "^26.0.13",
     "@types/node": "^14.6.4",
     "@types/supertest": "^2.0.10",
     "jest": "^26.4.2",
+    "faker": "^5.1.0",
     "nodemon": "^2.0.4",
     "supertest": "^4.0.2",
     "ts-jest": "^26.3.0",
