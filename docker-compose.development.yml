@@ -1,0 +1,57 @@
+version: '3.3'
+
+services:
+
+  postgres:
+    image: ${PROJECT_NAME}-postgres:development
+    restart: "no"
+    env_file:
+      - services/postgres/.env
+    ports:
+      - "5432:5432"
+
+  postgres-testing:
+    container_name: ${PROJECT_NAME}-postgres-testing
+    image: ${PROJECT_NAME}-postgres:development
+    restart: "no"
+    build:
+      context: services/postgres
+      dockerfile: Dockerfile
+    env_file:
+      - services/postgres/.env.testing
+    ports:
+      - "5433:5432"
+    networks:
+      - internal
+
+  api:
+    image: ${PROJECT_NAME}-api:development
+    restart: "no"
+    env_file:
+      - services/api/.env
+    command: ["npm", "run", "watch"]
+    volumes:
+      - ./services/api/src:/app/src
+      - ./services/api/tsconfig.json:/app/tsconfig.json
+      - ./services/api/ormconfig.json:/app/ormconfig.json
+      - ./services/api/package.json:/app/package.json
+      - ./services/api/package-lock.json:/app/package-lock.json
+      - ./services/api/.env.dist:/app/.env
+    depends_on:
+      - postgres
+      - postgres-testing
+
+  web:
+    image: ${PROJECT_NAME}-web:development
+    restart: "no"
+
+  webserver:
+    image: ${PROJECT_NAME}-webserver:development
+    restart: "no"
+    ports:
+      - "8000:80"
+
+networks:
+  internal:
+  web:
+    external: true

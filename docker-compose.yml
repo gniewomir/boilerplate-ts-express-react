@@ -3,55 +3,30 @@ version: '3.3'
 services:
 
   postgres:
-    container_name: recruitment-postgres
+    container_name: ${PROJECT_NAME}-postgres
+    image: ${PROJECT_NAME}-postgres:${PROJECT_VERSION}
     restart: unless-stopped
     build:
       context: services/postgres
       dockerfile: Dockerfile
-    env_file:
-      - services/postgres/.env
-    ports:
-      - "5432:5432"
-    networks:
-      - internal
-
-  postgres-testing:
-    container_name: recruitment-postgres-testing
-    restart: unless-stopped
-    build:
-      context: services/postgres
-      dockerfile: Dockerfile
-    env_file:
-      - services/postgres/.env.testing
-    ports:
-      - "5433:5432"
     networks:
       - internal
 
   api:
-    container_name: recruitment-api
+    container_name: ${PROJECT_NAME}-api
+    image: ${PROJECT_NAME}-api:${PROJECT_VERSION}
     restart: unless-stopped
     build:
       context: services/api
       dockerfile: Dockerfile
-    env_file:
-      - services/api/.env
-    command: ["npm", "run", "watch"]
-    volumes:
-      - ./services/api/src:/app/src
-      - ./services/api/tsconfig.json:/app/tsconfig.json
-      - ./services/api/ormconfig.json:/app/ormconfig.json
-      - ./services/api/package.json:/app/package.json
-      - ./services/api/package-lock.json:/app/package-lock.json
-      - ./services/api/.env.dist:/app/.env
     networks:
       - internal
     depends_on:
       - postgres
-      - postgres-testing
 
   web:
-    container_name: recruitment-web
+    container_name: ${PROJECT_NAME}-web
+    image: ${PROJECT_NAME}-web:${PROJECT_VERSION}
     restart: unless-stopped
     build:
       context: services/web
@@ -62,7 +37,8 @@ services:
       - api
 
   webserver:
-    container_name: recruitment-webserver
+    container_name: ${PROJECT_NAME}-webserver
+    image: ${PROJECT_NAME}-webserver:${PROJECT_VERSION}
     restart: unless-stopped
     build:
       context: services/webserver
