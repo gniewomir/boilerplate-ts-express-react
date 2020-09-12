@@ -1,11 +1,12 @@
-import {Connection, createConnection, getConnection} from "typeorm";
+import {Connection, createConnection, getConnection, useContainer} from "typeorm";
 
 import config from "../config";
 import {User} from "../entity/User";
-
-const usingTestDatabase = config.env === 'testing' && config.database.name === 'testing' && config.database.user === 'testing';
+import {Container} from "typedi";
+import {Token} from "../entity/Token";
 
 const createPostgresConnection = async (): Promise<Connection> => {
+    useContainer(Container);
     return await createConnection({
         type: "postgres",
         host: config.database.host,
@@ -14,11 +15,12 @@ const createPostgresConnection = async (): Promise<Connection> => {
         password: config.database.password,
         database: config.database.name,
         entities: [
-            User
+            User,
+            Token
         ],
-        synchronize: usingTestDatabase,
-        dropSchema: usingTestDatabase,
-        migrationsRun: usingTestDatabase,
+        synchronize: config.env === 'testing' && config.testing.database.drop,
+        dropSchema: config.env === 'testing' && config.testing.database.drop,
+        migrationsRun: config.env === 'testing' && config.testing.database.drop,
         logging: false
     });
 };
@@ -28,9 +30,8 @@ export default async (): Promise<Connection> => {
         return await createPostgresConnection();
     } catch (error) {
 
-        if (error.name === 'AlreadyHasActiveConnectionError' && usingTestDatabase) {
-            await getConnection().close();
-            return await createPostgresConnection();
+        if (error.name === 'AlreadyHasActiveConnectionError') {
+            return getConnection();
         }
 
         throw error;

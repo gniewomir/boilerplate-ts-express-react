@@ -3,16 +3,22 @@ import * as faker from 'faker';
 import {User} from "../entity/User";
 import postgres from "../loader/postgres";
 import {IUserRepository} from "../interface/IUserRepository";
+import {Container} from "typedi";
+import PasswordService from "../service/password";
+
+const getRepository = async (): Promise<IUserRepository> => {
+    const postgresConnection = await postgres();
+    return new UserRepository(
+        postgresConnection,
+        Container.get(PasswordService)
+    );
+}
 
 describe('The user repository', () => {
-    it('implements correct interface', async () => {
-        const postgresConnection = await postgres();
-        ((repository: IUserRepository): IUserRepository => repository)(postgresConnection.getCustomRepository(UserRepository));
-    })
     describe('createAndSave', () => {
         it('should create user', async () => {
-            const postgresConnection = await postgres();
-            const repository = postgresConnection.getCustomRepository(UserRepository);
+            const repository = await getRepository();
+
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -26,8 +32,8 @@ describe('The user repository', () => {
     });
     describe('findById', () => {
         it('should find user by id', async () => {
-            const postgresConnection = await postgres();
-            const repository = postgresConnection.getCustomRepository(UserRepository);
+            const repository = await getRepository();
+
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -38,20 +44,21 @@ describe('The user repository', () => {
             expect(found.email).toBe(email);
             expect(found.password).toBeTruthy();
             expect(found.password).not.toBe(password);
+            expect(found.salt).toBeTruthy();
         })
     });
     describe('findById', () => {
         it('should return undefined for non existent user', async () => {
-            const postgresConnection = await postgres();
-            const repository = postgresConnection.getCustomRepository(UserRepository);
+            const repository = await getRepository();
+
             const user = await repository.findById(2147483647);
             expect(user).toBeUndefined();
         })
     });
     describe('findByEmail', () => {
         it('should find user by email', async () => {
-            const postgresConnection = await postgres();
-            const repository = postgresConnection.getCustomRepository(UserRepository);
+            const repository = await getRepository();
+
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -66,10 +73,30 @@ describe('The user repository', () => {
     });
     describe('findByEmail', () => {
         it('should return undefined for non existent user', async () => {
-            const postgresConnection = await postgres();
-            const repository = postgresConnection.getCustomRepository(UserRepository);
+            const repository = await getRepository();
+
             const user = await repository.findByEmail('email.faker.cannot.even.dream.about@gmail.com');
             expect(user).toBeUndefined();
         })
+    });
+    describe('exists', () => {
+        it('should return false for non existent user', async () => {
+            const repository = await getRepository();
+            const exist = await repository.exists(2147483647);
+
+            expect(exist).toBe(false);
+        });
+        it('should return true for existing user', async () => {
+            const repository = await getRepository();
+
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await repository.createAndSave(name, email, password);
+            const exist = await repository.exists(user.id);
+
+            expect(exist).toBe(true);
+        })
+
     });
 });
