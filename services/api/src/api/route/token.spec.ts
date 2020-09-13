@@ -28,6 +28,7 @@ describe('Token routes', () => {
             const password = faker.internet.password();
             await repository.createAndSave(faker.name.findName(), email, password);
 
+            expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token`)
                 .send({
@@ -37,7 +38,8 @@ describe('Token routes', () => {
                 .expect(200)
                 .expect(async (res: Response) => {
                     const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
-                    await authenticationService.checkAuthentication(res.body.token);
+                    const authenticated = await authenticationService.checkAuthentication(res.body.token);
+                    expect(authenticated.user.email).toBe(email);
                 });
         })
     });
