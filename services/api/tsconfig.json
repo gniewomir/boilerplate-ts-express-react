@@ -9,8 +9,8 @@
     ],
     "typeRoots": [
       "./node_modules/@types",
-      "./src/type",
-      "./src/interface"
+      "./src/application/type",
+      "./src/application/interface"
     ],
     "noImplicitAny": true,
     "moduleResolution": "node",
