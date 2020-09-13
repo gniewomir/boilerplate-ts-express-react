@@ -1,5 +1,5 @@
 import {IUserService} from "../interface/IUserService";
-import {IAuthenticated} from "../../application/interface/IAuthenticated";
+import {IAuthentication} from "../../application/interface/IAuthenticated";
 import {Service} from "typedi";
 import UserRepository from "../../database/repository/user";
 import AuthenticationService from "../../application/service/authentication";
@@ -18,7 +18,7 @@ export default class UserService implements IUserService {
     ) {
     }
 
-    public async authenticateByCredentials(credentials: IUserLoginDTO): Promise<IAuthenticated> {
+    public async authenticateByCredentials(credentials: IUserLoginDTO): Promise<IAuthentication> {
         const user = await this.userRepository.findByEmail(credentials.email);
         if (!user) {
             throw new InvalidAuthentication('user not found');
@@ -27,7 +27,7 @@ export default class UserService implements IUserService {
         return await this.authenticationService.createAuthentication(user);
     }
 
-    public async authenticateById(id: number): Promise<IAuthenticated> {
+    public async authenticateById(id: number): Promise<IAuthentication> {
         const user = await this.userRepository.findById(id);
         if (!user) {
             throw new InvalidAuthentication('user not found');

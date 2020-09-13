@@ -1,7 +1,7 @@
 import {Controller} from "./controller";
 import {Service} from "typedi";
 import {Request, Response} from "express";
-import {IAuthenticated} from "../../application/interface/IAuthenticated";
+import {IAuthentication} from "../../application/interface/IAuthenticated";
 import UserService from "../../domain/service/user";
 import Forbidden from "../../application/error/Forbidden";
 
@@ -14,7 +14,7 @@ export class UserController extends Controller {
         super();
     }
 
-    public async POST(req: Request, res: Response, authentication: IAuthenticated): Promise<any> {
+    public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<any> {
         if (authentication.authenticated) {
             throw new Forbidden('Already authenticated user cannot register');
         }

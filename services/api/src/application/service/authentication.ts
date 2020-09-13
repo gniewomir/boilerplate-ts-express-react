@@ -6,7 +6,7 @@ import config from '../config';
 import InvalidAuthentication from "../error/InvalidAuthentication";
 import TokenRepository from "../../database/repository/token";
 import {IUserDto} from "../../domain/interface/user";
-import {IAuthenticated} from "../interface/IAuthenticated";
+import {IAuthentication} from "../interface/IAuthenticated";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
 import {IToken} from "../interface/IToken";
 import {ITokenPayload} from "../interface/ITokenPayload";
@@ -36,7 +36,7 @@ export default class AuthenticationService implements IAuthenticationService {
         };
     }
 
-    public async checkAuthentication(token: string): Promise<IAuthenticated> {
+    public async checkAuthentication(token: string): Promise<IAuthentication> {
         try {
             const payload = jwt.verify(token, config.security.authentication.jwt.secret) as ITokenPayload;
             const user = await this.userRepository.findById(payload.user_id);
@@ -59,7 +59,7 @@ export default class AuthenticationService implements IAuthenticationService {
         }
     }
 
-    public async createAuthentication(user: IUserDto): Promise<IAuthenticated> {
+    public async createAuthentication(user: IUserDto): Promise<IAuthentication> {
         return {
             authenticated: true,
             user,
@@ -84,7 +84,7 @@ export default class AuthenticationService implements IAuthenticationService {
         return undefined;
     }
 
-    public authenticationFromResponse(res: Response): IAuthenticated {
+    public authenticationFromResponse(res: Response): IAuthentication {
         if (res.locals.authentication) {
             return res.locals.authentication;
         }

@@ -1,7 +1,7 @@
 import {Controller} from "./controller";
 import {Service} from "typedi";
 import {Request, Response} from "express";
-import {IAuthenticated} from "../../application/interface/IAuthenticated";
+import {IAuthentication} from "../../application/interface/IAuthenticated";
 import UserService from "../../domain/service/user";
 
 @Service()
@@ -13,7 +13,7 @@ export class TokenController extends Controller {
         super();
     }
 
-    public async POST(req: Request, res: Response, authentication: IAuthenticated): Promise<any> {
+    public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<any> {
         if (authentication.authenticated) {
             const newAuthentication = await this.userService.authenticateById(authentication.user.id);
             res
@@ -35,7 +35,7 @@ export class TokenController extends Controller {
         }
     }
 
-    public async DELETE(req: Request, res: Response, authentication: IAuthenticated): Promise<any> {
+    public async DELETE(req: Request, res: Response, authentication: IAuthentication): Promise<any> {
         if (authentication.authenticated) {
             await this.userService.revokeAuthentication(authentication.token.token);
         }
