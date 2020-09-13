@@ -15,7 +15,8 @@ const getTokenFromHeader = (req: Request) => {
     return null;
 };
 
-const normalize = (str: string): string => {
+const normalizePath = (str: string): string => {
+    str = str.split('?')[0];
     str = str.toLowerCase();
     if (str.substr(-1) === '/') {
         return str.substr(0, str.length - 1);
@@ -27,8 +28,8 @@ const isWhitelisted = (req: Request): boolean => {
     return config.security.authentication.whitelist.reduce(
         (carry: boolean, entry: IWhitelistEntry) => {
             return carry || (
-                normalize(entry.method) === normalize(req.method) &&
-                normalize(entry.route) === normalize(req.originalUrl)
+                entry.method.toUpperCase() === req.method.toUpperCase() &&
+                normalizePath(entry.route) === normalizePath(req.originalUrl)
             );
         },
         false

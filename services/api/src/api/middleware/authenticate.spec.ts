@@ -28,6 +28,33 @@ describe('Authenticate middleware', () => {
             .post(`${config.api.prefix}/token`)
             .expect(400);
     });
+    it('ignores trailing slash for routes whitelisted in config', async () => {
+        config.security.authentication.whitelist = [
+            {
+                method: "POST",
+                route: `${config.api.prefix}/token`
+            }
+        ];
+        const application = await app();
+        await request(application)
+            .post(`${config.api.prefix}/token/`)
+            .expect(400);
+    });
+    it('ignores query string for routes whitelisted in config', async () => {
+        config.security.authentication.whitelist = [
+            {
+                method: "POST",
+                route: `${config.api.prefix}/token`
+            }
+        ];
+        const application = await app();
+        await request(application)
+            .post(`${config.api.prefix}/token`)
+            .query({
+                test: "test"
+            })
+            .expect(400);
+    });
     it('authenticates even whitelisted routes if possible', async () => {
         config.security.authentication.whitelist = [
             {
