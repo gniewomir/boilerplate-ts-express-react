@@ -3,10 +3,19 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es6",
+    "target": "es2017",
+    "lib": [
+      "es2017"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/type",
+      "./src/interface"
+    ],
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
+    "pretty": true,
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
