@@ -20,4 +20,5 @@ export class Token {
 
     @Column()
     blacklisted: boolean;
+
 }

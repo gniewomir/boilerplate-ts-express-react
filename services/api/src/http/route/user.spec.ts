@@ -2,19 +2,16 @@ import request from 'supertest';
 import app from '../../application/loader';
 import config from "../../application/config";
 import faker from "faker";
-import {Container} from "typedi";
-import UserRepository from "../../database/repository/user";
-import {User} from "../../database/entity/User";
 
 describe('User routes', () => {
     describe(`POST ${config.api.prefix}/user`, () => {
-        it('should return create user', async () => {
+        it('should return created user', async () => {
             const application = await app();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
 
-            expect.assertions(2);
+            expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/user`)
                 .send({
@@ -24,9 +21,43 @@ describe('User routes', () => {
                 })
                 .expect(201)
                 .then(response => {
-                    expect(response.body.data.email).toStrictEqual(["email"]);
+                    expect(response.body.email).toStrictEqual(email);
                 });
-            await expect(await Container.get(UserRepository).findByEmail(email)).toBeInstanceOf(User);
+        });
+        it('should return validation error', async () => {
+            const application = await app();
+
+            expect.assertions(1);
+            await request(application)
+                .post(`${config.api.prefix}/user`)
+                .send({})
+                .expect(400)
+                .then(response => {
+                    expect(response.body.validation.body.keys).toStrictEqual(["name"]);
+                });
+        });
+        it('should return error on existing user', async () => {
+            const application = await app();
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+
+            await request(application)
+                .post(`${config.api.prefix}/user`)
+                .send({
+                    name,
+                    email,
+                    password
+                })
+                .expect(201);
+            await request(application)
+                .post(`${config.api.prefix}/user`)
+                .send({
+                    name,
+                    email,
+                    password
+                })
+                .expect(422);
         });
     });
 });

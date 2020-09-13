@@ -1,8 +1,10 @@
 import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Token} from "./Token";
+import {IMapper} from "../interface/IMapper";
+import {IUserDto} from "../../domain/interface/user";
 
 @Entity()
-export class User {
+export class User implements IMapper {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -32,5 +34,13 @@ export class User {
 
     @OneToMany(() => Token, token => token.user)
     tokens: Token[];
+
+    toDTO(): IUserDto {
+        return {
+            id: this.id,
+            email: this.email,
+            name: this.name
+        };
+    }
 
 }

@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import config from '../config';
 import InvalidAuthentication from "../error/InvalidAuthentication";
 import TokenRepository from "../../database/repository/token";
-import {IUser} from "../../domain/interface/IUser";
+import {IUserDto} from "../../domain/interface/user";
 import {IAuthenticated} from "../interface/IAuthenticated";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
 import {IToken} from "../interface/IToken";
@@ -22,7 +22,7 @@ export default class AuthenticationService implements IAuthenticationService {
     ) {
     }
 
-    private static generateToken(user: IUser): IToken {
+    private static generateToken(user: IUserDto): IToken {
         const payload = {
             user_id: user.id,
             exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60)
@@ -59,7 +59,7 @@ export default class AuthenticationService implements IAuthenticationService {
         }
     }
 
-    public async createAuthentication(user: IUser): Promise<IAuthenticated> {
+    public async createAuthentication(user: IUserDto): Promise<IAuthenticated> {
         return {
             authenticated: true,
             user,

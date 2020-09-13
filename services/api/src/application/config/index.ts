@@ -39,7 +39,11 @@ export default {
             whitelist: [
                 {
                     method: "POST",
-                    route: '/api/token'
+                    route: `${apiPrefix}/token`
+                },
+                {
+                    method: "POST",
+                    route: `${apiPrefix}/user`
                 }
             ] as HttpWhitelist
         }

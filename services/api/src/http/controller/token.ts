@@ -23,7 +23,10 @@ export class TokenController extends Controller {
                 });
             return;
         } else {
-            const newAuthentication = await this.userService.authenticateByCredentials(req.body.email, req.body.password);
+            const newAuthentication = await this.userService.authenticateByCredentials({
+                email: req.body.email,
+                password: req.body.password
+            });
             res
                 .status(201)
                 .json({

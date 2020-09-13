@@ -6,12 +6,12 @@ import {User} from "../../database/entity/User";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import InvalidAuthentication from "../error/InvalidAuthentication";
-import {IUser} from "../../domain/interface/IUser";
+import {IUserDto} from "../../domain/interface/user";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
 import app from "../loader";
 import {ITokenPayload} from "../interface/ITokenPayload";
 
-const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUser, password: string }> => {
+const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUserDto, password: string }> => {
     await app();
 
     const name = faker.name.findName();

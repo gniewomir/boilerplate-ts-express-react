@@ -1,4 +1,4 @@
-import {IUser} from "../interface/IUser";
+import {IUserDto} from "../interface/user";
 import app from "../../application/loader";
 import faker from "faker";
 import {Container} from "typedi";
@@ -6,8 +6,10 @@ import UserRepository from "../../database/repository/user";
 import UserService from "./user";
 import {IUserService} from "../interface/IUserService";
 import TokenRepository from "../../database/repository/token";
+import {User} from "../../database/entity/User";
+import UnprocessableEntity from "../../application/error/UnprocessableEntity";
 
-const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: IUser, password: string }> => {
+const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: IUserDto, password: string }> => {
     await app();
 
     const name = faker.name.findName();
@@ -26,7 +28,11 @@ describe('User service', () => {
     describe('authenticateByCredentials', () => {
         it('authenticates user', async () => {
             const {subject, user, password} = await getTestSubjectAndUser();
-            const authentication = await subject.authenticateByCredentials(user.email, password);
+            const authentication = await subject.authenticateByCredentials(
+                {
+                    email: user.email,
+                    password
+                });
             expect(authentication.authenticated).toBe(true);
             expect(authentication.user.id).toBe(user.id);
         });
@@ -49,6 +55,50 @@ describe('User service', () => {
             await subject.revokeAuthentication(authentication.token.token);
             const token = await tokenRepository.find(authentication.token.token);
             expect(token.blacklisted).toBe(true);
+        });
+    });
+    describe('register', () => {
+        it('creates new user', async () => {
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            await expect(await Container.get(UserRepository).findByEmail(email)).toBeInstanceOf(User);
+        });
+        it('throws on already existing user', async () => {
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            expect.assertions(1);
+            try {
+                await Container.get(UserService).register({
+                    name,
+                    email,
+                    password
+                });
+            } catch (error) {
+                expect(error).toBeInstanceOf(UnprocessableEntity);
+            }
+        });
+        it('returns DTO not entity', async () => {
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const dto = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            expect(dto).not.toBeInstanceOf(User);
         });
     });
 });

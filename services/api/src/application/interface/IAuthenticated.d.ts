@@ -1,8 +1,8 @@
-import {IUser} from "../../domain/interface/IUser";
+import {IUserDto} from "../../domain/interface/user";
 import {IToken} from "./IToken";
 
 export interface IAuthenticated {
     authenticated: boolean;
-    user: IUser | null;
+    user: IUserDto | null;
     token: IToken | null;
 }
