@@ -13,7 +13,7 @@
     "db:drop": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js schema:drop",
     "db:migrate": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js migration:run"
   },
-  "author": "",
+  "author": "Gniewomir Świechowski <gniewomir.swiechowski@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "argon2": "^0.27.0",
