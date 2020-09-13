@@ -1,20 +1,21 @@
 import request from 'supertest';
 import application from './index';
+import config from "../config";
 
 describe('The express loader', () => {
-    describe('GET /api/status', () => {
+    describe(`GET ${config.api.prefix}/status`, () => {
         it('should return status code 200', async () => {
             const app = await application();
-            return request(app)
-                .get(`/api/status`)
+            await request(app)
+                .get(`${config.api.prefix}/status`)
                 .expect(200)
         })
     });
-    describe('HEAD /api/status', () => {
+    describe(`HEAD ${config.api.prefix}/status`, () => {
         it('should return status code 200', async () => {
             const app = await application();
-            return request(app)
-                .head(`/api/status`)
+            await request(app)
+                .head(`${config.api.prefix}/status`)
                 .expect(200)
         })
     });

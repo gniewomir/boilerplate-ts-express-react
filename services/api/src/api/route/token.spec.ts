@@ -9,12 +9,12 @@ import {IAuthenticationService} from "../../interface/IAuthenticationService";
 import config from "../../config";
 
 describe('Token routes', () => {
-    describe('POST /api/token', () => {
+    describe(`POST ${config.api.prefix}/token`, () => {
         it('should return status code 422 and list of errors on invalid request', async () => {
             const application = await app();
 
             await request(application)
-                .post(`/${config.api.prefix}/token`)
+                .post(`${config.api.prefix}/token`)
                 .expect(422)
                 .expect({
                     email: 'This field is required',
@@ -29,7 +29,7 @@ describe('Token routes', () => {
             await repository.createAndSave(faker.name.findName(), email, password);
 
             await request(application)
-                .post(`/${config.api.prefix}/token`)
+                .post(`${config.api.prefix}/token`)
                 .send({
                     email,
                     password
