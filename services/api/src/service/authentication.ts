@@ -3,7 +3,6 @@ import PasswordService from "./password";
 import UserRepository from "../repository/user";
 import jwt from "jsonwebtoken";
 import config from '../config';
-import moment from "moment";
 import InvalidAuthentication from "../error/InvalidAuthentication";
 import TokenRepository from "../repository/token";
 import {IUser} from "../interface/IUser";
@@ -21,13 +20,9 @@ export default class AuthenticationService implements IAuthenticationService {
     }
 
     private static generateToken(user: IUser): IToken {
-        const expiration = moment(new Date())
-            .add(config.authentication.jwt.token_expiration_in_minutes, 'm')
-            .toDate()
-            .getSeconds();
         const payload = {
             user_id: user.id,
-            exp: expiration
+            exp: Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60)
         };
         return {
             token: jwt.sign(
@@ -70,7 +65,7 @@ export default class AuthenticationService implements IAuthenticationService {
     public async revokeAuthentication(token: string): Promise<undefined> {
         try {
             const {token: {payload}} = await this.checkAuthentication(token);
-            await this.tokenRepository.blacklist(token, payload.user_id, payload.exp);
+            await this.tokenRepository.blacklist(token, payload.user_id, new Date(payload.exp * 1000));
         } catch (error) {
             if (error instanceof InvalidAuthentication) {
                 return;

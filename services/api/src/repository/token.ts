@@ -15,13 +15,13 @@ export default class TokenRepository implements ITokenRepository {
     ) {
     }
 
-    public async blacklist(token: string, userId: number, expiration: number): Promise<Token> {
+    public async blacklist(token: string, userId: number, expiration: Date): Promise<Token> {
         if (!await this.exist(token)) {
             const entity = new Token()
 
             entity.token = token;
             entity.user = await this.userRepository.findById(userId);
-            entity.expiration = new Date(expiration);
+            entity.expiration = expiration;
             entity.blacklisted = true;
 
             await this.connection.manager.save(Token, entity);

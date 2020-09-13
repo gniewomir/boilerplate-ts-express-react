@@ -22,11 +22,16 @@ describe('The token repository', () => {
         it('saves token to database as blacklisted', async () => {
             const {subject, user} = await getSubjectAndUser();
             const {token} = await Container.get(AuthenticationService).createAuthentication(user);
-            await subject.blacklist(token.token, user.id, token.payload.exp);
+            const expirationDate = new Date(token.payload.exp * 1000);
+            await subject.blacklist(token.token, user.id, expirationDate);
             const entity = await subject.find(token.token);
             expect(entity).toBeInstanceOf(Token);
             expect(entity.token).toBe(token.token);
             expect(entity.blacklisted).toBe(true);
+
+            expect(entity.expiration.getMinutes()).toBe(expirationDate.getMinutes());
+            expect(entity.expiration.getMonth()).toBe(expirationDate.getMonth());
+            expect(entity.expiration.getFullYear()).toBe(expirationDate.getFullYear());
         });
     });
 
@@ -34,7 +39,7 @@ describe('The token repository', () => {
         it('returns true when provided with blacklisted token', async () => {
             const {subject, user} = await getSubjectAndUser();
             const {token} = await Container.get(AuthenticationService).createAuthentication(user);
-            await subject.blacklist(token.token, user.id, token.payload.exp);
+            await subject.blacklist(token.token, user.id, new Date(token.payload.exp * 1000));
             const blacklisted = await subject.isBlacklisted(token.token);
             expect(blacklisted).toBe(true);
         });
@@ -50,7 +55,7 @@ describe('The token repository', () => {
         it('returns true when provided with existing token', async () => {
             const {subject, user} = await getSubjectAndUser();
             const {token} = await Container.get(AuthenticationService).createAuthentication(user);
-            await subject.blacklist(token.token, user.id, token.payload.exp);
+            await subject.blacklist(token.token, user.id, new Date(token.payload.exp * 1000));
             const exists = await subject.exist(token.token);
             expect(exists).toBe(true);
         });
@@ -66,7 +71,7 @@ describe('The token repository', () => {
         it('returns token when token exists', async () => {
             const {subject, user} = await getSubjectAndUser();
             const {token} = await Container.get(AuthenticationService).createAuthentication(user);
-            await subject.blacklist(token.token, user.id, token.payload.exp);
+            await subject.blacklist(token.token, user.id, new Date(token.payload.exp * 1000));
             const entity = await subject.find(token.token);
             expect(entity).toBeInstanceOf(Token);
             expect(entity.token).toBe(token.token);
