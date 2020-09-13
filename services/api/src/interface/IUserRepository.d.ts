@@ -9,4 +9,3 @@ interface IUserRepository {
 
     exists(id: number): Promise<boolean>;
 }
-
