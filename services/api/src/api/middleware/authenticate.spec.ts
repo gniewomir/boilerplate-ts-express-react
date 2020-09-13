@@ -28,7 +28,7 @@ describe('Authenticate middleware', () => {
             .post(`${config.api.prefix}/token`)
             .expect(400);
     });
-    it('ignores trailing slash for routes whitelisted in config', async () => {
+    it('ignores request path trailing slash for routes whitelisted in config', async () => {
         config.security.authentication.whitelist = [
             {
                 method: "POST",
@@ -40,7 +40,7 @@ describe('Authenticate middleware', () => {
             .post(`${config.api.prefix}/token/`)
             .expect(400);
     });
-    it('ignores query string for routes whitelisted in config', async () => {
+    it('ignores request query string for routes whitelisted in config', async () => {
         config.security.authentication.whitelist = [
             {
                 method: "POST",
