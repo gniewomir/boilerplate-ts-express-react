@@ -1,26 +1,10 @@
 import {IError} from "../interface/IError";
+import ApiError from "./ApiError";
 
-export default class NotImplemented implements IError {
+export default class NotImplemented extends ApiError implements IError {
 
-    private readonly statusCode: number;
-    private readonly message: string;
-    private readonly previous: any;
-
-    constructor(message: string, previous?: any) {
-        this.statusCode = 500;
-        this.message = message;
-        this.previous = previous;
+    constructor(message: string = 'Not implemented', previous?: any) {
+        super(message, 500, previous)
     }
 
-    getHttpStatusCode(): number {
-        return this.statusCode;
-    }
-
-    getMessage(): string {
-        return this.message;
-    }
-
-    getPreviousError(): any {
-        return this.previous;
-    }
 }

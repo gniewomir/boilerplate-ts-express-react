@@ -6,4 +6,6 @@ export interface IError {
 
     getPreviousError(): any;
 
+    getAsLiteral(): object;
+
 }

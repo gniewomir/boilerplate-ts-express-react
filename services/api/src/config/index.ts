@@ -5,8 +5,10 @@ dotenv.config();
 export default {
     env: process.env.NODE_ENV,
     api: {
+        scheme: process.env.NODE_ENV === 'development' ? 'http' : 'https',
         port: parseInt(process.env.API_PORT, 10),
-        prefix: '/api'
+        prefix: '/api',
+        domain: process.env.API_DOMAIN
     },
     time: {
         timezone: process.env.TZ
