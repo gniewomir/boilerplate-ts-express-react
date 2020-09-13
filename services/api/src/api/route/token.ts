@@ -1,17 +1,35 @@
-import {Request, Response, Router} from 'express';
+import {Router} from 'express';
+import {celebrate, Joi, Segments} from "celebrate";
+import {TokenController} from "../controller/token";
+import {Container} from "typedi";
+import {forUnauthenticated, middleware} from "../middleware";
+import {controller} from "../controller";
 
 const route = Router();
 
 export default (app: Router) => {
+    const tokenController = controller(Container.get(TokenController));
     app.use('/token', route);
 
-    // FIXME: only for testing
-    // Obtain JWT token
-    route.post('', (req: Request, res: Response) => {
-        return res.json({}).status(200);
-    });
-    // Blacklist JWT token
-    route.delete('', (req: Request, res: Response) => {
-        return res.json({}).status(200);
-    });
+    route.post(
+        '/',
+        middleware(
+            forUnauthenticated(
+                celebrate(
+                    {
+                        [Segments.BODY]: Joi.object().keys({
+                            email: Joi.string().required(),
+                            password: Joi.string().required(),
+                        })
+                    })
+            )
+        ),
+        tokenController
+    );
+
+    route.delete(
+        '/',
+        middleware(),
+        tokenController
+    );
 };

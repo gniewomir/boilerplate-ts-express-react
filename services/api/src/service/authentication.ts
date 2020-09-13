@@ -8,6 +8,9 @@ import TokenRepository from "../repository/token";
 import {IUser} from "../interface/IUser";
 import {IAuthenticated} from "../interface/IAuthenticated";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
+import {IToken} from "../interface/IToken";
+import {ITokenPayload} from "../interface/ITokenPayload";
+import {Response} from "express";
 
 @Service()
 export default class AuthenticationService implements IAuthenticationService {
@@ -22,12 +25,12 @@ export default class AuthenticationService implements IAuthenticationService {
     private static generateToken(user: IUser): IToken {
         const payload = {
             user_id: user.id,
-            exp: Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60)
+            exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60)
         };
         return {
             token: jwt.sign(
                 payload,
-                config.authentication.jwt.secret
+                config.security.authentication.jwt.secret
             ),
             payload
         };
@@ -35,7 +38,7 @@ export default class AuthenticationService implements IAuthenticationService {
 
     public async checkAuthentication(token: string): Promise<IAuthenticated> {
         try {
-            const payload = jwt.verify(token, config.authentication.jwt.secret) as ITokenPayload;
+            const payload = jwt.verify(token, config.security.authentication.jwt.secret) as ITokenPayload;
             const user = await this.userRepository.findById(payload.user_id);
             if (!user) {
                 throw new InvalidAuthentication('user not found');
@@ -44,6 +47,7 @@ export default class AuthenticationService implements IAuthenticationService {
                 throw new InvalidAuthentication('jwt blacklisted');
             }
             return {
+                authenticated: true,
                 user,
                 token: {
                     token,
@@ -57,6 +61,7 @@ export default class AuthenticationService implements IAuthenticationService {
 
     public async createAuthentication(user: IUser): Promise<IAuthenticated> {
         return {
+            authenticated: true,
             user,
             token: AuthenticationService.generateToken(user)
         };
@@ -72,5 +77,21 @@ export default class AuthenticationService implements IAuthenticationService {
             }
             throw error;
         }
+    }
+
+    public async authenticateResponse(token: string, res: Response): Promise<Response> {
+        res.locals.authentication = await this.checkAuthentication(token);
+        return undefined;
+    }
+
+    public authenticationFromResponse(res: Response): IAuthenticated {
+        if (res.locals.authentication) {
+            return res.locals.authentication;
+        }
+        return {
+            authenticated: false,
+            user: null,
+            token: null
+        };
     }
 }

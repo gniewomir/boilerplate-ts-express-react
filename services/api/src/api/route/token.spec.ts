@@ -1,4 +1,4 @@
-import request, {Response} from 'supertest';
+import request from 'supertest';
 import app from '../../loader';
 import {Container} from "typedi";
 import UserRepository from "../../repository/user";
@@ -10,15 +10,14 @@ import config from "../../config";
 
 describe('Token routes', () => {
     describe(`POST ${config.api.prefix}/token`, () => {
-        it('should return status code 422 and list of errors on invalid request', async () => {
+        it('should return status code 400 and list of errors on invalid request', async () => {
             const application = await app();
-
+            expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token`)
-                .expect(422)
-                .expect({
-                    email: 'This field is required',
-                    password: 'This field is required'
+                .expect(400)
+                .then(response => {
+                    expect(response.body.validation.body.keys).toStrictEqual(["email"]);
                 })
         })
         it('should return status code 200 and valid token with credentials matching user', async () => {
@@ -35,10 +34,10 @@ describe('Token routes', () => {
                     email,
                     password
                 })
-                .expect(200)
-                .expect(async (res: Response) => {
+                .expect(201)
+                .then(async (response) => {
                     const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
-                    const authenticated = await authenticationService.checkAuthentication(res.body.token);
+                    const authenticated = await authenticationService.checkAuthentication(response.body.token);
                     expect(authenticated.user.email).toBe(email);
                 });
         })

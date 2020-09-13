@@ -1,12 +1,12 @@
 import {IErrorValidation} from "../interface/IErrorValidation";
 import ApiError from "./ApiError";
 
-export default class InvalidRequest extends ApiError implements IErrorValidation {
+export default class BadRequest extends ApiError implements IErrorValidation {
 
     private readonly validationErrors: any;
 
     constructor(validationErrors: object, previous?: any) {
-        super('Unprocessable request', 422, previous);
+        super('Malformed request', 400, previous);
         this.validationErrors = validationErrors;
     }
 

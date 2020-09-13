@@ -1,6 +1,8 @@
 import {IUser} from "./IUser";
+import {IToken} from "./IToken";
 
-interface IAuthenticated {
+export interface IAuthenticated {
+    authenticated: boolean;
     user: IUser | null;
-    token: IToken;
+    token: IToken | null;
 }

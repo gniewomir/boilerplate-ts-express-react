@@ -9,6 +9,7 @@ import InvalidAuthentication from "../error/InvalidAuthentication";
 import {IUser} from "../interface/IUser";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
 import app from "../loader";
+import {ITokenPayload} from "../interface/ITokenPayload";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUser, password: string }> => {
     await app();
@@ -39,7 +40,7 @@ describe('Authentication service', () => {
     describe('checkAuthentication', () => {
         it('reject expired tokens', async () => {
             const {subject, user} = await getTestSubjectAndUser();
-            const expiration = Math.floor(Date.now() / 1000) - (config.authentication.jwt.token_expiration_in_minutes * 60);
+            const expiration = Math.floor(Date.now() / 1000) - (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
                 user_id: user.id,
                 exp: expiration,
@@ -49,7 +50,7 @@ describe('Authentication service', () => {
             try {
                 await subject.checkAuthentication(jwt.sign(
                     payload,
-                    config.authentication.jwt.secret,
+                    config.security.authentication.jwt.secret,
                 ));
             } catch (error) {
                 expect(error).toBeInstanceOf(InvalidAuthentication);
@@ -60,11 +61,11 @@ describe('Authentication service', () => {
             const {subject, user} = await getTestSubjectAndUser();
             const payload = {
                 user_id: user.id,
-                exp: Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60),
+                exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60),
             } as ITokenPayload;
             const token = jwt.sign(
                 payload,
-                config.authentication.jwt.secret,
+                config.security.authentication.jwt.secret,
             );
 
             await subject.revokeAuthentication(token);
@@ -79,7 +80,7 @@ describe('Authentication service', () => {
         });
         it('reject token without valid signature', async () => {
             const {subject, user} = await getTestSubjectAndUser();
-            const expiration = Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60);
+            const expiration = Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
                 user_id: user.id,
                 exp: expiration,
@@ -89,7 +90,7 @@ describe('Authentication service', () => {
             try {
                 await subject.checkAuthentication(jwt.sign(
                     payload,
-                    `INVALID_${config.authentication.jwt.secret}`,
+                    `INVALID_${config.security.authentication.jwt.secret}`,
                 ));
             } catch (error) {
                 expect(error).toBeInstanceOf(InvalidAuthentication);
@@ -99,7 +100,7 @@ describe('Authentication service', () => {
 
         it('reject token for non existent user', async () => {
             const {subject} = await getTestSubjectAndUser();
-            const expiration = Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60);
+            const expiration = Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
                 user_id: 2147483647,
                 exp: expiration,
@@ -109,7 +110,7 @@ describe('Authentication service', () => {
             try {
                 await subject.checkAuthentication(jwt.sign(
                     payload,
-                    config.authentication.jwt.secret,
+                    config.security.authentication.jwt.secret,
                 ));
             } catch (error) {
                 expect(error).toBeInstanceOf(InvalidAuthentication);

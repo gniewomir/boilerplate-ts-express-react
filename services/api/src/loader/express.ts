@@ -4,9 +4,9 @@ import bodyParser from "body-parser";
 import routes from '../api/index';
 import Log from "./logger";
 import Logger from "./logger";
-import cors from "cors";
 import NotFound from "../error/NotFound";
 import ApiError from "../error/ApiError";
+import {errors} from "celebrate";
 
 export default async (application: express.Application) => {
 
@@ -24,12 +24,6 @@ export default async (application: express.Application) => {
     // We are always running behind reverse proxy
     application.enable('trust proxy');
 
-    // Configure cors
-    application.use(cors({
-        origin: `${config.api.scheme}://${config.api.domain}${config.env === 'development' ? ':8000' : ''}`,
-        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-    }));
-
     // Middleware that transforms the raw string of req.body into json
     application.use(bodyParser.json());
 
@@ -42,6 +36,7 @@ export default async (application: express.Application) => {
     });
 
     // error handler
+    application.use(errors()); // celebrate validation
     application.use((err: any, req: Request, res: Response, next: NextFunction) => {
         if (!(err instanceof ApiError)) {
             err = new ApiError('Unrecognized error.', 500, err);
