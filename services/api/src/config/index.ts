@@ -1,15 +1,15 @@
 import dotenv from "dotenv";
 
-process.env.NODE_ENV = process.env.NODE_ENV || "development";
-
 dotenv.config();
-
 
 export default {
     env: process.env.NODE_ENV,
     api: {
         port: parseInt(process.env.API_PORT, 10),
         prefix: '/api'
+    },
+    time: {
+        timezone: process.env.TZ
     },
     database: {
         host: process.env.DB_HOST,
@@ -35,13 +35,7 @@ export default {
         jwt: {
             secret: process.env.JWT_SECRET,
             token_expiration_in_minutes: 5
-        },
-        clients: [
-            {
-                name: process.env.WEB_CLIENT_NAME,
-                secret: process.env.WEB_CLIENT_SECRET
-            }
-        ]
+        }
     },
     testing: {
         database: {

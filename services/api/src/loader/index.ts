@@ -1,9 +1,11 @@
 import express from "express";
 
-import expressLoader from "./express";
-import postgresLoader from "./postgres";
+import configureExpress from "./express";
+import establishDatabaseConnection from "./postgres";
+import validateConfig from "./config";
 
-export default async (app: express.Application) => {
-    const postgresConnection = await postgresLoader();
-    return await expressLoader(app);
+export default async (): Promise<express.Application> => {
+    await validateConfig();
+    await establishDatabaseConnection();
+    return await configureExpress(express());
 }

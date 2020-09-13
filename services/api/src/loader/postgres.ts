@@ -4,6 +4,7 @@ import config from "../config";
 import {User} from "../entity/User";
 import {Container} from "typedi";
 import {Token} from "../entity/Token";
+import Log from "./logger";
 
 const createPostgresConnection = async (): Promise<Connection> => {
     useContainer(Container);
@@ -18,19 +19,23 @@ const createPostgresConnection = async (): Promise<Connection> => {
             User,
             Token
         ],
-        synchronize: config.env === 'testing' && config.testing.database.drop,
-        dropSchema: config.env === 'testing' && config.testing.database.drop,
-        migrationsRun: config.env === 'testing' && config.testing.database.drop,
+        synchronize: config.testing.database.drop,
+        dropSchema: config.testing.database.drop,
+        migrationsRun: config.testing.database.drop,
         logging: false
     });
 };
 
 export default async (): Promise<Connection> => {
     try {
-        return await createPostgresConnection();
+        return await createPostgresConnection().then((connection: Connection) => {
+            Log.info('Database connection established.');
+            return connection;
+        });
     } catch (error) {
 
         if (error.name === 'AlreadyHasActiveConnectionError') {
+            Log.info('Database connection established.');
             return getConnection();
         }
 

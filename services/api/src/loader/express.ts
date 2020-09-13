@@ -2,25 +2,33 @@ import express from "express";
 import config from '../config';
 import bodyParser from "body-parser";
 import routes from '../api/index';
+import Log from "./logger";
+import Logger from "./logger";
 
-export default async (app: express.Application) => {
+export default async (application: express.Application) => {
 
     /**
      * Health Check endpoints
      */
-    app.get(`${config.api.prefix}/status`, (req, res) => {
+    application.get(`${config.api.prefix}/status`, (req, res) => {
         res.write("OK");
         res.status(200).end();
     });
-    app.head(`${config.api.prefix}/status`, (req, res) => {
+    application.head(`${config.api.prefix}/status`, (req, res) => {
         res.status(200).end();
     });
 
     // Middleware that transforms the raw string of req.body into json
-    app.use(bodyParser.json());
+    application.use(bodyParser.json());
 
-    // Load API routes
-    app.use(config.api.prefix, routes());
+    // Load routes
+    application.use(config.api.prefix, routes());
 
-    return app;
+    Log.info('Express configured.');
+
+    if (config.env !== 'testing') {
+        application.listen(config.api.port, () => Logger.info(`Listening on port ${config.api.port}`))
+    }
+
+    return application;
 };
