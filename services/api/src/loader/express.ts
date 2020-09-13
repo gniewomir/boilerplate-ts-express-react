@@ -18,6 +18,9 @@ export default async (application: express.Application) => {
         res.status(200).end();
     });
 
+    // We are running behind reverse proxy
+    application.enable('trust proxy');
+
     // Middleware that transforms the raw string of req.body into json
     application.use(bodyParser.json());
 
