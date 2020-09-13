@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {controller} from "../controller";
 import {Container} from "typedi";
-import {forUnauthenticated, middleware} from "../middleware";
+import {middleware} from "../middleware";
 import {celebrate, Joi, Segments} from "celebrate";
 import {UserController} from "../controller/user";
 
@@ -14,16 +14,14 @@ export default (app: Router) => {
     route.post(
         '/',
         middleware(
-            forUnauthenticated(
-                celebrate(
-                    {
-                        [Segments.BODY]: Joi.object().keys({
-                            name: Joi.string().required(),
-                            email: Joi.string().required(),
-                            password: Joi.string().required(),
-                        })
+            celebrate(
+                {
+                    [Segments.BODY]: Joi.object().keys({
+                        name: Joi.string().required(),
+                        email: Joi.string().required(),
+                        password: Joi.string().required(),
                     })
-            )
+                })
         ),
         userController
     );

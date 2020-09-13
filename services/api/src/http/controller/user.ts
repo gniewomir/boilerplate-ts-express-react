@@ -3,6 +3,7 @@ import {Service} from "typedi";
 import {Request, Response} from "express";
 import {IAuthenticated} from "../../application/interface/IAuthenticated";
 import UserService from "../../domain/service/user";
+import Forbidden from "../../application/error/Forbidden";
 
 @Service()
 export class UserController extends Controller {
@@ -14,6 +15,9 @@ export class UserController extends Controller {
     }
 
     public async POST(req: Request, res: Response, authentication: IAuthenticated): Promise<any> {
+        if (authentication.authenticated) {
+            throw new Forbidden('Already authenticated user cannot register');
+        }
         const user = await this.userService.register({
             name: req.body.name,
             email: req.body.email,
