@@ -22,7 +22,8 @@ npm run test
 * Introduce authorization service and permissions 
     * add refresh tokens with longer lifetime which will allow only obtaining new token
     * revoking any user token should also revoke all refresh tokens
-    * consider how to log out from other browser tabs/devices ref: https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/ 
+    * consider how to log out from other browser tabs/devices ref: https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/
+* Fix Jest not exiting correctly, perhaps because of still open database connection? 
 * Some cleanup performed before testing may be unnecessary slowing down testing
 * Add more structured way of loading fixtures
 * Remove expired and blacklisted tokens from database 
