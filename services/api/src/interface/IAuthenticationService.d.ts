@@ -1,7 +1,7 @@
 import {IUser} from "./IUser";
 import {IAuthenticated} from "./IAuthenticated";
 
-interface IAuthenticationService {
+export interface IAuthenticationService {
 
     checkAuthentication(token: string): Promise<IAuthenticated>
 
