@@ -6,12 +6,12 @@ import {User} from "../entity/User";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import InvalidAuthentication from "../error/InvalidAuthentication";
-import postgres from "../loader/postgres";
 import {IUser} from "../interface/IUser";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
+import app from "../loader";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUser, password: string }> => {
-    await postgres();
+    await app();
 
     const name = faker.name.findName();
     const email = faker.internet.email();
@@ -77,44 +77,46 @@ describe('Authentication service', () => {
                 expect(error.message).toBe("jwt blacklisted");
             }
         });
-    });
-    it('reject token without valid signature', async () => {
-        const {subject, user} = await getTestSubjectAndUser();
-        const expiration = Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60);
-        const payload = {
-            user_id: user.id,
-            exp: expiration,
-        } as ITokenPayload;
+        it('reject token without valid signature', async () => {
+            const {subject, user} = await getTestSubjectAndUser();
+            const expiration = Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60);
+            const payload = {
+                user_id: user.id,
+                exp: expiration,
+            } as ITokenPayload;
 
-        expect.assertions(2);
-        try {
-            await subject.checkAuthentication(jwt.sign(
-                payload,
-                `INVALID_${config.authentication.jwt.secret}`,
-            ));
-        } catch (error) {
-            expect(error).toBeInstanceOf(InvalidAuthentication);
-            expect(error.message).toBe("invalid signature");
-        }
-    });
-    it('reject token for non existent user', async () => {
-        const {subject} = await getTestSubjectAndUser();
-        const expiration = Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60);
-        const payload = {
-            user_id: 2147483647,
-            exp: expiration,
-        } as ITokenPayload;
+            expect.assertions(2);
+            try {
+                await subject.checkAuthentication(jwt.sign(
+                    payload,
+                    `INVALID_${config.authentication.jwt.secret}`,
+                ));
+            } catch (error) {
+                expect(error).toBeInstanceOf(InvalidAuthentication);
+                expect(error.message).toBe("invalid signature");
+            }
+        });
 
-        expect.assertions(2);
-        try {
-            await subject.checkAuthentication(jwt.sign(
-                payload,
-                config.authentication.jwt.secret,
-            ));
-        } catch (error) {
-            expect(error).toBeInstanceOf(InvalidAuthentication);
-            expect(error.message).toBe('user not found');
-        }
+        it('reject token for non existent user', async () => {
+            const {subject} = await getTestSubjectAndUser();
+            const expiration = Math.floor(Date.now() / 1000) + (config.authentication.jwt.token_expiration_in_minutes * 60);
+            const payload = {
+                user_id: 2147483647,
+                exp: expiration,
+            } as ITokenPayload;
+
+            expect.assertions(2);
+            try {
+                await subject.checkAuthentication(jwt.sign(
+                    payload,
+                    config.authentication.jwt.secret,
+                ));
+            } catch (error) {
+                expect(error).toBeInstanceOf(InvalidAuthentication);
+                expect(error.message).toBe('user not found');
+            }
+        });
 
     });
+
 });
