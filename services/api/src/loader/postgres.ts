@@ -35,7 +35,6 @@ export default async (): Promise<Connection> => {
     } catch (error) {
 
         if (error.name === 'AlreadyHasActiveConnectionError') {
-            Log.info('Database connection established.');
             return getConnection();
         }
 
