@@ -44,7 +44,7 @@ export default {
                     process.env.NODE_ENV === 'development' ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
                 ],
                 subscribers: [
-                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "src/subscriber/**/*.js"
+                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "dist/subscriber/**/*.js"
                 ],
                 cli: {
                     "entitiesDir": "src/database/entity",
@@ -70,7 +70,7 @@ export default {
                     process.env.NODE_ENV === 'development' ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
                 ],
                 subscribers: [
-                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "src/subscriber/**/*.js"
+                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "dist/subscriber/**/*.js"
                 ],
                 cli: {
                     "entitiesDir": "src/database/entity",
