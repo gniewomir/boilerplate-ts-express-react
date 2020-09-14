@@ -52,6 +52,7 @@ services:
         - TESTING_DB_NAME=testing
     depends_on:
       - postgres
+      - testing
 
   admin:
     image: ${PROJECT_NAME}-admin:not-development
