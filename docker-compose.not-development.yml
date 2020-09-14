@@ -23,8 +23,6 @@ services:
   api:
     image: ${PROJECT_NAME}-api:not-development
     restart: "no"
-    env_file:
-      - services/api/.env
     environment:
         # Node
         - NODE_ENV=not-development
@@ -57,6 +55,8 @@ services:
 
   admin:
     image: ${PROJECT_NAME}-admin:not-development
+    environment:
+      - ADMIN_PORT=3000
     restart: "no"
 
   webserver:
