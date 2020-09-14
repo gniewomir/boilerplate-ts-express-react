@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
 import {HttpWhitelist} from "../type/whitelist";
+import {User} from "../../database/entity/User";
+import {Token} from "../../database/entity/Token";
+import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 dotenv.config();
 
@@ -24,11 +27,40 @@ export default {
         })(process.env.NODE_ENV)
     },
     database: {
-        host: process.env.DB_HOST,
-        port: parseInt(process.env.DB_PORT, 10),
-        name: process.env.DB_NAME,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD
+        connections: {
+            default: {
+                type: "postgres",
+                host: process.env.DB_HOST,
+                port: parseInt(process.env.DB_PORT, 10),
+                username: process.env.DB_USER,
+                password: process.env.DB_PASSWORD,
+                database: process.env.DB_NAME,
+                entities: [
+                    User,
+                    Token
+                ],
+                synchronize: false,
+                dropSchema: false,
+                migrationsRun: false,
+                logging: false
+            } as PostgresConnectionOptions,
+            testing: {
+                type: "postgres",
+                host: process.env.TESTING_DB_HOST,
+                port: parseInt(process.env.TESTING_DB_PORT, 10),
+                username: process.env.TESTING_DB_USER,
+                password: process.env.TESTING_DB_PASSWORD,
+                database: process.env.TESTING_DB_NAME,
+                entities: [
+                    User,
+                    Token
+                ],
+                synchronize: process.env.TESTING_DB_DROP_AFTER_CONNECTION === 'true',
+                dropSchema: process.env.TESTING_DB_DROP_AFTER_CONNECTION === 'true',
+                migrationsRun: process.env.TESTING_DB_DROP_AFTER_CONNECTION === 'true',
+                logging: false
+            } as PostgresConnectionOptions
+        }
     },
     security: {
         authentication: {
@@ -56,12 +88,4 @@ export default {
         public_port: parseInt(process.env.PUBLIC_API_PORT, 10),
         public_domain: process.env.PUBLIC_API_DOMAIN,
     },
-
-    // DEV and TESTING stuff
-
-    testing: {
-        database: {
-            drop: process.env.NODE_ENV === 'testing' && process.env.TESTING_DB_DROP_AFTER_CONNECTION === 'true'
-        }
-    }
 };
