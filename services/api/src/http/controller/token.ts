@@ -15,24 +15,15 @@ export class TokenController extends Controller {
     }
 
     public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
-        if (authentication.authenticated) {
-            const newAuthentication = await this.userService.authenticateById(authentication.user.id);
-            return {
-                statusCode: 201,
-                body: {
-                    token: newAuthentication.token.token
-                }
-            }
-        } else {
-            const newAuthentication = await this.userService.authenticateByCredentials({
-                email: req.body.email,
-                password: req.body.password
-            });
-            return {
-                statusCode: 201,
-                body: {
-                    token: newAuthentication.token.token
-                }
+        return {
+            statusCode: 201,
+            body: {
+                token: !authentication.authenticated
+                    ? (await this.userService.authenticateByCredentials({
+                        email: req.body.email,
+                        password: req.body.password
+                    })).token.token
+                    : (await this.userService.authenticateById(authentication.user.id)).token.token
             }
         }
     }

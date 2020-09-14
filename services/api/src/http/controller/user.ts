@@ -16,14 +16,13 @@ export class UserController extends Controller {
     }
 
     public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
-        const user = await this.userService.register({
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
-        })
         return {
             statusCode: 201,
-            body: user
+            body: await this.userService.register({
+                name: req.body.name,
+                email: req.body.email,
+                password: req.body.password,
+            })
         }
     }
 
