@@ -24,35 +24,23 @@ services:
     image: ${PROJECT_NAME}-api:not-development
     restart: "no"
     environment:
-        # Node
-        - NODE_ENV=not-development
-        - TZ=utc
-
-        # Http
-        - API_PORT=9000
-        - API_DOMAIN=localhost
-        - PUBLIC_API_PORT=8000
-        - PUBLIC_API_DOMAIN=localhost
-
-        # Database
-        - DB_HOST=postgres
-        - DB_PORT=5432
-        - DB_USER=root
-        - DB_PASSWORD=password_we_cannot_use_outside_local_machine
-        - DB_NAME=recruitment
-
-        # Authentication
-        - JWT_SECRET=DEVELOPMENT_ONLY_JWT_SECRET
-
-        # Testing
-        - TESTING_DB_HOST=testing
-        - TESTING_DB_PORT=5432
-        - TESTING_DB_USER=testing
-        - TESTING_DB_PASSWORD=testing
-        - TESTING_DB_NAME=testing
-    depends_on:
-      - postgres
-      - testing
+      - NODE_ENV=not-development
+      - TZ=utc
+      - API_PORT=9000
+      - API_DOMAIN=localhost
+      - PUBLIC_API_PORT=8000
+      - PUBLIC_API_DOMAIN=localhost
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PASSWORD=password_we_cannot_use_outside_local_machine
+      - DB_NAME=boilerplate
+      - JWT_SECRET=DEVELOPMENT_ONLY_JWT_SECRET
+      - TESTING_DB_HOST=testing
+      - TESTING_DB_PORT=5432
+      - TESTING_DB_USER=testing
+      - TESTING_DB_PASSWORD=testing
+      - TESTING_DB_NAME=testing
 
   admin:
     image: ${PROJECT_NAME}-admin:not-development

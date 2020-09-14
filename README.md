@@ -52,7 +52,6 @@ NOTE:
 docker-compose -f docker-compose.yml -f docker-compose.not-development.yml up -d --build --force-recreate --remove-orphans
 docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js schema:drop
 docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js migration:run
-docker-compose exec api npm run test
 
 # ensure we are good to go
 
@@ -61,7 +60,7 @@ curl localhost:8000/api/status
 # should return html or just go to localhost:8000 in your browser   
 curl localhost:8000
 # test api
-docker-compose exec api npm run test
+docker-compose exec api npm run test:nobuild
 
 docker-compose logs -f
 ```

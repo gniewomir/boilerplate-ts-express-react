@@ -39,6 +39,7 @@ services:
       - internal
     depends_on:
       - postgres
+      - testing
 
   admin:
     container_name: ${PROJECT_NAME}-admin
