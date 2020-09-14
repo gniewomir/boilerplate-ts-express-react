@@ -1,7 +1,9 @@
 {
   "name": "api",
-  "version": "0.0.0",
-  "description": "API",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Gniewomir Świechowski <gniewomir.swiechowski@gmail.com>",
+  "license": "ISC",
   "main": "dist/api.js",
   "scripts": {
     "lint": "./node_modules/tslint/bin/tslint -c tslint.json -p tsconfig.json --fix",
@@ -18,8 +20,6 @@
     "db:testing:drop": "NODE_ENV=testing node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js  --config src/application/config/typeorm.cli.ts schema:drop",
     "db:testing:migrate": "NODE_ENV=testing node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js  --config src/application/config/typeorm.cli.ts migration:run"
   },
-  "author": "Gniewomir Świechowski <gniewomir.swiechowski@gmail.com>",
-  "license": "ISC",
   "dependencies": {
     "argon2": "^0.27.0",
     "body-parser": "^1.19.0",
