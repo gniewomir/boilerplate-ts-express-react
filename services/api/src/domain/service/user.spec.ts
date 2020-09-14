@@ -8,6 +8,7 @@ import {IUserService} from "../interface/IUserService";
 import TokenRepository from "../../database/repository/token";
 import {User} from "../../database/entity/User";
 import UnprocessableEntity from "../../application/error/UnprocessableEntity";
+import {getConnection} from "typeorm";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: IUserDto, password: string }> => {
     await app();
@@ -23,6 +24,13 @@ const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: I
         password
     };
 };
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
 
 describe('User service', () => {
     describe('authenticateByCredentials', () => {

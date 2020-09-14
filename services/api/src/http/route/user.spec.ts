@@ -6,6 +6,14 @@ import {Container} from "typedi";
 import AuthenticationService from "../../application/service/authentication";
 import UserRepository from "../../database/repository/user";
 import UserService from "../../domain/service/user";
+import {getConnection} from "typeorm";
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
 
 describe('User routes', () => {
     describe(`POST ${config.api.prefix}/user`, () => {

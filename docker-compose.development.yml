@@ -7,10 +7,12 @@ services:
     restart: "no"
     env_file:
       - services/postgres/.env
-    ports:
-      - "5432:5432"
+    volumes:
+    - data-postgress:/var/lib/postgresql/data
+    networks:
+      - internal
 
-  postgres-testing:
+  testing:
     container_name: ${PROJECT_NAME}-postgres-testing
     image: ${PROJECT_NAME}-postgres:development
     restart: "no"
@@ -19,6 +21,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - services/postgres/.env.testing
+    volumes:
+      - data-testing:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     networks:
@@ -29,18 +33,21 @@ services:
     restart: "no"
     env_file:
       - services/api/.env
+    environment:
+      - NODE_ENV=env-only
     command: ["npm", "run", "watch"]
     volumes:
       - ./services/api/src:/app/src
       - ./services/api/tsconfig.json:/app/tsconfig.json
       - ./services/api/tslint.json:/app/tslint.json
-      - ./services/api/ormconfig.json:/app/ormconfig.json
       - ./services/api/package.json:/app/package.json
       - ./services/api/package-lock.json:/app/package-lock.json
+      - ./services/api/node_modules:/app/node_modules
+      - ./services/api/jest.config.js:/app/jest.config.js
       - ./services/api/.env.dist:/app/.env
     depends_on:
       - postgres
-      - postgres-testing
+      - testing
 
   web:
     image: ${PROJECT_NAME}-web:development
@@ -51,6 +58,12 @@ services:
     restart: "no"
     ports:
       - "8000:80"
+
+volumes:
+  data-postgress:
+    driver: local
+  data-testing:
+    driver: local
 
 networks:
   internal:

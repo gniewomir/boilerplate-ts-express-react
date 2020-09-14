@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
 import {HttpWhitelist} from "../type/whitelist";
-import {User} from "../../database/entity/User";
-import {Token} from "../../database/entity/Token";
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 dotenv.config();
@@ -35,30 +33,50 @@ export default {
                 username: process.env.DB_USER,
                 password: process.env.DB_PASSWORD,
                 database: process.env.DB_NAME,
-                entities: [
-                    User,
-                    Token
-                ],
                 synchronize: false,
                 dropSchema: false,
                 migrationsRun: false,
-                logging: false
+                logging: false,
+                entities: [
+                    process.env.NODE_ENV === 'development' ? "src/database/entity/**/*.ts" : "dist/database/entity/**/*.js",
+                ],
+                migrations: [
+                    process.env.NODE_ENV === 'development' ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
+                ],
+                subscribers: [
+                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "src/subscriber/**/*.js"
+                ],
+                cli: {
+                    "entitiesDir": "src/database/entity",
+                    "migrationsDir": "src/database/migration",
+                    "subscribersDir": "src/subscriber"
+                }
             } as PostgresConnectionOptions,
             testing: {
                 type: "postgres",
-                host: process.env.TESTING_DB_HOST,
-                port: parseInt(process.env.TESTING_DB_PORT, 10),
+                host: process.env.RUNNING_IN_CONTAINER === 'true' ? process.env.TESTING_DB_HOST : 'localhost',
+                port: process.env.RUNNING_IN_CONTAINER === 'true' ? parseInt(process.env.TESTING_DB_PORT, 10) : 5433,
                 username: process.env.TESTING_DB_USER,
                 password: process.env.TESTING_DB_PASSWORD,
                 database: process.env.TESTING_DB_NAME,
+                synchronize: false,
+                dropSchema: true,
+                migrationsRun: true,
+                logging: false,
                 entities: [
-                    User,
-                    Token
+                    process.env.NODE_ENV === 'development' ? "src/database/entity/**/*.ts" : "dist/database/entity/**/*.js",
                 ],
-                synchronize: process.env.TESTING_DB_DROP_AFTER_CONNECTION === 'true',
-                dropSchema: process.env.TESTING_DB_DROP_AFTER_CONNECTION === 'true',
-                migrationsRun: process.env.TESTING_DB_DROP_AFTER_CONNECTION === 'true',
-                logging: false
+                migrations: [
+                    process.env.NODE_ENV === 'development' ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
+                ],
+                subscribers: [
+                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "src/subscriber/**/*.js"
+                ],
+                cli: {
+                    "entitiesDir": "src/database/entity",
+                    "migrationsDir": "src/database/migration",
+                    "subscribersDir": "src/subscriber"
+                }
             } as PostgresConnectionOptions
         }
     },

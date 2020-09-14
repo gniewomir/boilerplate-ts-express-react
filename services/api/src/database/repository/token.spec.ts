@@ -7,6 +7,7 @@ import UserRepository from "./user";
 import AuthenticationService from "../../application/service/authentication";
 import {Token} from "../entity/Token";
 import * as faker from 'faker';
+import {getConnection} from "typeorm";
 
 const getSubjectAndUser = async (): Promise<{ subject: ITokenRepository, user: User }> => {
     await postgres();
@@ -15,6 +16,13 @@ const getSubjectAndUser = async (): Promise<{ subject: ITokenRepository, user: U
         user: await Container.get(UserRepository).createAndSave(faker.name.findName(), faker.internet.email(), faker.internet.password())
     };
 }
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
 
 describe('The token repository', () => {
 

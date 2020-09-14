@@ -9,6 +9,22 @@ services:
     build:
       context: services/postgres
       dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    networks:
+      - internal
+
+  testing:
+    container_name: ${PROJECT_NAME}-postgres-testing
+    image: ${PROJECT_NAME}-postgres:development
+    restart: unless-stopped
+    build:
+      context: services/postgres
+      dockerfile: Dockerfile
+    env_file:
+      - services/postgres/.env.testing
+    ports:
+      - "5433:5432"
     networks:
       - internal
 
@@ -49,7 +65,7 @@ services:
       - internal
       - web
     depends_on:
-      - web
+      - api
 
 networks:
   internal:

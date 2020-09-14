@@ -1,6 +1,14 @@
 import request from 'supertest';
 import application from './index';
 import config from "../config";
+import {getConnection} from "typeorm";
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
 
 describe('The express loader', () => {
     describe(`GET ${config.api.prefix}/status`, () => {

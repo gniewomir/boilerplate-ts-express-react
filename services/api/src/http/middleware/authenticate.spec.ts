@@ -7,6 +7,14 @@ import {IAuthenticationService} from "../../application/interface/IAuthenticatio
 import UserRepository from "../../database/repository/user";
 import {IUserRepository} from "../../domain/interface/IUserRepository";
 import faker from "faker";
+import {getConnection} from "typeorm";
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
 
 describe('Authenticate middleware', () => {
     it('requires valid token for not whitelisted routes', async () => {

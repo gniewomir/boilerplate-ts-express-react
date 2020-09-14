@@ -5,6 +5,7 @@ import postgres from "../../application/loader/postgres";
 import {IUserRepository} from "../../domain/interface/IUserRepository";
 import {Container} from "typedi";
 import PasswordService from "../../application/service/password";
+import {getConnection} from "typeorm";
 
 const getRepository = async (): Promise<IUserRepository> => {
     const postgresConnection = await postgres();
@@ -13,6 +14,14 @@ const getRepository = async (): Promise<IUserRepository> => {
         Container.get(PasswordService)
     );
 }
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
+
 
 describe('The user repository', () => {
     describe('createAndSave', () => {

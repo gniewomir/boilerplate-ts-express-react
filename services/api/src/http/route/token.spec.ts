@@ -7,6 +7,14 @@ import * as faker from 'faker';
 import AuthenticationService from "../../application/service/authentication";
 import {IAuthenticationService} from "../../application/interface/IAuthenticationService";
 import config from "../../application/config";
+import {getConnection} from "typeorm";
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
 
 describe('Token routes', () => {
     describe(`POST ${config.api.prefix}/token`, () => {

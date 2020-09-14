@@ -1,0 +1,71 @@
+version: '3.3'
+
+services:
+
+  postgres:
+    image: ${PROJECT_NAME}-postgres:not-development
+    restart: "no"
+    env_file:
+      - services/postgres/.env
+    ports:
+      - "5432:5432"
+    networks:
+      - internal
+
+  testing:
+    image: ${PROJECT_NAME}-postgres:not-development
+    restart: "no"
+    env_file:
+      - services/postgres/.env.testing
+    networks:
+      - internal
+
+  api:
+    image: ${PROJECT_NAME}-api:not-development
+    restart: "no"
+    env_file:
+      - services/api/.env
+    environment:
+        # Node
+        - NODE_ENV=not-development
+        - TZ=utc
+
+        # Http
+        - API_PORT=9000
+        - API_DOMAIN=localhost
+        - PUBLIC_API_PORT=8000
+        - PUBLIC_API_DOMAIN=localhost
+
+        # Database
+        - DB_HOST=postgres
+        - DB_PORT=5432
+        - DB_USER=root
+        - DB_PASSWORD=password_we_cannot_use_outside_local_machine
+        - DB_NAME=recruitment
+
+        # Authentication
+        - JWT_SECRET=DEVELOPMENT_ONLY_JWT_SECRET
+
+        # Testing
+        - TESTING_DB_HOST=testing
+        - TESTING_DB_PORT=5432
+        - TESTING_DB_USER=testing
+        - TESTING_DB_PASSWORD=testing
+        - TESTING_DB_NAME=testing
+    depends_on:
+      - postgres
+
+  web:
+    image: ${PROJECT_NAME}-web:not-development
+    restart: "no"
+
+  webserver:
+    image: ${PROJECT_NAME}-webserver:not-development
+    restart: "no"
+    ports:
+      - "8000:80"
+
+networks:
+  internal:
+  web:
+    external: true

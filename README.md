@@ -6,33 +6,41 @@ Setup full development environment
 cp .env.dist .env
 cp services/postgres/.env.dist services/postgres/.env
 cp services/api/.env.dist services/api/.env
-docker network create web
-docker-compose -f docker-compose.yml -f docker-compose.development.yml up --build --force-recreate --remove-orphans
-docker-compose exec api npm run db:drop || true
-docker-compose exec api npm run db:migrate
-curl localhost:8000/api/status
-
+docker network create web | true
 cd services/api
 npm ci
-npm run test
+cd -
+docker-compose -f docker-compose.yml -f docker-compose.development.yml up -d --build --force-recreate --remove-orphans
+docker-compose exec api npm run db:drop || true
+docker-compose exec api npm run db:migrate
+docker-compose exec api npm run test
+
+curl localhost:8000/api/status
+
+docker-compose logs -f
 ```
 
-Setup api testing environment (no watcher, no mounting local changes)
+Setup api testing environment (no watcher, no mounting local changes, no dev dependencies, no typescript)
  
 ```shell script
 cp .env.dist .env
 cp services/postgres/.env.dist services/postgres/.env
 cp services/api/.env.dist services/api/.env
-docker network create web
-docker-compose -f docker-compose.yml -f docker-compose.env-only.yml up --build --force-recreate --remove-orphans
-docker-compose exec api npm run db:drop || true
-docker-compose exec api npm run db:migrate
+docker network create web | true
+docker-compose -f docker-compose.yml -f docker-compose.not-development.yml up -d --build --force-recreate --remove-orphans
+docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js schema:drop
+docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js migration:run
+docker-compose exec api npm run test
+
 curl localhost:8000/api/status
+
+docker-compose logs -f
 ```
 
 # Todo
+* Timestamps for entities (updated/created)
 * Add a way of enforcing response shape
-* Add more structured way of loading fixtures
+* Add a way of loading fixtures
 * Introduce authorization service and permissions 
     * add refresh tokens with longer lifetime which will allow only obtaining a new token
     * revoking any user token should also revoke all refresh tokens

@@ -39,6 +39,7 @@ export default async (application: express.Application) => {
     application.use(errors()); // celebrate validation
     application.use((err: any, req: Request, res: Response, next: NextFunction) => {
         if (!(err instanceof ApiError)) {
+            Log.error(err);
             err = new ApiError('Unrecognized error.', 500, err);
         }
         if (err instanceof ApiError) {

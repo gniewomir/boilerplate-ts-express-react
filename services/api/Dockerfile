@@ -14,10 +14,14 @@ FROM node:14.9.0-buster AS distribution
 
 WORKDIR /app
 
+COPY --from=builder --chown=node:node /app/jest.config.js ./jest.config.js
+
 COPY --from=builder --chown=node:node /app/package.json ./package.json
 COPY --from=builder --chown=node:node /app/package-lock.json ./package-lock.json
-COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+RUN npm ci --production
 COPY --from=builder --chown=node:node /app/dist ./dist
+
+ENV RUNNING_IN_CONTAINER=true
 
 USER node
 

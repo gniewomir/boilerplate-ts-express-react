@@ -10,6 +10,7 @@ import {IUserDto} from "../../domain/interface/user";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
 import app from "../loader";
 import {ITokenPayload} from "../interface/ITokenPayload";
+import {getConnection} from "typeorm";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUserDto, password: string }> => {
     await app();
@@ -25,6 +26,13 @@ const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationServic
         password
     };
 };
+
+afterAll(async () => {
+    const connection  = getConnection();
+    if (connection.isConnected) {
+        await connection.close();
+    }
+})
 
 describe('Authentication service', () => {
     describe('createAuthentication', () => {
