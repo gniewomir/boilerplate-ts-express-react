@@ -1,5 +1,5 @@
 import {IUserService} from "../interface/IUserService";
-import {IAuthentication} from "../../application/interface/IAuthenticated";
+import {IAuthentication} from "../../application/interface/IAuthentication";
 import {Service} from "typedi";
 import UserRepository from "../../database/repository/user";
 import AuthenticationService from "../../application/service/authentication";

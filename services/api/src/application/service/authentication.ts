@@ -6,7 +6,7 @@ import config from '../config';
 import InvalidAuthentication from "../error/InvalidAuthentication";
 import TokenRepository from "../../database/repository/token";
 import {IUserDto} from "../../domain/interface/user";
-import {IAuthentication} from "../interface/IAuthenticated";
+import {IAuthentication} from "../interface/IAuthentication";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
 import {IToken} from "../interface/IToken";
 import {ITokenPayload} from "../interface/ITokenPayload";

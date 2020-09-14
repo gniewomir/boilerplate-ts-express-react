@@ -1,7 +1,7 @@
 import {Controller} from "./controller";
 import {Service} from "typedi";
 import {Request, Response} from "express";
-import {IAuthentication} from "../../application/interface/IAuthenticated";
+import {IAuthentication} from "../../application/interface/IAuthentication";
 import UserService from "../../domain/service/user";
 import {IApiResponse} from "../interface/IApiResponse";
 
