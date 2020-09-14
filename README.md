@@ -1,8 +1,14 @@
 # Setup
 
-Setup full development environment 
+Setup full development environment
+
+install: https://github.com/nvm-sh/nvm
 
 ```shell script
+nvm install v14.9.0
+nvm use v14.9.0
+
+# in project directory
 cp .env.dist .env
 cp services/postgres/.env.dist services/postgres/.env
 cp services/api/.env.dist services/api/.env
@@ -17,10 +23,20 @@ docker-compose exec api npm run test
 
 curl localhost:8000/api/status
 
+# step required to run postman collection on autopilot
+curl --location --request POST 'http://localhost:8000/api/user' \
+     --header 'Accept: application/json' \
+     --header 'Content-Type: application/json' \
+     --data-raw '{
+            "name": "Gniewomir Świechowski",
+            "email": "gniewomir.swiechowski@gmail.com",
+            "password": "kNcy64fWbcAGBPY3"
+     }'
+
 docker-compose logs -f
 ```
 
-Setup api testing environment (no watcher, no mounting local changes, no dev dependencies, no typescript)
+Setup api testing environment (no need for matching node ver, no watcher, no mounting local changes, no dev dependencies, no typescript)
  
 ```shell script
 cp .env.dist .env
@@ -33,6 +49,16 @@ docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/
 docker-compose exec api npm run test
 
 curl localhost:8000/api/status
+
+# step required to run postman collection on autopilot
+curl --location --request POST 'http://localhost:8000/api/user' \
+     --header 'Accept: application/json' \
+     --header 'Content-Type: application/json' \
+     --data-raw '{
+            "name": "Gniewomir Świechowski",
+            "email": "gniewomir.swiechowski@gmail.com",
+            "password": "kNcy64fWbcAGBPY3"
+     }'
 
 docker-compose logs -f
 ```
