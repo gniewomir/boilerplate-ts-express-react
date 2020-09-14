@@ -3,6 +3,7 @@ import {Service} from "typedi";
 import {Request, Response} from "express";
 import {IAuthentication} from "../../application/interface/IAuthenticated";
 import UserService from "../../domain/service/user";
+import {IApiResponse} from "../interface/IApiResponse";
 
 @Service()
 export class TokenController extends Controller {
@@ -13,33 +14,37 @@ export class TokenController extends Controller {
         super();
     }
 
-    public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<any> {
+    public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
         if (authentication.authenticated) {
             const newAuthentication = await this.userService.authenticateById(authentication.user.id);
-            res
-                .status(201)
-                .json({
+            return {
+                statusCode: 201,
+                body: {
                     token: newAuthentication.token.token
-                });
-            return;
+                }
+            }
         } else {
             const newAuthentication = await this.userService.authenticateByCredentials({
                 email: req.body.email,
                 password: req.body.password
             });
-            res
-                .status(201)
-                .json({
+            return {
+                statusCode: 201,
+                body: {
                     token: newAuthentication.token.token
-                });
+                }
+            }
         }
     }
 
-    public async DELETE(req: Request, res: Response, authentication: IAuthentication): Promise<any> {
+    public async DELETE(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
         if (authentication.authenticated) {
             await this.userService.revokeAuthentication(authentication.token.token);
         }
-        res.status(204).end();
+        return {
+            statusCode: 204,
+            body: {}
+        }
     }
 
 }

@@ -19,7 +19,6 @@ npm run test
 
 # Todo
 * Add a way of enforcing response shape
-* Add a way to prevent returning entity as response
 * Add more structured way of loading fixtures
 * Introduce authorization service and permissions 
     * add refresh tokens with longer lifetime which will allow only obtaining new token
