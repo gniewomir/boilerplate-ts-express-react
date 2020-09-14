@@ -9,6 +9,8 @@ nvm install v14.9.0
 nvm use v14.9.0
 
 # in project directory
+
+# api setup
 cp .env.dist .env
 cp services/postgres/.env.dist services/postgres/.env
 cp services/api/.env.dist services/api/.env
@@ -39,6 +41,11 @@ docker-compose logs -f
 Setup api testing environment (no need for matching node ver, no watcher, no mounting local changes, no dev dependencies, no typescript)
  
 ```shell script
+
+# in project directory
+
+# api setup
+
 cp .env.dist .env
 cp services/postgres/.env.dist services/postgres/.env
 cp services/api/.env.dist services/api/.env
