@@ -50,7 +50,6 @@ NOTE:
 ```shell script
 # in project root directory
 docker-compose -f docker-compose.yml -f docker-compose.not-development.yml up -d --build --force-recreate --remove-orphans
-cd - 
 docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js schema:drop
 docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js migration:run
 docker-compose exec api npm run test
