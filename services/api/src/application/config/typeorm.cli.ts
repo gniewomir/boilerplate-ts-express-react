@@ -1,9 +1,9 @@
 import config from "./index";
 
 export = (() => {
-    const connectionConfig = process.env.NODE_ENV !== 'testing'
-        ? config.database.connections.default
-        : config.database.connections.testing;
+    const connectionConfig = process.env.NODE_ENV === 'testing'
+        ? config.database.connections.testing
+        : config.database.connections.default;
 
     if (process.env.RUNNING_IN_CONTAINER !== 'true' && process.env.NODE_ENV === 'testing') {
         return {
