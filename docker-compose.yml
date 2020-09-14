@@ -40,12 +40,12 @@ services:
     depends_on:
       - postgres
 
-  web:
-    container_name: ${PROJECT_NAME}-web
+  admin:
+    container_name: ${PROJECT_NAME}-admin
     image: ${PROJECT_NAME}-web:${PROJECT_VERSION}
     restart: unless-stopped
     build:
-      context: services/web
+      context: services/admin
       dockerfile: Dockerfile
     networks:
       - internal
@@ -66,6 +66,7 @@ services:
       - web
     depends_on:
       - api
+      - admin
 
 networks:
   internal:

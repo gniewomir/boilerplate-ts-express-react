@@ -55,8 +55,8 @@ services:
     depends_on:
       - postgres
 
-  web:
-    image: ${PROJECT_NAME}-web:not-development
+  admin:
+    image: ${PROJECT_NAME}-admin:not-development
     restart: "no"
 
   webserver:

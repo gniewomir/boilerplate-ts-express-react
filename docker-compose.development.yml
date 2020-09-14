@@ -47,9 +47,22 @@ services:
       - postgres
       - testing
 
-  web:
-    image: ${PROJECT_NAME}-web:development
+  admin:
+    image: ${PROJECT_NAME}-admin:development
     restart: "no"
+    env_file:
+      - services/admin/.env
+    volumes:
+      - ./services/admin/src:/app/src
+      - ./services/admin/tsconfig.json:/app/tsconfig.json
+      - ./services/admin/package.json:/app/package.json
+      - ./services/admin/package-lock.json:/app/package-lock.json
+      - ./services/admin/node_modules:/app/node_modules
+      - ./services/admin/public:/app/public
+      - ./services/admin/build:/app/build
+    command: ["npm", "run", "start"]
+    networks:
+      - internal
 
   webserver:
     image: ${PROJECT_NAME}-webserver:development
