@@ -1,0 +1,13 @@
+# client
+
+/client/build
+/client/node_modules
+/client/coverage
+npm-debug.log
+
+# server
+
+/client/dist
+/client/node_modules
+/client/coverage
+npm-debug.log
