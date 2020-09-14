@@ -5,8 +5,9 @@ import UserRepository from "../../database/repository/user";
 import AuthenticationService from "../../application/service/authentication";
 import PasswordService from "../../application/service/password";
 import InvalidAuthentication from "../../application/error/InvalidAuthentication";
-import {IUserDto, IUserLoginDTO, IUserRegistrationDTO} from "../interface/user";
+import {IUserDto, IUserLoginIntputDTO, IUserRegistrationInputDTO} from "../interface/user";
 import UnprocessableEntity from "../../application/error/UnprocessableEntity";
+import Log from "../../application/loader/logger";
 
 @Service()
 export default class UserService implements IUserService {
@@ -18,7 +19,7 @@ export default class UserService implements IUserService {
     ) {
     }
 
-    public async authenticateByCredentials(credentials: IUserLoginDTO): Promise<IAuthentication> {
+    public async authenticateByCredentials(credentials: IUserLoginIntputDTO): Promise<IAuthentication> {
         const user = await this.userRepository.findByEmail(credentials.email);
         if (!user) {
             throw new InvalidAuthentication('user not found');
@@ -39,11 +40,16 @@ export default class UserService implements IUserService {
         return await this.authenticationService.revokeAuthentication(token);
     }
 
-    public async register(input: IUserRegistrationDTO): Promise<IUserDto> {
+    public async register(input: IUserRegistrationInputDTO): Promise<IUserDto> {
         if (await this.userRepository.findByEmail(input.email)) {
             throw new UnprocessableEntity('User already exists');
         }
         const user = await this.userRepository.createAndSave(input.name, input.email, input.password);
+        return user.toDTO();
+    }
+
+    public async find(id: number): Promise<IUserDto> {
+        const user = await this.userRepository.findById(id);
         return user.toDTO();
     }
 

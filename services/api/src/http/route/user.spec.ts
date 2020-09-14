@@ -5,6 +5,7 @@ import faker from "faker";
 import {Container} from "typedi";
 import AuthenticationService from "../../application/service/authentication";
 import UserRepository from "../../database/repository/user";
+import UserService from "../../domain/service/user";
 
 describe('User routes', () => {
     describe(`POST ${config.api.prefix}/user`, () => {
@@ -67,19 +68,15 @@ describe('User routes', () => {
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
-
-            await request(application)
-                .post(`${config.api.prefix}/user`)
-                .send({
-                    name,
-                    email,
-                    password
-                })
-                .expect(201);
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
 
             const authentication = await Container
                 .get(AuthenticationService)
-                .createAuthentication(await Container.get(UserRepository).findByEmail(email));
+                .createAuthentication(await Container.get(UserRepository).findByEmail(user.email));
 
             await request(application)
                 .post(`${config.api.prefix}/user`)
@@ -89,6 +86,52 @@ describe('User routes', () => {
                     email: faker.internet.email(),
                     password: faker.internet.password()
                 })
+                .expect(403);
+        });
+    });
+    describe(`GET ${config.api.prefix}/user/:userId`, () => {
+        it('should return correct user', async () => {
+            const application = await app();
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+
+            expect.assertions(1);
+            await request(application)
+                .get(`${config.api.prefix}/user/${user.id}`)
+                .set('authorization', `Bearer ${authentication.token.token}`)
+                .expect(200)
+                .then(response => {
+                    expect(response.body.id).toStrictEqual(user.id);
+                });
+        });
+        it('should prevent user from accessing other users', async () => {
+            const application = await app();
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+
+            const otherUser = await Container.get(UserService).register({
+                name: faker.name.findName(),
+                email: faker.internet.email(),
+                password: faker.internet.password()
+            });
+
+            await request(application)
+                .get(`${config.api.prefix}/user/${otherUser.id}`)
+                .set('authorization', `Bearer ${authentication.token.token}`)
                 .expect(403);
         });
     });

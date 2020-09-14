@@ -1,12 +1,12 @@
 import {IDTO} from "../../database/interface/IDTO";
 
 
-export interface IUserLoginDTO {
+export interface IUserLoginIntputDTO {
     email: string;
     password: string;
 }
 
-export interface IUserRegistrationDTO {
+export interface IUserRegistrationInputDTO {
     name: string;
     email: string;
     password: string;

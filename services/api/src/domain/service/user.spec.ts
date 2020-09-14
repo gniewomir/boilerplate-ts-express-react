@@ -101,4 +101,19 @@ describe('User service', () => {
             expect(dto).not.toBeInstanceOf(User);
         });
     });
+    describe('find', () => {
+        it('returns DTO not entity', async () => {
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const subject = Container.get(UserService)
+            const user = await subject.register({
+                name,
+                email,
+                password
+            });
+            const dto = subject.find(user.id)
+            expect(dto).not.toBeInstanceOf(User);
+        });
+    });
 });

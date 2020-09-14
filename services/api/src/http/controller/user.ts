@@ -15,9 +15,6 @@ export class UserController extends Controller {
     }
 
     public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<any> {
-        if (authentication.authenticated) {
-            throw new Forbidden('Already authenticated user cannot register');
-        }
         const user = await this.userService.register({
             name: req.body.name,
             email: req.body.email,
@@ -25,4 +22,13 @@ export class UserController extends Controller {
         })
         res.status(201).json(user);
     }
+
+    public async GET(req: Request, res: Response, authentication: IAuthentication): Promise<any> {
+        const id = parseInt(req.params.userId, 10);
+        if (id !== authentication.user.id) {
+            throw new Forbidden('Accessing other users is forbidden.');
+        }
+        res.status(200).json(await this.userService.find(id));
+    }
+
 }

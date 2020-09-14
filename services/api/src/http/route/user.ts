@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {controller} from "../controller";
 import {Container} from "typedi";
-import {middleware} from "../middleware";
+import {middleware, requireUnauthenticated} from "../middleware";
 import {celebrate, Joi, Segments} from "celebrate";
 import {UserController} from "../controller/user";
 
@@ -14,12 +14,26 @@ export default (app: Router) => {
     route.post(
         '/',
         middleware(
+            requireUnauthenticated('Already authenticated user cannot register'),
             celebrate(
                 {
                     [Segments.BODY]: Joi.object().keys({
                         name: Joi.string().required(),
                         email: Joi.string().required(),
                         password: Joi.string().required(),
+                    })
+                })
+        ),
+        userController
+    );
+
+    route.get(
+        '/:userId',
+        middleware(
+            celebrate(
+                {
+                    [Segments.PARAMS]: Joi.object().keys({
+                        userId: Joi.number().required(),
                     })
                 })
         ),
