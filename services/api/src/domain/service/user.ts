@@ -7,7 +7,6 @@ import PasswordService from "../../application/service/password";
 import InvalidAuthentication from "../../application/error/InvalidAuthentication";
 import {IUserDto, IUserLoginIntputDTO, IUserRegistrationInputDTO} from "../interface/user";
 import UnprocessableEntity from "../../application/error/UnprocessableEntity";
-import Log from "../../application/loader/logger";
 
 @Service()
 export default class UserService implements IUserService {
