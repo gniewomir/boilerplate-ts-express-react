@@ -54,6 +54,8 @@ services:
       - services/admin/.env
     volumes:
       - ./services/admin/client:/app/client
+    stdin_open: true
+    command: ['npm', 'run', 'start']
     networks:
       - internal
 

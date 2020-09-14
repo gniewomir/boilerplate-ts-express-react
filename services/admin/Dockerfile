@@ -32,10 +32,10 @@ COPY --from=builder --chown=node:node /app/client/build ./build
 
 ENV RUNNING_IN_CONTAINER=true
 
-WORKDIR /app/server
+WORKDIR /app/client
 
 USER node
 
 EXPOSE 3000
 
-CMD [ "node", "dist/server.js" ]
+CMD [ "node", "/app/server/dist/server.js" ]
