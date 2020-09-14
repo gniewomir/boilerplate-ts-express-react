@@ -14,6 +14,7 @@
     "typeorm:testing": "NODE_ENV=testing node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js --config src/application/config/typeorm.cli.ts",
     "db:drop": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js  --config src/application/config/typeorm.cli.ts schema:drop",
     "db:migrate": "node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js  --config src/application/config/typeorm.cli.ts migration:run",
+    "db:refresh": "npm run db:drop && npm run db:migrate",
     "db:testing:drop": "NODE_ENV=testing node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js  --config src/application/config/typeorm.cli.ts schema:drop",
     "db:testing:migrate": "NODE_ENV=testing node --require ./node_modules/ts-node/register ./node_modules/typeorm/cli.js  --config src/application/config/typeorm.cli.ts migration:run"
   },
