@@ -33,8 +33,6 @@ services:
     restart: "no"
     env_file:
       - services/api/.env
-    environment:
-      - NODE_ENV=env-only
     command: ["npm", "run", "watch"]
     volumes:
       - ./services/api/src:/app/src
