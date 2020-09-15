@@ -18,12 +18,14 @@ export class TokenController extends Controller {
         return {
             statusCode: 201,
             body: {
-                token: !authentication.authenticated
-                    ? (await this.userService.authenticateByCredentials({
-                        email: req.body.email,
-                        password: req.body.password
-                    })).token.token
-                    : (await this.userService.authenticateById(authentication.user.id)).token.token
+                token: authentication.authenticated
+                    ? (await this.userService.authenticateById(authentication.user.id)).token.token
+                    : (await this.userService.authenticateByCredentials(
+                        {
+                            email: req.body.email,
+                            password: req.body.password
+                        }
+                    )).token.token
             }
         }
     }
