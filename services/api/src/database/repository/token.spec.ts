@@ -18,7 +18,7 @@ const getSubjectAndUser = async (): Promise<{ subject: ITokenRepository, user: U
 }
 
 afterAll(async () => {
-    const connection  = getConnection();
+    const connection = getConnection();
     if (connection.isConnected) {
         await connection.close();
     }

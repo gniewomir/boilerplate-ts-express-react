@@ -16,7 +16,7 @@ const getRepository = async (): Promise<IUserRepository> => {
 }
 
 afterAll(async () => {
-    const connection  = getConnection();
+    const connection = getConnection();
     if (connection.isConnected) {
         await connection.close();
     }

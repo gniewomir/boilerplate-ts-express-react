@@ -26,7 +26,7 @@ const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: I
 };
 
 afterAll(async () => {
-    const connection  = getConnection();
+    const connection = getConnection();
     if (connection.isConnected) {
         await connection.close();
     }

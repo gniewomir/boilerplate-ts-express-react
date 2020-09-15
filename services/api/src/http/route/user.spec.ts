@@ -9,7 +9,7 @@ import UserService from "../../domain/service/user";
 import {getConnection} from "typeorm";
 
 afterAll(async () => {
-    const connection  = getConnection();
+    const connection = getConnection();
     if (connection.isConnected) {
         await connection.close();
     }
