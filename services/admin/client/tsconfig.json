@@ -19,7 +19,11 @@
     "noEmit": true,
     "jsx": "react",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/type"
+    ]
   },
   "include": [
     "src"
