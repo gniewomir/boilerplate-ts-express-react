@@ -1,6 +1,10 @@
 import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
-import {IApiResponse} from "./IApiResponse";
+
+export interface IApiResponse {
+    statusCode: number,
+    body: object
+}
 
 export interface IController {
     CONNECT(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse>

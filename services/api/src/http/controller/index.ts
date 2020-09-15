@@ -1,8 +1,7 @@
-import {IController} from "../type/IController";
+import {IApiResponse, IController} from "../type/controller";
 import {NextFunction, Request, Response} from "express";
 import {Container} from "typedi";
 import AuthenticationService from "../../application/service/authentication";
-import {IApiResponse} from "../type/IApiResponse";
 import {Entity} from "typeorm";
 import InternalServerError from "../../application/error/InternalServerError";
 

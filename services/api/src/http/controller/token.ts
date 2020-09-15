@@ -3,7 +3,7 @@ import {Service} from "typedi";
 import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
 import UserService from "../../domain/service/user";
-import {IApiResponse} from "../type/IApiResponse";
+import {IApiResponse} from "../type/controller";
 
 @Service()
 export class TokenController extends Controller {

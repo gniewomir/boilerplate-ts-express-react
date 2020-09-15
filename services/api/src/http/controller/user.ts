@@ -4,7 +4,7 @@ import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
 import UserService from "../../domain/service/user";
 import Forbidden from "../../application/error/Forbidden";
-import {IApiResponse} from "../type/IApiResponse";
+import {IApiResponse} from "../type/controller";
 
 @Service()
 export class UserController extends Controller {
