@@ -5,8 +5,11 @@ services:
   postgres:
     image: ${PROJECT_NAME}-postgres:not-development
     restart: "no"
-    env_file:
-      - services/postgres/.env
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password_we_cannot_use_outside_local_machine
+      - POSTGRES_DB=boilerplate
+      - PGDATA=/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -15,8 +18,11 @@ services:
   testing:
     image: ${PROJECT_NAME}-postgres:not-development
     restart: "no"
-    env_file:
-      - services/postgres/.env.testing
+    environment:
+      - POSTGRES_USER=testing
+      - POSTGRES_PASSWORD=testing
+      - POSTGRES_DB=testing
+      - PGDATA=/var/lib/postgresql/data
     networks:
       - internal
 
@@ -35,7 +41,7 @@ services:
       - DB_USER=root
       - DB_PASSWORD=password_we_cannot_use_outside_local_machine
       - DB_NAME=boilerplate
-      - JWT_SECRET=DEVELOPMENT_ONLY_JWT_SECRET
+      - JWT_SECRET=NOT_DEVELOPMENT_ONLY_JWT_SECRET
       - TESTING_DB_HOST=testing
       - TESTING_DB_PORT=5432
       - TESTING_DB_USER=testing
