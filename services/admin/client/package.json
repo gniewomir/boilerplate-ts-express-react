@@ -23,6 +23,8 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
+    "reflect-metadata": "^0.1.13",
+    "typedi": "^0.8.0",
     "typescript": "~3.7.2"
   },
   "scripts": {
