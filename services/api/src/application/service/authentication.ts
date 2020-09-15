@@ -11,6 +11,8 @@ import {IAuthenticationService} from "../interface/IAuthenticationService";
 import {IToken} from "../interface/IToken";
 import {ITokenPayload} from "../interface/ITokenPayload";
 import {Response} from "express";
+import InternalServerError from "../error/InternalServerError";
+import {Entity} from "typeorm";
 
 @Service()
 export default class AuthenticationService implements IAuthenticationService {
@@ -36,6 +38,20 @@ export default class AuthenticationService implements IAuthenticationService {
         };
     }
 
+    private static createAuthenticationObject(authenticated: boolean, user: IUserDto | null, token: IToken | null): IAuthentication {
+        if (authenticated && (user === null || token === null)) {
+            throw new InternalServerError('Creating successful authentication require both user and token.');
+        }
+        if (user instanceof Entity) {
+            throw new InternalServerError('We do not pass entities around - only DTOs.');
+        }
+        return {
+            authenticated,
+            user,
+            token
+        };
+    }
+
     public async checkAuthentication(token: string): Promise<IAuthentication> {
         try {
             const payload = jwt.verify(token, config.security.authentication.jwt.secret) as ITokenPayload;
@@ -46,25 +62,25 @@ export default class AuthenticationService implements IAuthenticationService {
             if (await this.tokenRepository.isBlacklisted(token)) {
                 throw new InvalidAuthentication('jwt blacklisted');
             }
-            return {
-                authenticated: true,
-                user,
-                token: {
+            return AuthenticationService.createAuthenticationObject(
+                true,
+                user.toDTO(),
+                {
                     token,
                     payload
                 }
-            };
+            );
         } catch (error) {
             throw new InvalidAuthentication(error.message, error);
         }
     }
 
     public async createAuthentication(user: IUserDto): Promise<IAuthentication> {
-        return {
-            authenticated: true,
+        return AuthenticationService.createAuthenticationObject(
+            true,
             user,
-            token: AuthenticationService.generateToken(user)
-        };
+            AuthenticationService.generateToken(user)
+        );
     }
 
     public async revokeAuthentication(token: string): Promise<undefined> {
@@ -88,10 +104,10 @@ export default class AuthenticationService implements IAuthenticationService {
         if (res.locals.authentication) {
             return res.locals.authentication;
         }
-        return {
-            authenticated: false,
-            user: null,
-            token: null
-        };
+        return AuthenticationService.createAuthenticationObject(
+            false,
+            null,
+            null
+        );
     }
 }
