@@ -5,7 +5,7 @@ import UserRepository from "../../database/repository/user";
 import AuthenticationService from "../../application/service/authentication";
 import PasswordService from "../../application/service/password";
 import InvalidAuthentication from "../../application/error/InvalidAuthentication";
-import {IUserDto, IUserLoginIntputDTO, IUserRegistrationInputDTO} from "../interface/user";
+import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO} from "../interface/user";
 import UnprocessableEntity from "../../application/error/UnprocessableEntity";
 
 @Service()
@@ -18,7 +18,7 @@ export default class UserService implements IUserService {
     ) {
     }
 
-    public async authenticateByCredentials(credentials: IUserLoginIntputDTO): Promise<IAuthentication> {
+    public async authenticateByCredentials(credentials: IUserLoginInputDTO): Promise<IAuthentication> {
         const user = await this.userRepository.findByEmail(credentials.email);
         if (!user) {
             throw new InvalidAuthentication('user not found');

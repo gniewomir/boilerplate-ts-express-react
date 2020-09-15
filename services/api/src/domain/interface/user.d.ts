@@ -1,7 +1,7 @@
 import {IDTO} from "../../database/interface/IDTO";
 
 
-export interface IUserLoginIntputDTO {
+export interface IUserLoginInputDTO {
     email: string;
     password: string;
 }
