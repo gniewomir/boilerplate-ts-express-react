@@ -37,7 +37,7 @@ function App() {
                     <Button variant="contained" color="primary">Profile</Button>
                 </Route>
                 <Route path="/">
-                    <Button variant="contained" color="primary">home</Button>
+                    <Button variant="contained" color="primary">Example button</Button>
                 </Route>
             </Switch>
         </Router>
