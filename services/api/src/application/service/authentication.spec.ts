@@ -6,11 +6,11 @@ import {User} from "../../database/entity/User";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import InvalidAuthentication from "../error/InvalidAuthentication";
-import {IUserDto} from "../../domain/interface/user";
-import {IAuthenticationService} from "../interface/IAuthenticationService";
+import {IUserDto} from "../../domain/type/user";
+import {IAuthenticationService} from "../type/IAuthenticationService";
 import app from "../loader";
 import {getConnection} from "typeorm";
-import {ITokenPayload} from "../interface/authentication";
+import {ITokenPayload} from "../type/authentication";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUserDto, password: string }> => {
     await app();

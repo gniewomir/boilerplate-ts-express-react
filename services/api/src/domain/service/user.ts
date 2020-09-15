@@ -1,11 +1,11 @@
-import {IUserService} from "../interface/IUserService";
-import {IAuthentication} from "../../application/interface/authentication";
+import {IUserService} from "../type/IUserService";
+import {IAuthentication} from "../../application/type/authentication";
 import {Service} from "typedi";
 import UserRepository from "../../database/repository/user";
 import AuthenticationService from "../../application/service/authentication";
 import PasswordService from "../../application/service/password";
 import InvalidAuthentication from "../../application/error/InvalidAuthentication";
-import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO} from "../interface/user";
+import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO} from "../type/user";
 import UnprocessableEntity from "../../application/error/UnprocessableEntity";
 
 @Service()

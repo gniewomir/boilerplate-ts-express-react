@@ -1,5 +1,5 @@
 import ApiError from "./ApiError";
-import {IErrorValidation} from "../interface/error";
+import {IErrorValidation} from "../type/error";
 
 export default class BadRequest extends ApiError implements IErrorValidation {
 

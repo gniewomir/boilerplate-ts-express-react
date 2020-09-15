@@ -1,4 +1,4 @@
-import {IUserDto} from "../../domain/interface/user";
+import {IUserDto} from "../../domain/type/user";
 
 export interface ITokenPayload {
     user_id: number;

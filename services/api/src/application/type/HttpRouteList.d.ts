@@ -1,8 +1,8 @@
 type HttpMethod = "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH";
 
-interface IWhitelistEntry {
+export interface IRouteListEntry {
     method: HttpMethod
     route: string
 }
 
-export type HttpWhitelist = IWhitelistEntry[];
+export type HttpRouteList = IRouteListEntry[];

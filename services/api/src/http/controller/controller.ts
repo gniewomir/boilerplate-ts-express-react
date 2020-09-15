@@ -1,8 +1,8 @@
 import {Request, Response} from "express";
-import {IController} from "../interface/IController";
+import {IController} from "../type/IController";
 import MethodNotAllowed from "../../application/error/MethodNotAllowed";
-import {IAuthentication} from "../../application/interface/authentication";
-import {IApiResponse} from "../interface/IApiResponse";
+import {IAuthentication} from "../../application/type/authentication";
+import {IApiResponse} from "../type/IApiResponse";
 
 export class Controller implements IController {
     public async CONNECT(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {

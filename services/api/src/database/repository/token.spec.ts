@@ -1,5 +1,5 @@
 import postgres from "../../application/loader/postgres";
-import {ITokenRepository} from "../../application/interface/ITokenRepository";
+import {ITokenRepository} from "../../application/type/ITokenRepository";
 import TokenRepository from "./token";
 import {User} from "../entity/User";
 import {Container} from "typedi";

@@ -1,7 +1,7 @@
 import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Token} from "./Token";
-import {IMapper} from "../interface/IMapper";
-import {IUserDto} from "../../domain/interface/user";
+import {IMapper} from "../type/IMapper";
+import {IUserDto} from "../../domain/type/user";
 
 @Entity()
 export class User implements IMapper {

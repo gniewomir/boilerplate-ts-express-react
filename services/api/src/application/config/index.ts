@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import {HttpWhitelist} from "../type/whitelist";
+import {HttpRouteList} from "../type/HttpRouteList";
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 dotenv.config();
@@ -95,7 +95,7 @@ export default {
                     method: "POST",
                     route: `${apiPrefix}/user`
                 }
-            ] as HttpWhitelist
+            ] as HttpRouteList
         }
     },
     api: {

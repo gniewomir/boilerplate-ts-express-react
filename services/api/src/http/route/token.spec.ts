@@ -2,10 +2,10 @@ import request from 'supertest';
 import app from '../../application/loader';
 import {Container} from "typedi";
 import UserRepository from "../../database/repository/user";
-import {IUserRepository} from "../../domain/interface/IUserRepository";
+import {IUserRepository} from "../../domain/type/IUserRepository";
 import * as faker from 'faker';
 import AuthenticationService from "../../application/service/authentication";
-import {IAuthenticationService} from "../../application/interface/IAuthenticationService";
+import {IAuthenticationService} from "../../application/type/IAuthenticationService";
 import config from "../../application/config";
 import {getConnection} from "typeorm";
 

@@ -1,4 +1,4 @@
-import {IUserDto} from "../../domain/interface/user";
+import {IUserDto} from "../../domain/type/user";
 import {IAuthentication} from "./authentication";
 import {Response} from "express";
 

@@ -10,7 +10,9 @@
     "typeRoots": [
       "./node_modules/@types",
       "./src/application/type",
-      "./src/application/interface"
+      "./src/database/type",
+      "./src/domain/type",
+      "./src/http/type"
     ],
     "noImplicitAny": true,
     "moduleResolution": "node",

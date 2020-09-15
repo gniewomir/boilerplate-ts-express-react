@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {IAuthentication} from "../../application/interface/authentication";
+import {IAuthentication} from "../../application/type/authentication";
 import {IApiResponse} from "./IApiResponse";
 
 export interface IController {

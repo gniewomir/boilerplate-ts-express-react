@@ -2,7 +2,7 @@ import UserRepository from "./user";
 import * as faker from 'faker';
 import {User} from "../entity/User";
 import postgres from "../../application/loader/postgres";
-import {IUserRepository} from "../../domain/interface/IUserRepository";
+import {IUserRepository} from "../../domain/type/IUserRepository";
 import {Container} from "typedi";
 import PasswordService from "../../application/service/password";
 import {getConnection} from "typeorm";

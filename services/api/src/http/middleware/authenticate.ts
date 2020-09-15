@@ -2,7 +2,7 @@ import {NextFunction, Request, RequestHandler, Response} from "express";
 import {Container} from "typedi";
 import AuthenticationService from "../../application/service/authentication";
 import config from "../../application/config";
-import {IWhitelistEntry} from "../../application/type/whitelist";
+import {IRouteListEntry} from "../../application/type/HttpRouteList";
 import InvalidAuthentication from "../../application/error/InvalidAuthentication";
 
 const getTokenFromHeader = (req: Request) => {
@@ -26,7 +26,7 @@ const normalizePath = (str: string): string => {
 
 const isWhitelisted = (req: Request): boolean => {
     return config.security.authentication.whitelist.reduce(
-        (carry: boolean, entry: IWhitelistEntry) => {
+        (carry: boolean, entry: IRouteListEntry) => {
             return carry || (
                 entry.method.toUpperCase() === req.method.toUpperCase() &&
                 normalizePath(entry.route) === normalizePath(req.originalUrl)

@@ -3,9 +3,9 @@ import app from "../../application/loader";
 import request from "supertest";
 import {Container} from "typedi";
 import AuthenticationService from "../../application/service/authentication";
-import {IAuthenticationService} from "../../application/interface/IAuthenticationService";
+import {IAuthenticationService} from "../../application/type/IAuthenticationService";
 import UserRepository from "../../database/repository/user";
-import {IUserRepository} from "../../domain/interface/IUserRepository";
+import {IUserRepository} from "../../domain/type/IUserRepository";
 import faker from "faker";
 import {getConnection} from "typeorm";
 

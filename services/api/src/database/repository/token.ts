@@ -2,7 +2,7 @@ import {Service} from "typedi";
 import {Token} from "../entity/Token";
 import {InjectConnection} from "typeorm-typedi-extensions";
 import {Connection} from "typeorm";
-import {ITokenRepository} from "../../application/interface/ITokenRepository";
+import {ITokenRepository} from "../../application/type/ITokenRepository";
 import UserRepository from "./user";
 
 

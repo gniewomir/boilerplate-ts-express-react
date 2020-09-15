@@ -1,4 +1,4 @@
-import {IUserRepository} from "../../domain/interface/IUserRepository";
+import {IUserRepository} from "../../domain/type/IUserRepository";
 import {User} from "../entity/User";
 import {Connection} from "typeorm";
 import {Service} from "typedi";

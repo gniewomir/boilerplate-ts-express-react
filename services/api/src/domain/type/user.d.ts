@@ -1,4 +1,4 @@
-import {IDTO} from "../../database/interface/IDTO";
+import {IDTO} from "../../database/type/IDTO";
 
 
 export interface IUserLoginInputDTO {

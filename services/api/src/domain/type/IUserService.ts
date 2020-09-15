@@ -1,4 +1,4 @@
-import {IAuthentication} from "../../application/interface/authentication";
+import {IAuthentication} from "../../application/type/authentication";
 import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO} from "./user";
 
 export interface IUserService {

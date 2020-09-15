@@ -1,10 +1,10 @@
 import {Controller} from "./controller";
 import {Service} from "typedi";
 import {Request, Response} from "express";
-import {IAuthentication} from "../../application/interface/authentication";
+import {IAuthentication} from "../../application/type/authentication";
 import UserService from "../../domain/service/user";
 import Forbidden from "../../application/error/Forbidden";
-import {IApiResponse} from "../interface/IApiResponse";
+import {IApiResponse} from "../type/IApiResponse";
 
 @Service()
 export class UserController extends Controller {
