@@ -9,3 +9,7 @@ export interface IError {
     getAsLiteral(): object;
 
 }
+
+export interface IErrorValidation extends IError {
+    getValidationErrors(): object;
+}

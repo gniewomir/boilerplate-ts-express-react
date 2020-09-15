@@ -1,4 +1,4 @@
-import {IError} from "../interface/IError";
+import {IError} from "../interface/error";
 
 export default class ApiError implements IError {
 

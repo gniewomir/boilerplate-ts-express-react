@@ -1,5 +1,14 @@
 import {IUserDto} from "../../domain/interface/user";
-import {IToken} from "./IToken";
+
+export interface ITokenPayload {
+    user_id: number;
+    exp: number;
+}
+
+export interface IToken {
+    token: string;
+    payload: ITokenPayload
+}
 
 export interface IAuthentication {
     authenticated: boolean;

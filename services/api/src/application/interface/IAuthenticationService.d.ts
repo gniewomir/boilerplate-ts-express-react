@@ -1,5 +1,5 @@
 import {IUserDto} from "../../domain/interface/user";
-import {IAuthentication} from "./IAuthentication";
+import {IAuthentication} from "./authentication";
 import {Response} from "express";
 
 export interface IAuthenticationService {

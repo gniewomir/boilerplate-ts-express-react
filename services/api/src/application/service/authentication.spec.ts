@@ -9,8 +9,8 @@ import InvalidAuthentication from "../error/InvalidAuthentication";
 import {IUserDto} from "../../domain/interface/user";
 import {IAuthenticationService} from "../interface/IAuthenticationService";
 import app from "../loader";
-import {ITokenPayload} from "../interface/ITokenPayload";
 import {getConnection} from "typeorm";
+import {ITokenPayload} from "../interface/authentication";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUserDto, password: string }> => {
     await app();

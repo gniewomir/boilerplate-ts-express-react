@@ -1,4 +1,4 @@
-import {IError} from "../interface/IError";
+import {IError} from "../interface/error";
 import ApiError from "./ApiError";
 
 export default class MethodNotAllowed extends ApiError implements IError {
