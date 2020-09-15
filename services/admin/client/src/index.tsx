@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './component/app/App';
+import App from './ui/app/App';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
