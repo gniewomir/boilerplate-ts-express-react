@@ -1,6 +1,7 @@
 import {IAuthentication, IToken} from "../../type/authentication";
 import {IUserDto} from "../../../domain/type/user";
 import {IPermission} from "../../type/authorization";
+import {SuperAdminPermission} from "../../permission/SuperAdminPermission";
 
 export class Authentication implements IAuthentication {
     constructor(
@@ -15,7 +16,7 @@ export class Authentication implements IAuthentication {
     }
 
     granted(permission: IPermission): boolean {
-        return this.hasPermission(permission);
+        return this.hasPermission(permission) || this.hasPermission(new SuperAdminPermission());
     }
 
     getToken(): IToken | null {
