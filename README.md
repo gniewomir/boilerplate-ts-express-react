@@ -85,7 +85,7 @@ curl --location --request POST 'http://localhost:8000/api/user' \
 * Api: Timestamps for entities (updated/created)
 * Api: Add a way of enforcing response shape
 * Api: Add a way of loading fixtures
-* Api: Introduce authorization service and permissions 
+* Api: Add refresh tokens 
     * add refresh tokens with longer lifetime which will allow only obtaining a new token
     * revoking any user token should also revoke all refresh tokens
     * consider how to log out from other browser tabs/devices ref: https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/
