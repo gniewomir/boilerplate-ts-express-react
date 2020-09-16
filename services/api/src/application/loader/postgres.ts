@@ -8,9 +8,9 @@ import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnect
 const attempt = async (): Promise<Connection> => {
     try {
         useContainer(Container);
-        const configuration = config.env !== 'testing'
-            ? config.database.connections.default
-            : config.database.connections.testing;
+        const configuration = config.env === 'testing'
+            ? config.database.connections.testing
+            : config.database.connections.default;
         const connection = await createConnection(configuration as PostgresConnectionOptions);
         Log.info('Database connection: established.');
         return connection;
@@ -21,7 +21,7 @@ const attempt = async (): Promise<Connection> => {
             return getConnection();
         }
 
-        Log.error(error);
+        throw error;
 
     }
 }
