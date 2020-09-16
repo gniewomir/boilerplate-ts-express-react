@@ -8,7 +8,7 @@ import {IPermission} from "../../application/type/authorization";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {IRepository} from "../../database/type/IRepository";
 import {ResourceCrudPermission} from "../../application/permission/ResourceCrudPermission";
-import {HttpMethod} from "../../application/type/HttpRouteList";
+import {HttpMethod} from "../../application/type/http";
 
 export const middleware = (...args: RequestHandler[]): RequestHandler[] => {
     return [

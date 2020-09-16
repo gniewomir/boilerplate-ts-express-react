@@ -1,7 +1,7 @@
 import {NextFunction, Request, RequestHandler, Response} from "express";
 import {Container} from "typedi";
 import {config} from "../../application/config";
-import {IRouteListEntry} from "../../application/type/HttpRouteList";
+import {IRouteListEntry} from "../../application/type/http";
 import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 

@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import {HttpRouteList} from "../type/HttpRouteList";
+import {HttpRouteList} from "../type/http";
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 dotenv.config();
