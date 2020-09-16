@@ -36,4 +36,8 @@ export class UserRepository implements IUserRepository {
         const user = await this.findById(id);
         return user !== undefined;
     }
+
+    public getEntityName(): string {
+        return User.name;
+    }
 }

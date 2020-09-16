@@ -27,13 +27,9 @@ export class UserController extends Controller {
     }
 
     public async GET(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
-        const id = parseInt(req.params.userId, 10);
-        if (id !== authentication.getUser().id) {
-            throw new Forbidden('Accessing other users is forbidden.');
-        }
         return {
             statusCode: 200,
-            body: await this.userService.find(id)
+            body: await this.userService.find(parseInt(req.params.userId, 10))
         }
     }
 

@@ -1,9 +1,10 @@
 import {Router} from 'express';
 import {controller} from "../controller";
 import {Container} from "typedi";
-import {middleware, requireUnauthenticated} from "../middleware";
+import {middleware, requireResourcePermissions, requireUnauthenticated} from "../middleware";
 import {celebrate, Joi, Segments} from "celebrate";
 import {UserController} from "../controller/UserController";
+import {UserRepository} from "../../database/repository/UserRepository";
 
 const route = Router();
 
@@ -30,6 +31,7 @@ export const userRoutes = (app: Router) => {
     route.get(
         '/:userId',
         middleware(
+            requireResourcePermissions(Container.get(UserRepository), 'userId'),
             celebrate(
                 {
                     [Segments.PARAMS]: Joi.object().keys({

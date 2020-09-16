@@ -1,6 +1,7 @@
 import {User} from "../../database/entity/User";
+import {IRepository} from "../../database/type/IRepository";
 
-export interface IUserRepository {
+export interface IUserRepository extends IRepository {
     findByEmail(email: string): Promise<User | null>;
 
     findById(id: number): Promise<User | null>;

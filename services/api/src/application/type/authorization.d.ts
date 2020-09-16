@@ -1,8 +1,4 @@
 export interface IPermission {
-    granted(): boolean
-
-    denied(): boolean
-
     toString(): string
 }
 

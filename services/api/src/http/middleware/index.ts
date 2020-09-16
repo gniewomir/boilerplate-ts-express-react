@@ -6,6 +6,9 @@ import {Container} from "typedi";
 import {Forbidden} from "../../application/error/Forbidden";
 import {IPermission} from "../../application/type/authorization";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
+import {IRepository} from "../../database/type/IRepository";
+import {ResourceCrudPermission} from "../../application/permission/ResourceCrudPermission";
+import {HttpMethod} from "../../application/type/HttpRouteList";
 
 export const middleware = (...args: RequestHandler[]): RequestHandler[] => {
     return [
@@ -55,5 +58,22 @@ export const requirePermissions = (...args: IPermission[]): RequestHandler => {
             }
         });
         next();
+    }
+}
+
+export const requireResourcePermissions = (repository: IRepository, entityIdParamName?: string | null): RequestHandler => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const authentication = Container.get(AuthenticationService).authenticationFromResponse(res);
+        const repositoryPermission = new ResourceCrudPermission(req.method.toUpperCase() as HttpMethod, repository, req.params[entityIdParamName]);
+        const entityPermission = new ResourceCrudPermission(req.method.toUpperCase() as HttpMethod, repository);
+        if (authentication.granted(entityPermission)) {
+            next();
+            return;
+        }
+        if (authentication.granted(repositoryPermission)) {
+            next();
+            return;
+        }
+        throw new Forbidden(`You lack permission ${entityPermission.toString()} or ${repositoryPermission.toString()}`);
     }
 }

@@ -11,6 +11,8 @@ import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {Response} from "express";
 import {Authentication} from "./Authentication";
 import {PasswordService} from "../password/PasswordService";
+import {ResourceCrudPermission} from "../../permission/ResourceCrudPermission";
+import {IPermission} from "../../type/authorization";
 
 @Service()
 export class AuthenticationService implements IAuthenticationService {
@@ -22,11 +24,11 @@ export class AuthenticationService implements IAuthenticationService {
     ) {
     }
 
-    private static generateToken(user: IUserDto): IToken {
+    private static createToken(user: IUserDto, permissions: PermissionsList): IToken {
         const payload = {
             user_id: user.id,
             exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60),
-            permissions: [] as PermissionsList
+            permissions
         };
         return {
             token: jwt.sign(
@@ -35,6 +37,12 @@ export class AuthenticationService implements IAuthenticationService {
             ),
             payload
         };
+    }
+
+    private static createPermissionsList(...args: IPermission[]): PermissionsList {
+        return args.map((permission: IPermission): string => {
+            return permission.toString();
+        })
     }
 
     private static createAuthenticationObject(authenticated: boolean, user: IUserDto | null, token: IToken | null): IAuthentication {
@@ -71,7 +79,12 @@ export class AuthenticationService implements IAuthenticationService {
         return AuthenticationService.createAuthenticationObject(
             true,
             user,
-            AuthenticationService.generateToken(user)
+            AuthenticationService.createToken(
+                user,
+                AuthenticationService.createPermissionsList(
+                    new ResourceCrudPermission('GET', this.userRepository, user.id)
+                )
+            )
         );
     }
 

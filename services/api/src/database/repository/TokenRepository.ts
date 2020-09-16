@@ -4,6 +4,7 @@ import {InjectConnection} from "typeorm-typedi-extensions";
 import {Connection} from "typeorm";
 import {ITokenRepository} from "../../application/type/ITokenRepository";
 import {UserRepository} from "./UserRepository";
+import {User} from "../entity/User";
 
 
 @Service()
@@ -47,6 +48,10 @@ export class TokenRepository implements ITokenRepository {
             return false;
         }
         return entity.blacklisted;
+    }
+
+    public getEntityName(): string {
+        return User.name;
     }
 
 }

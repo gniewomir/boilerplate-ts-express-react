@@ -15,7 +15,7 @@ export class Authentication implements IAuthentication {
     }
 
     granted(permission: IPermission): boolean {
-        return this.hasPermission(permission) && permission.granted();
+        return this.hasPermission(permission);
     }
 
     getToken(): IToken | null {
@@ -50,7 +50,7 @@ export class Authentication implements IAuthentication {
         if (this.token === null) {
             return false;
         }
-        return permission.toString() in this.token.payload.permissions;
+        return this.token.payload.permissions.indexOf(permission.toString()) !== -1;
     }
 
 }
