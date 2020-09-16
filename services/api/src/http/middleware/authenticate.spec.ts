@@ -1,13 +1,13 @@
-import config from '../../application/config';
-import app from "../../application/loader";
+import {config} from '../../application/config';
+import {setupApplication as app} from "../../application/loader";
 import request from "supertest";
 import {Container} from "typedi";
-import AuthenticationService from "../../application/service/authentication";
 import {IAuthenticationService} from "../../application/type/IAuthenticationService";
-import UserRepository from "../../database/repository/user";
+import {UserRepository} from "../../database/repository/UserRepository";
 import {IUserRepository} from "../../domain/type/IUserRepository";
 import faker from "faker";
 import {getConnection} from "typeorm";
+import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 
 afterAll(async () => {
     const connection = getConnection();
@@ -80,11 +80,11 @@ describe('Authenticate middleware', () => {
 
         await request(application)
             .post(`${config.api.prefix}/token`)
-            .set('authorization', `Bearer ${authentication.token.token}`)
+            .set('authorization', `Bearer ${authentication.getToken().token}`)
             .expect(201)
             .then(async (response) => {
                 const authenticated = await authenticationService.checkAuthentication(response.body.token);
-                expect(authenticated.user.email).toBe(email);
+                expect(authenticated.getUser().email).toBe(email);
             });
     });
 })

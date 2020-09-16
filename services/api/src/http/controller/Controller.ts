@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import {IApiResponse, IController} from "../type/controller";
-import MethodNotAllowed from "../../application/error/MethodNotAllowed";
+import {MethodNotAllowed} from "../../application/error/MethodNotAllowed";
 import {IAuthentication} from "../../application/type/authentication";
 
 export class Controller implements IController {

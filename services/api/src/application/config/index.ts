@@ -6,7 +6,7 @@ dotenv.config();
 
 const apiPrefix = '/api';
 
-export default {
+export const config = {
     env: process.env.NODE_ENV,
     time: {
         timezone: process.env.TZ

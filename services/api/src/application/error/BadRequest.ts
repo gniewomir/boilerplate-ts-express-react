@@ -1,7 +1,7 @@
-import ApiError from "./ApiError";
+import {ApiError} from "./ApiError";
 import {IErrorValidation} from "../type/error";
 
-export default class BadRequest extends ApiError implements IErrorValidation {
+export class BadRequest extends ApiError implements IErrorValidation {
 
     private readonly validationErrors: any;
 

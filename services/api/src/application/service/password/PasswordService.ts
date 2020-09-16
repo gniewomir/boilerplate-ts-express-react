@@ -1,10 +1,10 @@
-import {Service} from 'typedi';
-import {randomBytes} from 'crypto';
+import {Service} from "typedi";
+import {IPasswordService} from "../../type/IPasswordService";
+import {randomBytes} from "crypto";
 import argon2 from "argon2";
-import {IPasswordService} from "../type/IPasswordService";
 
 @Service()
-export default class PasswordService implements IPasswordService {
+export class PasswordService implements IPasswordService {
 
     public async hashPassword(password: string): Promise<{ hashedPassword: string, salt: string }> {
         const salt = randomBytes(32);

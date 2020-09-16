@@ -1,14 +1,13 @@
 import express, {NextFunction, Request, Response} from "express";
-import config from '../config';
+import {config} from '../config';
 import bodyParser from "body-parser";
-import routes from '../../http';
-import Log from "./logger";
-import Logger from "./logger";
-import NotFound from "../error/NotFound";
-import ApiError from "../error/ApiError";
+import {routes} from '../../http/route';
+import {Log} from "./logger";
+import {NotFound} from "../error/NotFound";
+import {ApiError} from "../error/ApiError";
 import {errors} from "celebrate";
 
-export default async (application: express.Application) => {
+export const configureExpress = (application: express.Application) => {
 
     /**
      * Health Check endpoints
@@ -54,7 +53,7 @@ export default async (application: express.Application) => {
     Log.info('Express configured.');
 
     if (config.env !== 'testing') {
-        application.listen(config.api.port, () => Logger.info(`Listening on port ${config.api.port}`))
+        application.listen(config.api.port, () => Log.info(`Listening on port ${config.api.port}`))
     }
 
     return application;

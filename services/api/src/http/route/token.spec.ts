@@ -1,13 +1,13 @@
 import request from 'supertest';
-import app from '../../application/loader';
+import {setupApplication as app} from '../../application/loader';
 import {Container} from "typedi";
-import UserRepository from "../../database/repository/user";
+import {UserRepository} from "../../database/repository/UserRepository";
 import {IUserRepository} from "../../domain/type/IUserRepository";
 import * as faker from 'faker';
-import AuthenticationService from "../../application/service/authentication";
 import {IAuthenticationService} from "../../application/type/IAuthenticationService";
-import config from "../../application/config";
+import {config} from "../../application/config";
 import {getConnection} from "typeorm";
+import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 
 afterAll(async () => {
     const connection = getConnection();
@@ -46,7 +46,7 @@ describe('Token routes', () => {
                 .then(async (response) => {
                     const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
                     const authenticated = await authenticationService.checkAuthentication(response.body.token);
-                    expect(authenticated.user.email).toBe(email);
+                    expect(authenticated.getUser().email).toBe(email);
                 });
         })
     });

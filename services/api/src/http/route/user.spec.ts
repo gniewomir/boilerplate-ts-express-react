@@ -1,12 +1,12 @@
 import request from 'supertest';
-import app from '../../application/loader';
-import config from "../../application/config";
+import {setupApplication as app} from '../../application/loader';
+import {config} from "../../application/config";
 import faker from "faker";
 import {Container} from "typedi";
-import AuthenticationService from "../../application/service/authentication";
-import UserRepository from "../../database/repository/user";
-import UserService from "../../domain/service/user";
+import {UserRepository} from "../../database/repository/UserRepository";
+import {UserService} from "../../domain/service/UserService";
 import {getConnection} from "typeorm";
+import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 
 afterAll(async () => {
     const connection = getConnection();
@@ -88,7 +88,7 @@ describe('User routes', () => {
 
             await request(application)
                 .post(`${config.api.prefix}/user`)
-                .set('authorization', `Bearer ${authentication.token.token}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .send({
                     name: faker.name.findName(),
                     email: faker.internet.email(),
@@ -113,7 +113,7 @@ describe('User routes', () => {
             expect.assertions(1);
             await request(application)
                 .get(`${config.api.prefix}/user/${user.id}`)
-                .set('authorization', `Bearer ${authentication.token.token}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .expect(200)
                 .then(response => {
                     expect(response.body.id).toStrictEqual(user.id);
@@ -139,7 +139,7 @@ describe('User routes', () => {
 
             await request(application)
                 .get(`${config.api.prefix}/user/${otherUser.id}`)
-                .set('authorization', `Bearer ${authentication.token.token}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .expect(403);
         });
     });

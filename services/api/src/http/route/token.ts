@@ -1,13 +1,13 @@
 import {Router} from 'express';
 import {celebrate, Joi, Segments} from "celebrate";
-import {TokenController} from "../controller/token";
+import {TokenController} from "../controller/TokenController";
 import {Container} from "typedi";
 import {forUnauthenticated, middleware} from "../middleware";
 import {controller} from "../controller";
 
 const route = Router();
 
-export default (app: Router) => {
+export const tokenRoutes = (app: Router) => {
     const tokenController = controller(Container.get(TokenController));
     app.use('/token', route);
 

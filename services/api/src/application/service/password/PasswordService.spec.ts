@@ -1,5 +1,5 @@
 import * as faker from 'faker';
-import PasswordService from "./password";
+import {PasswordService} from "./PasswordService";
 
 describe('Password service', () => {
     describe('hashPassword', () => {

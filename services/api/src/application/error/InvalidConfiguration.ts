@@ -1,6 +1,6 @@
 import {IError} from "../type/error";
-import ApiError from "./ApiError";
+import {ApiError} from "./ApiError";
 
-export default class InvalidConfiguration extends ApiError implements IError {
+export class InvalidConfiguration extends ApiError implements IError {
 
 }

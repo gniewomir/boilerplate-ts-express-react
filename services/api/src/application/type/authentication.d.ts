@@ -1,8 +1,12 @@
 import {IUserDto} from "../../domain/type/user";
+import {IAuthorization} from "./authorization";
+
+type PermissionsList = string[]
 
 export interface ITokenPayload {
     user_id: number;
     exp: number;
+    permissions: PermissionsList
 }
 
 export interface IToken {
@@ -10,8 +14,10 @@ export interface IToken {
     payload: ITokenPayload
 }
 
-export interface IAuthentication {
-    authenticated: boolean;
-    user: IUserDto | null;
-    token: IToken | null;
+export interface IAuthentication extends IAuthorization {
+    isAuthenticated(): boolean
+
+    getUser(): IUserDto | null;
+
+    getToken(): IToken | null;
 }

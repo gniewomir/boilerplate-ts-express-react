@@ -1,16 +1,15 @@
-import AuthenticationService from "./authentication";
 import {Container} from "typedi";
-import UserRepository from "../../database/repository/user";
+import {UserRepository} from "../../../database/repository/UserRepository";
 import faker from "faker";
-import {User} from "../../database/entity/User";
-import config from "../config";
+import {config} from "../../config";
 import jwt from "jsonwebtoken";
-import InvalidAuthentication from "../error/InvalidAuthentication";
-import {IUserDto} from "../../domain/type/user";
-import {IAuthenticationService} from "../type/IAuthenticationService";
-import app from "../loader";
+import {InvalidAuthentication} from "../../error/InvalidAuthentication";
+import {IUserDto} from "../../../domain/type/user";
+import {IAuthenticationService} from "../../type/IAuthenticationService";
+import {setupApplication as app} from "../../loader";
 import {getConnection} from "typeorm";
-import {ITokenPayload} from "../type/authentication";
+import {ITokenPayload} from "../../type/authentication";
+import {AuthenticationService} from "./AuthenticationService";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUserDto, password: string }> => {
     await app();
@@ -39,9 +38,8 @@ describe('Authentication service', () => {
         it('returns token when user exists', async () => {
             const {subject, user} = await getTestSubjectAndUser();
             const authenticated = await subject.createAuthentication(user);
-            expect(authenticated.token).toBeTruthy()
-            expect(authenticated.user).toBeInstanceOf(User)
-            expect(authenticated.user.id).toBe(user.id);
+            expect(authenticated.getToken()).toBeTruthy()
+            expect(authenticated.getUser().id).toBe(user.id);
         });
     });
 

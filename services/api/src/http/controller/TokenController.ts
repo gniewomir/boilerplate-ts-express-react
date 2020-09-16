@@ -1,8 +1,8 @@
-import {Controller} from "./controller";
+import {Controller} from "./Controller";
 import {Service} from "typedi";
 import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
-import UserService from "../../domain/service/user";
+import {UserService} from "../../domain/service/UserService";
 import {IApiResponse} from "../type/controller";
 
 @Service()
@@ -18,21 +18,21 @@ export class TokenController extends Controller {
         return {
             statusCode: 201,
             body: {
-                token: authentication.authenticated
-                    ? (await this.userService.authenticateById(authentication.user.id)).token.token
+                token: authentication.isAuthenticated()
+                    ? (await this.userService.authenticateById(authentication.getUser().id)).getToken().token
                     : (await this.userService.authenticateByCredentials(
                         {
                             email: req.body.email,
                             password: req.body.password
                         }
-                    )).token.token
+                    )).getToken().token
             }
         }
     }
 
     public async DELETE(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
-        if (authentication.authenticated) {
-            await this.userService.revokeAuthentication(authentication.token.token);
+        if (authentication.isAuthenticated()) {
+            await this.userService.revokeAuthentication(authentication.getToken().token);
         }
         return {
             statusCode: 204,

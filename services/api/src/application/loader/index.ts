@@ -1,11 +1,11 @@
 import express from "express";
 
-import configureExpress from "./express";
-import establishDatabaseConnection from "./postgres";
-import validateConfig from "./config";
+import {configureExpress} from "./express";
+import {establishDatabaseConnection} from "./postgres";
+import {configValidator} from "./config";
 
-export default async (): Promise<express.Application> => {
-    await validateConfig();
+export const setupApplication = async (): Promise<express.Application> => {
+    await configValidator();
     await establishDatabaseConnection();
-    return await configureExpress(express());
+    return configureExpress(express());
 }

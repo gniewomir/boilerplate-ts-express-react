@@ -1,15 +1,15 @@
 import {IUserService} from "../type/IUserService";
 import {IAuthentication} from "../../application/type/authentication";
 import {Service} from "typedi";
-import UserRepository from "../../database/repository/user";
-import AuthenticationService from "../../application/service/authentication";
-import PasswordService from "../../application/service/password";
-import InvalidAuthentication from "../../application/error/InvalidAuthentication";
+import {UserRepository} from "../../database/repository/UserRepository";
+import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
 import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO} from "../type/user";
-import UnprocessableEntity from "../../application/error/UnprocessableEntity";
+import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
+import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
+import {PasswordService} from "../../application/service/password/PasswordService";
 
 @Service()
-export default class UserService implements IUserService {
+export class UserService implements IUserService {
 
     constructor(
         private userRepository: UserRepository,

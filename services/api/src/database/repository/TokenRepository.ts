@@ -3,11 +3,11 @@ import {Token} from "../entity/Token";
 import {InjectConnection} from "typeorm-typedi-extensions";
 import {Connection} from "typeorm";
 import {ITokenRepository} from "../../application/type/ITokenRepository";
-import UserRepository from "./user";
+import {UserRepository} from "./UserRepository";
 
 
 @Service()
-export default class TokenRepository implements ITokenRepository {
+export class TokenRepository implements ITokenRepository {
 
     constructor(
         @InjectConnection() private connection: Connection,

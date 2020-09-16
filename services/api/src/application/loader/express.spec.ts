@@ -1,6 +1,6 @@
 import request from 'supertest';
-import application from './index';
-import config from "../config";
+import {setupApplication as application} from './index';
+import {config} from "../config";
 import {getConnection} from "typeorm";
 
 afterAll(async () => {

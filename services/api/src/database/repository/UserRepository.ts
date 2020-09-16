@@ -3,10 +3,10 @@ import {User} from "../entity/User";
 import {Connection} from "typeorm";
 import {Service} from "typedi";
 import {InjectConnection} from "typeorm-typedi-extensions";
-import PasswordService from "../../application/service/password";
+import {PasswordService} from "../../application/service/password/PasswordService";
 
 @Service()
-export default class UserRepository implements IUserRepository {
+export class UserRepository implements IUserRepository {
 
     constructor(
         @InjectConnection() private connection: Connection,

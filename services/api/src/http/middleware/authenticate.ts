@@ -1,9 +1,9 @@
 import {NextFunction, Request, RequestHandler, Response} from "express";
 import {Container} from "typedi";
-import AuthenticationService from "../../application/service/authentication";
-import config from "../../application/config";
+import {config} from "../../application/config";
 import {IRouteListEntry} from "../../application/type/HttpRouteList";
-import InvalidAuthentication from "../../application/error/InvalidAuthentication";
+import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
+import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 
 const getTokenFromHeader = (req: Request): string => {
     if (
@@ -36,7 +36,7 @@ const isWhitelisted = (req: Request): boolean => {
     );
 }
 
-export default (): RequestHandler => {
+export const authenticate = (): RequestHandler => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
             await Container.get(AuthenticationService).authenticateResponse(getTokenFromHeader(req), res);

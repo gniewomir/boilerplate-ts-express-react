@@ -1,9 +1,9 @@
-import {Controller} from "./controller";
+import {Controller} from "./Controller";
 import {Service} from "typedi";
 import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
-import UserService from "../../domain/service/user";
-import Forbidden from "../../application/error/Forbidden";
+import {UserService} from "../../domain/service/UserService";
+import {Forbidden} from "../../application/error/Forbidden";
 import {IApiResponse} from "../type/controller";
 
 @Service()
@@ -28,7 +28,7 @@ export class UserController extends Controller {
 
     public async GET(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
         const id = parseInt(req.params.userId, 10);
-        if (id !== authentication.user.id) {
+        if (id !== authentication.getUser().id) {
             throw new Forbidden('Accessing other users is forbidden.');
         }
         return {

@@ -1,19 +1,19 @@
-import {Service} from 'typedi';
-import PasswordService from "./password";
-import UserRepository from "../../database/repository/user";
+import {Service} from "typedi";
+import {IAuthenticationService} from "../../type/IAuthenticationService";
+import {UserRepository} from "../../../database/repository/UserRepository";
+import {TokenRepository} from "../../../database/repository/TokenRepository";
+import {IUserDto} from "../../../domain/type/user";
+import {IAuthentication, IToken, ITokenPayload, PermissionsList} from "../../type/authentication";
+import {config} from "../../config";
 import jwt from "jsonwebtoken";
-import config from '../config';
-import InvalidAuthentication from "../error/InvalidAuthentication";
-import TokenRepository from "../../database/repository/token";
-import {IUserDto} from "../../domain/type/user";
-import {IAuthentication, IToken, ITokenPayload} from "../type/authentication";
-import {IAuthenticationService} from "../type/IAuthenticationService";
+import {InternalServerError} from "../../error/InternalServerError";
+import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {Response} from "express";
-import InternalServerError from "../error/InternalServerError";
-import {Entity} from "typeorm";
+import {Authentication} from "./Authentication";
+import {PasswordService} from "../password/PasswordService";
 
 @Service()
-export default class AuthenticationService implements IAuthenticationService {
+export class AuthenticationService implements IAuthenticationService {
 
     constructor(
         private passwordService: PasswordService,
@@ -25,7 +25,8 @@ export default class AuthenticationService implements IAuthenticationService {
     private static generateToken(user: IUserDto): IToken {
         const payload = {
             user_id: user.id,
-            exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60)
+            exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60),
+            permissions: [] as PermissionsList
         };
         return {
             token: jwt.sign(
@@ -40,14 +41,7 @@ export default class AuthenticationService implements IAuthenticationService {
         if (authenticated && (user === null || token === null)) {
             throw new InternalServerError('Creating successful authentication require both user and token.');
         }
-        if (user instanceof Entity) {
-            throw new InternalServerError('We do not pass entities around - only DTOs.');
-        }
-        return {
-            authenticated,
-            user,
-            token
-        };
+        return new Authentication(authenticated, token, user);
     }
 
     public async checkAuthentication(token: string): Promise<IAuthentication> {
@@ -83,7 +77,8 @@ export default class AuthenticationService implements IAuthenticationService {
 
     public async revokeAuthentication(token: string): Promise<undefined> {
         try {
-            const {token: {payload}} = await this.checkAuthentication(token);
+            const authentication = await this.checkAuthentication(token);
+            const {payload} = authentication.getToken();
             await this.tokenRepository.blacklist(token, payload.user_id, new Date(payload.exp * 1000));
         } catch (error) {
             if (error instanceof InvalidAuthentication) {

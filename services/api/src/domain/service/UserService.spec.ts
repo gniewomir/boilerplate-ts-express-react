@@ -1,13 +1,13 @@
 import {IUserDto} from "../type/user";
-import app from "../../application/loader";
+import {setupApplication as app} from "../../application/loader";
 import faker from "faker";
 import {Container} from "typedi";
-import UserRepository from "../../database/repository/user";
-import UserService from "./user";
+import {UserRepository} from "../../database/repository/UserRepository";
+import {UserService} from "./UserService";
 import {IUserService} from "../type/IUserService";
-import TokenRepository from "../../database/repository/token";
+import {TokenRepository} from "../../database/repository/TokenRepository";
 import {User} from "../../database/entity/User";
-import UnprocessableEntity from "../../application/error/UnprocessableEntity";
+import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {getConnection} from "typeorm";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: IUserDto, password: string }> => {
@@ -41,16 +41,16 @@ describe('User service', () => {
                     email: user.email,
                     password
                 });
-            expect(authentication.authenticated).toBe(true);
-            expect(authentication.user.id).toBe(user.id);
+            expect(authentication.isAuthenticated()).toBe(true);
+            expect(authentication.getUser().id).toBe(user.id);
         });
     });
     describe('authenticateById', () => {
         it('authenticates user', async () => {
             const {subject, user} = await getTestSubjectAndUser();
             const authentication = await subject.authenticateById(user.id);
-            expect(authentication.authenticated).toBe(true);
-            expect(authentication.user.id).toBe(user.id);
+            expect(authentication.isAuthenticated()).toBe(true);
+            expect(authentication.getUser().id).toBe(user.id);
         });
     });
     describe('revokeAuthentication', () => {
@@ -58,10 +58,10 @@ describe('User service', () => {
             const {subject, user} = await getTestSubjectAndUser();
             const tokenRepository = Container.get(TokenRepository);
             const authentication = await subject.authenticateById(user.id);
-            expect(authentication.authenticated).toBe(true);
-            expect(authentication.user.id).toBe(user.id);
-            await subject.revokeAuthentication(authentication.token.token);
-            const token = await tokenRepository.find(authentication.token.token);
+            expect(authentication.isAuthenticated()).toBe(true);
+            expect(authentication.getUser().id).toBe(user.id);
+            await subject.revokeAuthentication(authentication.getToken().token);
+            const token = await tokenRepository.find(authentication.getToken().token);
             expect(token.blacklisted).toBe(true);
         });
     });

@@ -1,6 +1,6 @@
 import {IError} from "../type/error";
 
-export default class ApiError implements IError {
+export class ApiError implements IError {
 
     private readonly statusCode: number;
     private readonly message: string;

@@ -1,14 +1,14 @@
-import UserRepository from "./user";
+import {UserRepository} from "./UserRepository";
 import * as faker from 'faker';
 import {User} from "../entity/User";
-import postgres from "../../application/loader/postgres";
+import {establishDatabaseConnection} from "../../application/loader/postgres";
 import {IUserRepository} from "../../domain/type/IUserRepository";
 import {Container} from "typedi";
-import PasswordService from "../../application/service/password";
 import {getConnection} from "typeorm";
+import {PasswordService} from "../../application/service/password/PasswordService";
 
 const getRepository = async (): Promise<IUserRepository> => {
-    const postgresConnection = await postgres();
+    const postgresConnection = await establishDatabaseConnection();
     return new UserRepository(
         postgresConnection,
         Container.get(PasswordService)

@@ -1,9 +1,9 @@
 import {IApiResponse, IController} from "../type/controller";
 import {NextFunction, Request, Response} from "express";
 import {Container} from "typedi";
-import AuthenticationService from "../../application/service/authentication";
 import {Entity} from "typeorm";
-import InternalServerError from "../../application/error/InternalServerError";
+import {InternalServerError} from "../../application/error/InternalServerError";
+import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 
 export const controller = (routeController: IController) => {
     return async (req: Request, res: Response, next: NextFunction) => {

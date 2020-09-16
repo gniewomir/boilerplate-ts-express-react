@@ -1,8 +1,8 @@
 import {Connection, createConnection, getConnection, useContainer} from "typeorm";
 
-import config from "../config";
+import {config} from "../config";
 import {Container} from "typedi";
-import Log from "./logger";
+import {Log} from "./logger";
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 const attempt = async (): Promise<Connection> => {
@@ -31,7 +31,7 @@ const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export default async (): Promise<Connection> => {
+export const establishDatabaseConnection = async (): Promise<Connection> => {
     while (true) {
         try {
             Log.info('Database connection: attempting.');
