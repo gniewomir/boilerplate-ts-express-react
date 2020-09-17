@@ -2,56 +2,43 @@ import {IAuthentication, IToken} from "../../type/authentication";
 import {IUserDto} from "../../../domain/type/user";
 import {IPermission} from "../../type/authorization";
 import {SuperAdminPermission} from "../../permission/SuperAdminPermission";
+import {Sealed} from "../../../util";
+import cloneDeep from "lodash/cloneDeep";
 
+@Sealed
 export class Authentication implements IAuthentication {
     constructor(
-        private authenticated: boolean,
-        private token: IToken | null,
-        private user: IUserDto | null,
+        private readonly authenticated: boolean,
+        private readonly token: IToken | null,
+        private readonly user: IUserDto | null,
     ) {
+        this.authenticated = authenticated;
+        this.token = token;
+        this.user = user;
     }
 
-    denied(permission: IPermission): boolean {
+    public denied(permission: IPermission): boolean {
         return !this.granted(permission);
     }
 
-    granted(permission: IPermission): boolean {
+    public granted(permission: IPermission): boolean {
         return this.hasPermission(permission) || this.hasPermission(new SuperAdminPermission());
     }
 
-    getToken(): IToken | null {
-        if (!this.token) {
-            return null
-        }
-        return {
-            ...this.token,
-            payload: {
-                ...this.token.payload,
-                permissions: {
-                    ...this.token.payload.permissions
-                }
-            }
-        } as IToken;
+    public getToken(): IToken | null {
+        return cloneDeep(this.token);
     }
 
-    getUser(): IUserDto | null {
-        if (!this.user) {
-            return null
-        }
-        return {
-            ...this.user
-        } as IUserDto;
+    public getUser(): IUserDto | null {
+        return cloneDeep(this.user);
     }
 
-    isAuthenticated(): boolean {
+    public isAuthenticated(): boolean {
         return this.authenticated;
     }
 
     private hasPermission(permission: IPermission): boolean {
-        if (this.token === null) {
-            return false;
-        }
-        return this.token.payload.permissions.indexOf(permission.toString()) !== -1;
+        return this.token !== null && this.token.payload.permissions.indexOf(permission.toString()) !== -1;
     }
 
 }

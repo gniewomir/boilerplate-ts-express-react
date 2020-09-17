@@ -3,7 +3,6 @@ import {Service} from "typedi";
 import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
 import {UserService} from "../../domain/service/UserService";
-import {Forbidden} from "../../application/error/Forbidden";
 import {IApiResponse} from "../type/controller";
 
 @Service()

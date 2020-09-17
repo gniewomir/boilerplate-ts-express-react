@@ -49,7 +49,7 @@ export class AuthenticationService implements IAuthenticationService {
         if (authenticated && (user === null || token === null)) {
             throw new InternalServerError('Creating successful authentication require both user and token.');
         }
-        return new Authentication(authenticated, token, user);
+        return Object.seal(new Authentication(authenticated, token, user));
     }
 
     public async checkAuthentication(token: string): Promise<IAuthentication> {
