@@ -5,6 +5,7 @@ import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnect
 dotenv.config();
 
 const apiPrefix = '/api';
+const useTypeScript = process.env.RUNNING_IN_CONTAINER !== 'true' || process.env.NODE_ENV === 'development'
 
 export const config = {
     env: process.env.NODE_ENV,
@@ -38,13 +39,13 @@ export const config = {
                 migrationsRun: false,
                 logging: false,
                 entities: [
-                    process.env.NODE_ENV === 'development' ? "src/database/entity/**/*.ts" : "dist/database/entity/**/*.js",
+                    useTypeScript ? "src/database/entity/**/*.ts" : "dist/database/entity/**/*.js",
                 ],
                 migrations: [
-                    process.env.NODE_ENV === 'development' ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
+                    useTypeScript ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
                 ],
                 subscribers: [
-                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "dist/subscriber/**/*.js"
+                    useTypeScript ? "src/subscriber/**/*.ts" : "dist/subscriber/**/*.js"
                 ],
                 cli: {
                     "entitiesDir": "src/database/entity",
@@ -60,17 +61,17 @@ export const config = {
                 password: process.env.TESTING_DB_PASSWORD,
                 database: process.env.TESTING_DB_NAME,
                 synchronize: false,
-                dropSchema: true,
-                migrationsRun: true,
+                dropSchema: false,
+                migrationsRun: false,
                 logging: false,
                 entities: [
-                    process.env.NODE_ENV === 'development' ? "src/database/entity/**/*.ts" : "dist/database/entity/**/*.js",
+                    useTypeScript ? "src/database/entity/**/*.ts" : "dist/database/entity/**/*.js",
                 ],
                 migrations: [
-                    process.env.NODE_ENV === 'development' ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
+                    useTypeScript ? "src/database/migration/**/*.ts" : "dist/database/migration/**/*.js",
                 ],
                 subscribers: [
-                    process.env.NODE_ENV === 'development' ? "src/subscriber/**/*.ts" : "dist/subscriber/**/*.js"
+                    useTypeScript ? "src/subscriber/**/*.ts" : "dist/subscriber/**/*.js"
                 ],
                 cli: {
                     "entitiesDir": "src/database/entity",

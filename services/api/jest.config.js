@@ -1,4 +1,4 @@
-module.exports = process.env.NODE_ENV === 'development' ? {
+module.exports = process.env.RUNNING_IN_CONTAINER !== 'true'  ? {
     roots: ['<rootDir>/src'],
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
@@ -8,5 +8,5 @@ module.exports = process.env.NODE_ENV === 'development' ? {
 } : {
     roots: ['<rootDir>/dist'],
     testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.js?$',
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
 };
