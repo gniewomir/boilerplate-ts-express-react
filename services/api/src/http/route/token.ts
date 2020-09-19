@@ -18,7 +18,7 @@ export const tokenRoutes = (app: Router) => {
                 celebrate(
                     {
                         [Segments.BODY]: Joi.object().keys({
-                            email: Joi.string().required(),
+                            email: Joi.string().email().required(),
                             password: Joi.string().required(),
                         })
                     })
