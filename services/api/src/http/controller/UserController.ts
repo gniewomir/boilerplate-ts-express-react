@@ -4,6 +4,7 @@ import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
 import {UserService} from "../../domain/service/UserService";
 import {IApiResponse} from "../type/controller";
+import {IUserUpdateInputDTO} from "../../domain/type/user";
 
 @Service()
 export class UserController extends Controller {
@@ -29,6 +30,13 @@ export class UserController extends Controller {
         return {
             statusCode: 200,
             body: await this.userService.find(parseInt(req.params.userId, 10))
+        }
+    }
+
+    public async PATCH(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
+        return {
+            statusCode: 200,
+            body: await this.userService.update(parseInt(req.params.userId, 10), req.body as IUserUpdateInputDTO)
         }
     }
 

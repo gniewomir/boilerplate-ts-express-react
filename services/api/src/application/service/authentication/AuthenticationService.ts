@@ -98,6 +98,7 @@ export class AuthenticationService implements IAuthenticationService {
             user,
             AuthenticationService.createPermissionsList(
                 new ResourceCrudPermission('GET', this.userRepository, user.id),
+                new ResourceCrudPermission('PATCH', this.userRepository, user.id),
                 new AuthenticatePermission()
             ),
             config.security.authentication.jwt.token_expiration_in_minutes

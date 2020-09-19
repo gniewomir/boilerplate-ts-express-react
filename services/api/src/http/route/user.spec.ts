@@ -7,6 +7,7 @@ import {UserRepository} from "../../database/repository/UserRepository";
 import {UserService} from "../../domain/service/UserService";
 import {getConnection} from "typeorm";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
+import {Log} from "../../application/loader/logger";
 
 afterAll(async () => {
     const connection = getConnection();
@@ -141,6 +142,38 @@ describe('User routes', () => {
                 .get(`${config.api.prefix}/user/${otherUser.id}`)
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .expect(403);
+        });
+    });
+    describe(`PATCH ${config.api.prefix}/user`, () => {
+        it('should update user', async () => {
+            const application = await app();
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
+
+            const newName = faker.name.findName();
+            const newEmail = faker.internet.email()
+
+            expect.assertions(3);
+            await request(application)
+                .patch(`${config.api.prefix}/user/${user.id}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .send({
+                    email: newEmail,
+                    name: newName
+                })
+                .expect(200)
+                .then(response => {
+                    expect(response.body.id).toStrictEqual(user.id);
+                    expect(response.body.name).toStrictEqual(newName);
+                    expect(response.body.email).toStrictEqual(newEmail);
+                });
         });
     });
 });

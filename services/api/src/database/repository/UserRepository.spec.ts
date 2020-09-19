@@ -25,7 +25,7 @@ afterAll(async () => {
 
 describe('The user repository', () => {
     describe('createAndSave', () => {
-        it('should create user', async () => {
+        it('must create user', async () => {
             const repository = await getRepository();
 
             const name = faker.name.findName();
@@ -39,6 +39,56 @@ describe('The user repository', () => {
             expect(user.password).not.toBe(password);
         })
     });
+
+    describe('update', () => {
+        it('must hash provided password', async () => {
+            const repository = await getRepository();
+
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await repository.createAndSave(name, email, password);
+
+            const newPassword = faker.internet.password();
+
+            await repository.update(
+                user.id,
+                {
+                    password: newPassword
+                }
+            );
+
+            const userAfterUpdate = await repository.findById(user.id);
+
+            expect(userAfterUpdate.password).not.toBe(newPassword);
+        })
+        it('must update email and name', async () => {
+            const repository = await getRepository();
+
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await repository.createAndSave(name, email, password);
+
+            const newName = faker.name.findName();
+            const newEmail = faker.internet.email();
+
+            const userAfterUpdate = await repository.update(
+                user.id,
+                {
+                    name: newName,
+                    email: newEmail,
+                }
+            );
+
+            expect(userAfterUpdate).toBeInstanceOf(User);
+            expect(userAfterUpdate.id).toBe(user.id);
+            expect(userAfterUpdate.name).toBe(newName);
+            expect(userAfterUpdate.email).toBe(newEmail);
+        })
+
+    });
+
     describe('findById', () => {
         it('should find user by id', async () => {
             const repository = await getRepository();
@@ -56,6 +106,7 @@ describe('The user repository', () => {
             expect(found.salt).toBeTruthy();
         })
     });
+
     describe('findById', () => {
         it('should return undefined for non existent user', async () => {
             const repository = await getRepository();
@@ -64,6 +115,7 @@ describe('The user repository', () => {
             expect(user).toBeUndefined();
         })
     });
+
     describe('findByEmail', () => {
         it('should find user by email', async () => {
             const repository = await getRepository();
@@ -80,6 +132,7 @@ describe('The user repository', () => {
             expect(found.password).not.toBe(password);
         })
     });
+
     describe('findByEmail', () => {
         it('should return undefined for non existent user', async () => {
             const repository = await getRepository();
@@ -88,6 +141,7 @@ describe('The user repository', () => {
             expect(user).toBeUndefined();
         })
     });
+
     describe('exists', () => {
         it('should return false for non existent user', async () => {
             const repository = await getRepository();
@@ -106,6 +160,5 @@ describe('The user repository', () => {
 
             expect(exist).toBe(true);
         })
-
     });
 });

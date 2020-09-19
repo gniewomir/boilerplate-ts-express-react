@@ -1,10 +1,22 @@
-import {IError} from "../type/error";
+import {IErrorValidation} from "../type/error";
 import {ApiError} from "./ApiError";
 
-export class UnprocessableEntity extends ApiError implements IError {
+export class UnprocessableEntity extends ApiError implements IErrorValidation {
+    private readonly field: string;
 
-    constructor(message: string = 'Unprocessable entity', previous?: any) {
+    constructor(message: string = 'Unprocessable entity', field: string = '', previous?: any) {
         super(message, 422, previous)
+        this.field = field;
+    }
+
+    getValidationErrors(): object {
+        return {
+            [this.field]: this.getMessage()
+        };
+    }
+
+    getAsLiteral(): object {
+        return this.getValidationErrors();
     }
 
 }

@@ -3,7 +3,7 @@ import {IAuthentication} from "../../application/type/authentication";
 import {Service} from "typedi";
 import {UserRepository} from "../../database/repository/UserRepository";
 import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
-import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO} from "../type/user";
+import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO, IUserUpdateInputDTO} from "../type/user";
 import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {PasswordService} from "../../application/service/password/PasswordService";
@@ -41,9 +41,17 @@ export class UserService implements IUserService {
 
     public async register(input: IUserRegistrationInputDTO): Promise<IUserDto> {
         if (await this.userRepository.findByEmail(input.email)) {
-            throw new UnprocessableEntity('User already exists');
+            throw new UnprocessableEntity('User already exists', 'email');
         }
         const user = await this.userRepository.createAndSave(input.name, input.email, input.password);
+        return user.toDTO();
+    }
+
+    public async update(userId: number, input: IUserUpdateInputDTO): Promise<IUserDto> {
+        if (input.email && await this.userRepository.findByEmail(input.email)) {
+            throw new UnprocessableEntity('Email already taken', 'email');
+        }
+        const user = await this.userRepository.update(userId, input);
         return user.toDTO();
     }
 

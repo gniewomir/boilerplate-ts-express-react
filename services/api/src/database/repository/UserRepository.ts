@@ -4,6 +4,7 @@ import {Connection} from "typeorm";
 import {Service} from "typedi";
 import {InjectConnection} from "typeorm-typedi-extensions";
 import {PasswordService} from "../../application/service/password/PasswordService";
+import {IUserDto, IUserUpdateInputDTO} from "../../domain/type/user";
 
 @Service()
 export class UserRepository implements IUserRepository {
@@ -24,6 +25,28 @@ export class UserRepository implements IUserRepository {
         return this.connection.manager.save(User, user);
     }
 
+    public async update(userId: number, update: IUserUpdateInputDTO): Promise<User | undefined> {
+        const user = await this.findById(userId);
+        update = {
+            ...user as IUserDto,
+            ...update,
+        }
+        if (update.password) {
+            const hashed = await this.passwordService.hashPassword(update.password);
+            update = {
+                ...update,
+                password: hashed.hashedPassword,
+                salt: hashed.salt
+            } as User
+        }
+        await this.connection.manager.update(
+            User,
+            {id: userId},
+            update
+        );
+        return await this.findById(userId);
+    }
+
     public async findByEmail(email: string): Promise<User | undefined> {
         return this.connection.manager.findOne(User, {email});
     }
@@ -40,4 +63,6 @@ export class UserRepository implements IUserRepository {
     public getEntityName(): string {
         return User.name;
     }
+
+
 }

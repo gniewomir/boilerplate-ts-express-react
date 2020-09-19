@@ -12,8 +12,15 @@ export interface IUserRegistrationInputDTO {
     password: string;
 }
 
+export interface IUserUpdateInputDTO {
+    name?: string;
+    email?: string;
+    password?: string;
+}
+
 export interface IUserDto extends IDTO {
     id: number;
     name: string;
     email: string;
+    password?: string;
 }

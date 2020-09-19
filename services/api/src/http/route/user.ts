@@ -42,4 +42,23 @@ export const userRoutes = (app: Router) => {
         userController
     );
 
+    route.patch(
+        '/:userId',
+        middleware(
+            requireResourcePermissions(Container.get(UserRepository), 'userId'),
+            celebrate(
+                {
+                    [Segments.PARAMS]: Joi.object().keys({
+                        name: Joi.string().optional(),
+                        email: Joi.string().optional(),
+                        password: Joi.string().optional(),
+                    }),
+                    [Segments.PARAMS]: Joi.object().keys({
+                        userId: Joi.number().required(),
+                    })
+                })
+        ),
+        userController
+    );
+
 };
