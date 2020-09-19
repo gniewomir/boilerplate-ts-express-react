@@ -18,6 +18,7 @@ cp .env.dist .env
 cp services/postgres/.env.dist services/postgres/.env
 cp services/api/.env.dist services/api/.env
 cp services/admin/.env.dist services/admin/.env
+cp services/admin/client/.env.dist services/admin/client/.env
 ```
 
 ## App development setup
