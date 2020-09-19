@@ -83,6 +83,7 @@ curl --location --request POST 'http://localhost:8000/api/user' \
 # Todo
 * Project: Postman collection with automatic request authentication
 * Project: Changelog
+* Project: What is the best way of sharing code (types?) between TS services?
 * Api: Timestamps for entities (updated/created)
 * Api: Add a way of enforcing response shape
 * Api: Add a way of loading fixtures
