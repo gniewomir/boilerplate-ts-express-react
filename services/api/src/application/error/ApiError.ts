@@ -26,7 +26,7 @@ export class ApiError implements IError {
 
     getAsLiteral(): object {
         return {
-            status: this.getHttpStatusCode(),
+            statusCode: this.getHttpStatusCode(),
             error: this.constructor.name,
             message: this.getMessage()
         };

@@ -4,7 +4,7 @@ import {IAuthorization} from "./authorization";
 type PermissionsList = string[]
 
 export interface ITokenPayload {
-    user_id: number;
+    userId: number;
     exp: number;
     permissions: PermissionsList
 }

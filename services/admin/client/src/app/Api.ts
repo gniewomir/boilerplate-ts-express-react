@@ -25,7 +25,7 @@ export class Api {
         return this.token;
     }
 
-    public async login(credentials: ILoginCredentialsInput): Promise<ITokenResponse> {
+    public async PostToken(credentials: ILoginCredentialsInput): Promise<ITokenResponse> {
         return await ky.post(
             `${config.api.url}/token`,
             {
@@ -38,7 +38,7 @@ export class Api {
         ).json();
     }
 
-    public async logout(): Promise<object> {
+    public async DeleteToken(): Promise<object> {
         return await ky.delete(
             `${config.api.url}/token`,
             {
@@ -47,7 +47,7 @@ export class Api {
         ).json();
     }
 
-    public async register(credentials: IRegisterCredentialsInput): Promise<IUserResponse> {
+    public async PostUser(credentials: IRegisterCredentialsInput): Promise<IUserResponse> {
         return await ky.post(
             `${config.api.url}/user`,
             {
@@ -57,8 +57,8 @@ export class Api {
         ).json();
     }
 
-    public async profile(id: number): Promise<IUserResponse> {
-        return await ky.post(
+    public async GetUser(id: number): Promise<IUserResponse> {
+        return await ky.get(
             `${config.api.url}/user/${id}`,
             {
                 ...this.defaultOptions(true)

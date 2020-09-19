@@ -48,7 +48,7 @@ describe('Authentication service', () => {
             const {subject, user} = await getTestSubjectAndUser();
             const expiration = Math.floor(Date.now() / 1000) - (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
-                user_id: user.id,
+                userId: user.id,
                 exp: expiration,
             } as ITokenPayload;
 
@@ -66,7 +66,7 @@ describe('Authentication service', () => {
         it('reject blacklisted tokens', async () => {
             const {subject, user} = await getTestSubjectAndUser();
             const payload = {
-                user_id: user.id,
+                userId: user.id,
                 exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60),
             } as ITokenPayload;
             const token = jwt.sign(
@@ -88,7 +88,7 @@ describe('Authentication service', () => {
             const {subject, user} = await getTestSubjectAndUser();
             const expiration = Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
-                user_id: user.id,
+                userId: user.id,
                 exp: expiration,
             } as ITokenPayload;
 
@@ -108,7 +108,7 @@ describe('Authentication service', () => {
             const {subject} = await getTestSubjectAndUser();
             const expiration = Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
-                user_id: 2147483647,
+                userId: 2147483647,
                 exp: expiration,
             } as ITokenPayload;
 

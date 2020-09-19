@@ -23,10 +23,23 @@ export interface IUserResponse {
 }
 
 export interface IApiError {
-    status: number,
+    statusCode: number,
     error: string,
     message: string,
     validation: ValidationErrors
+}
+
+type PermissionsList = string[]
+
+export interface ITokenPayload {
+    userId: number;
+    exp: number;
+    permissions: PermissionsList
+}
+
+export interface IToken {
+    token: string;
+    payload: ITokenPayload
 }
 
 export type ValidationErrors = { [id: string]: string }

@@ -26,10 +26,10 @@ export class AuthenticationService implements IAuthenticationService {
 
     private static createToken(user: IUserDto, permissions: PermissionsList): IToken {
         const payload = {
-            user_id: user.id,
+            userId: user.id,
             exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60),
             permissions
-        };
+        } as ITokenPayload;
         return {
             token: jwt.sign(
                 payload,
@@ -55,7 +55,7 @@ export class AuthenticationService implements IAuthenticationService {
     public async checkAuthentication(token: string): Promise<IAuthentication> {
         try {
             const payload = jwt.verify(token, config.security.authentication.jwt.secret) as ITokenPayload;
-            const user = await this.userRepository.findById(payload.user_id);
+            const user = await this.userRepository.findById(payload.userId);
             if (!user) {
                 throw new InvalidAuthentication('user not found');
             }
@@ -92,7 +92,7 @@ export class AuthenticationService implements IAuthenticationService {
         try {
             const authentication = await this.checkAuthentication(token);
             const {payload} = authentication.getToken();
-            await this.tokenRepository.blacklist(token, payload.user_id, new Date(payload.exp * 1000));
+            await this.tokenRepository.blacklist(token, payload.userId, new Date(payload.exp * 1000));
         } catch (error) {
             if (error instanceof InvalidAuthentication) {
                 return;

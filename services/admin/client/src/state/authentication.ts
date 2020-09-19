@@ -1,35 +1,60 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Container} from "typedi";
 import {Api} from "../app/Api";
-import {IApiError, ILoginCredentialsInput, ValidationErrors} from "../type/api";
+import {
+    IApiError,
+    ILoginCredentialsInput,
+    IRegisterCredentialsInput,
+    ITokenPayload,
+    IUserResponse,
+    ValidationErrors
+} from "../type/api";
 import {RootState} from "./root";
+import jwt from "jsonwebtoken";
 
 interface IAuthenticationState {
     pending: boolean,
     token: string,
     error: IApiError
+    user: IUserResponse
 }
 
 interface ILoginAction {
     type: string,
-    payload: { token: string }
+    payload: {
+        user: IUserResponse,
+        token: string
+    }
 }
 
 const apiConnection = Container.get(Api);
 const name = 'authentication';
-const success = {
-    status: 0,
+const noError = {
+    statusCode: 0,
     message: '',
     error: '',
     validation: {}
 } as IApiError;
+const noUser = {
+    id: 0,
+    name: '',
+    email: ''
+} as IUserResponse;
+const noToken = '';
 
 export const LOGIN = createAsyncThunk(
     `${name}/LOGIN`,
     async (credentials: ILoginCredentialsInput, thunkAPI) => {
         try {
-            return await apiConnection.login(credentials);
+            const token = await apiConnection.PostToken(credentials);
+            const tokenPayload = jwt.decode(token.token) as ITokenPayload;
+            apiConnection.setToken(token.token);
+            return {
+                token: token.token,
+                user: await apiConnection.GetUser(tokenPayload.userId)
+            }
         } catch (error) {
+            apiConnection.setToken(noToken);
             return thunkAPI.rejectWithValue(error);
         }
     }
@@ -39,7 +64,18 @@ export const LOGOUT = createAsyncThunk(
     `${name}/LOGOUT`,
     async (arg, thunkAPI) => {
         try {
-            return await apiConnection.logout();
+            return await apiConnection.DeleteToken();
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error);
+        }
+    }
+)
+
+export const REGISTER = createAsyncThunk(
+    `${name}/REGISTER`,
+    async (credentials: IRegisterCredentialsInput, thunkAPI) => {
+        try {
+            return await apiConnection.PostUser(credentials);
         } catch (error) {
             return thunkAPI.rejectWithValue(error);
         }
@@ -50,8 +86,9 @@ export const {actions, reducer} = createSlice({
     name,
     initialState: {
         pending: false,
-        token: '',
-        error: success
+        token: noToken,
+        user: noUser,
+        error: noError
     },
     reducers: {},
     extraReducers: builder => {
@@ -61,7 +98,7 @@ export const {actions, reducer} = createSlice({
                 return {
                     ...state,
                     pending: true,
-                    error: success,
+                    error: noError,
                 }
             })
         builder.addCase(
@@ -71,6 +108,7 @@ export const {actions, reducer} = createSlice({
                     ...state,
                     pending: false,
                     token: action.payload.token,
+                    user: action.payload.user,
                 }
             })
         builder.addCase(
@@ -79,8 +117,17 @@ export const {actions, reducer} = createSlice({
                 return {
                     ...state,
                     pending: false,
-                    token: '',
+                    token: noToken,
+                    user: noUser,
                     error: action.payload as IApiError
+                }
+            })
+        builder.addCase(
+            LOGOUT.pending,
+            (state: IAuthenticationState): IAuthenticationState => {
+                return {
+                    ...state,
+                    pending: true,
                 }
             })
         builder.addCase(
@@ -89,8 +136,8 @@ export const {actions, reducer} = createSlice({
                 return {
                     ...state,
                     pending: false,
-                    token: '',
-                    error: success,
+                    token: noToken,
+                    error: noError,
                 }
             })
         builder.addCase(
@@ -99,10 +146,41 @@ export const {actions, reducer} = createSlice({
                 return {
                     ...state,
                     pending: false,
-                    token: '',
-                    error: success,
+                    token: noToken,
+                    error: noError,
                 }
             })
+        builder.addCase(
+            REGISTER.pending,
+            (state: IAuthenticationState): IAuthenticationState => {
+                return {
+                    ...state,
+                    pending: true,
+                }
+            })
+        builder.addCase(
+            REGISTER.rejected,
+            (state: IAuthenticationState, action): IAuthenticationState => {
+                return {
+                    ...state,
+                    pending: false,
+                    token: noToken,
+                    error: action.payload as IApiError,
+                    user: noUser
+                }
+            })
+        builder.addCase(
+            REGISTER.fulfilled,
+            (state: IAuthenticationState, action): IAuthenticationState => {
+                return {
+                    ...state,
+                    pending: false,
+                    token: noToken,
+                    error: noError,
+                    user: action.payload
+                }
+            })
+
     }
 });
 export type AuthenticationState = ReturnType<typeof reducer>
@@ -111,13 +189,14 @@ const selectAuthentication = (state: RootState): AuthenticationState => state.au
 
 export const selectToken = (state: RootState): string => selectAuthentication(state).token;
 
-export const selectIsAuthenticated = (state: RootState): boolean => !selectHasError(state) && selectToken(state) !== '';
 export const selectIsPending = (state: RootState): boolean => selectAuthentication(state).pending;
+export const selectIsAuthenticated = (state: RootState): boolean => !selectHasError(state) && selectToken(state) !== '';
 
-export const selectHasError = (state: RootState): boolean => selectAuthentication(state).error.status !== success.status;
+export const selectHasUser = (state: RootState): boolean => selectAuthentication(state).user.id !== 0;
+export const selectHasError = (state: RootState): boolean => selectAuthentication(state).error.statusCode !== noError.statusCode;
 
-export const selectHasInvalidCredentialsError = (state: RootState): boolean => selectAuthentication(state).error.status === 401 && selectToken(state) === '';
-export const selectHasValidationError = (state: RootState): boolean => selectAuthentication(state).error.status === 400;
+export const selectHasInvalidCredentialsError = (state: RootState): boolean => selectAuthentication(state).error.statusCode === 401 && selectToken(state) === '';
+export const selectHasApiValidationErrors = (state: RootState): boolean => selectAuthentication(state).error.statusCode === 400;
 
-export const selectValidationErrors = (state: RootState): ValidationErrors => selectAuthentication(state).error.validation;
-
+export const selectApiValidationErrors = (state: RootState): ValidationErrors => selectAuthentication(state).error.validation;
+export const selectUser = (state: RootState): IUserResponse => selectAuthentication(state).user;
