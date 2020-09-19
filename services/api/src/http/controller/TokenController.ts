@@ -89,7 +89,7 @@ export class TokenController extends Controller {
         if (authentication.isAuthenticated()) {
             await this.userService.revokeAuthentication(authentication.getToken().token);
         }
-        if (req.signedCookies || req.signedCookies.refresh_token) {
+        if (req.signedCookies && req.signedCookies.refresh_token) {
             try {
                 await this.authenticationService.revokeToken(req.signedCookies.refresh_token)
             } catch (error) {

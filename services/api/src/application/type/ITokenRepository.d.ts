@@ -8,5 +8,7 @@ export interface ITokenRepository extends IRepository {
 
     find(token: string): Promise<Token | undefined>
 
+    findByUser(userId: number): Promise<Token[]>
+
     exist(token: string): Promise<boolean>
 }

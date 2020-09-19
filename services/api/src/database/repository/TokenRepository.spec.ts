@@ -100,4 +100,23 @@ describe('The token repository', () => {
         });
     });
 
+    describe('findByUser', () => {
+        it('returns user tokens', async () => {
+            const {subject, user} = await getSubjectAndUser();
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
+            const token = authentication.getToken();
+            await subject.blacklist('test_first', user.id, new Date(token.payload.exp * 1000));
+            await subject.blacklist('test_second', user.id, new Date(token.payload.exp * 1000));
+            const tokens = await subject.findByUser(user.id);
+
+            expect(tokens[0].token).toBe('test_first');
+            expect(tokens[1].token).toBe('test_second');
+        });
+        it('returns empty array when no tokes exist for user', async () => {
+            const {subject, user} = await getSubjectAndUser();
+            const tokens = await subject.findByUser(user.id);
+            expect(tokens).toStrictEqual([]);
+        });
+    });
+
 });

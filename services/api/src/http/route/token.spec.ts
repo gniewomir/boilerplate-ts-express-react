@@ -9,6 +9,8 @@ import {config} from "../../application/config";
 import {getConnection} from "typeorm";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import crypto from 'crypto';
+import {TokenRepository} from "../../database/repository/TokenRepository";
+import {ITokenRepository} from "../../application/type/ITokenRepository";
 
 
 const signedTokenCookie = (token: string) => {
@@ -109,6 +111,62 @@ describe('Token routes', () => {
                     const authenticated = await testAuthenticationService.checkAuthentication(response.body.token);
                     expect(authenticated.getUser().email).toBe(email);
                 });
+        })
+    });
+
+    describe(`DELETE ${config.api.prefix}/token`, () => {
+        it('should blacklist token used to authenticate request', async () => {
+            const application = await app();
+            const repository = Container.get(UserRepository) as IUserRepository;
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await repository.createAndSave(faker.name.findName(), email, password);
+            const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
+            const authentication = await authenticationService.createUserAuthentication(user);
+
+            await request(application)
+                .get(`${config.api.prefix}/user/${user.id}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .expect(200);
+
+            await request(application)
+                .delete(`${config.api.prefix}/token`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .expect(204);
+
+            await request(application)
+                .get(`${config.api.prefix}/user/${user.id}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .expect(401);
+        })
+        it('should blacklist refresh token sent with request', async () => {
+            const application = await app();
+            const userRepository = Container.get(UserRepository) as IUserRepository;
+            const tokenRepository = Container.get(TokenRepository) as ITokenRepository;
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await userRepository.createAndSave(faker.name.findName(), email, password);
+            const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
+            const authentication = await authenticationService.createUserAuthentication(user);
+            const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);
+
+            const beforeUserTokensCount = (await tokenRepository.findByUser(user.id)).length;
+
+            await request(application)
+                .get(`${config.api.prefix}/user/${user.id}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .expect(200);
+
+            await request(application)
+                .delete(`${config.api.prefix}/token`)
+                .set('Cookie', [signedTokenCookie(refreshTokenAuthentication.getToken().token)])
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .expect(204);
+
+            const afterUserTokensCount = (await tokenRepository.findByUser(user.id)).length;
+
+            expect(beforeUserTokensCount).toBe(0);
+            expect(afterUserTokensCount).toBe(2);
         })
     });
 });
