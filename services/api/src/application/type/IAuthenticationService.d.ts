@@ -1,14 +1,18 @@
 import {IUserDto} from "../../domain/type/user";
-import {IAuthentication} from "./authentication";
+import {IAuthentication, PermissionsList} from "./authentication";
 import {Response} from "express";
 
 export interface IAuthenticationService {
 
     checkAuthentication(token: string): Promise<IAuthentication>
 
-    createAuthentication(user: IUserDto): Promise<IAuthentication>
+    createAuthentication(user: IUserDto, permissions: PermissionsList, tokenExpirationInMinutes: number): Promise<IAuthentication>
 
-    revokeAuthentication(token: string): Promise<boolean>
+    createUserAuthentication(user: IUserDto): Promise<IAuthentication>
+
+    createRefreshTokenAuthentication(user: IUserDto): Promise<IAuthentication>
+
+    revokeToken(token: string): Promise<boolean>
 
     authenticateResponse(token: string, res: Response): Promise<Response>;
 

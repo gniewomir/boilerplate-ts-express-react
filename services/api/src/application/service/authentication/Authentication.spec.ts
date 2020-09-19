@@ -16,7 +16,7 @@ const getUserAndSubject = async (): Promise<{ authentication: IAuthentication, u
     const user = await Container.get(UserRepository).createAndSave(name, email, password);
 
     return {
-        authentication: await Container.get(AuthenticationService).createAuthentication(user),
+        authentication: await Container.get(AuthenticationService).createUserAuthentication(user),
         user,
         password
     };

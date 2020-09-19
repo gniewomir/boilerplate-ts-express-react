@@ -10,6 +10,8 @@ import {setupApplication as app} from "../../loader";
 import {getConnection} from "typeorm";
 import {ITokenPayload} from "../../type/authentication";
 import {AuthenticationService} from "./AuthenticationService";
+import {AuthenticatePermission} from "../../permission/AuthenticatePermission";
+import {AuthenticationRefreshPermission} from "../../permission/AuthenticationRefreshPermission";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IAuthenticationService, user: IUserDto, password: string }> => {
     await app();
@@ -34,12 +36,33 @@ afterAll(async () => {
 })
 
 describe('Authentication service', () => {
-    describe('createAuthentication', () => {
+    describe('createUserAuthentication', () => {
         it('returns token when user exists', async () => {
             const {subject, user} = await getTestSubjectAndUser();
-            const authenticated = await subject.createAuthentication(user);
+            const authenticated = await subject.createUserAuthentication(user);
             expect(authenticated.getToken()).toBeTruthy()
             expect(authenticated.getUser().id).toBe(user.id);
+        });
+        it('contains permission to authenticate, but not to refresh ', async () => {
+            const {subject, user} = await getTestSubjectAndUser();
+            const authenticated = await subject.createUserAuthentication(user);
+            expect(authenticated.granted(new AuthenticationRefreshPermission())).toBe(false)
+            expect(authenticated.granted(new AuthenticatePermission())).toBe(true)
+        });
+    });
+
+    describe('createRefreshTokenAuthentication', () => {
+        it('returns token when user exists', async () => {
+            const {subject, user} = await getTestSubjectAndUser();
+            const authenticated = await subject.createRefreshTokenAuthentication(user);
+            expect(authenticated.getToken()).toBeTruthy()
+            expect(authenticated.getUser().id).toBe(user.id);
+        });
+        it('contains permission to refresh, but not to authenticate', async () => {
+            const {subject, user} = await getTestSubjectAndUser();
+            const authenticated = await subject.createRefreshTokenAuthentication(user);
+            expect(authenticated.granted(new AuthenticationRefreshPermission())).toBe(true)
+            expect(authenticated.granted(new AuthenticatePermission())).toBe(false)
         });
     });
 
@@ -65,23 +88,16 @@ describe('Authentication service', () => {
         });
         it('reject blacklisted tokens', async () => {
             const {subject, user} = await getTestSubjectAndUser();
-            const payload = {
-                userId: user.id,
-                exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60),
-            } as ITokenPayload;
-            const token = jwt.sign(
-                payload,
-                config.security.authentication.jwt.secret,
-            );
+            const authentication = await subject.createUserAuthentication(user);
 
-            await subject.revokeAuthentication(token);
+            await subject.revokeToken(authentication.getToken().token);
 
             expect.assertions(2);
             try {
-                await subject.checkAuthentication(token);
+                await subject.checkAuthentication(authentication.getToken().token);
             } catch (error) {
                 expect(error).toBeInstanceOf(InvalidAuthentication);
-                expect(error.message).toBe("jwt blacklisted");
+                expect(error.getMessage()).toBe("jwt blacklisted");
             }
         });
         it('reject token without valid signature', async () => {

@@ -84,7 +84,7 @@ describe('User routes', () => {
 
             const authentication = await Container
                 .get(AuthenticationService)
-                .createAuthentication(await Container.get(UserRepository).findByEmail(user.email));
+                .createUserAuthentication(await Container.get(UserRepository).findByEmail(user.email));
 
             await request(application)
                 .post(`${config.api.prefix}/user`)
@@ -108,7 +108,7 @@ describe('User routes', () => {
                 email,
                 password
             });
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
 
             expect.assertions(1);
             await request(application)
@@ -129,7 +129,7 @@ describe('User routes', () => {
                 email,
                 password
             });
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
 
             const otherUser = await Container.get(UserService).register({
                 name: faker.name.findName(),

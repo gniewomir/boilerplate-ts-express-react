@@ -76,15 +76,11 @@ describe('Authenticate middleware', () => {
         const email = faker.internet.email();
         const password = faker.internet.password();
         const user = await repository.createAndSave(faker.name.findName(), email, password);
-        const authentication = await authenticationService.createAuthentication(user)
+        const authentication = await authenticationService.createUserAuthentication(user)
 
         await request(application)
             .post(`${config.api.prefix}/token`)
             .set('authorization', `Bearer ${authentication.getToken().token}`)
-            .expect(201)
-            .then(async (response) => {
-                const authenticated = await authenticationService.checkAuthentication(response.body.token);
-                expect(authenticated.getUser().email).toBe(email);
-            });
+            .expect(400);
     });
 })

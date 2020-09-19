@@ -6,6 +6,7 @@ import {Log} from "./logger";
 import {NotFound} from "../error/NotFound";
 import {ApiError} from "../error/ApiError";
 import {errors} from "celebrate";
+import cookieParser from "cookie-parser";
 
 export const configureExpress = (application: express.Application) => {
 
@@ -23,8 +24,8 @@ export const configureExpress = (application: express.Application) => {
     // We are always running behind reverse proxy
     application.enable('trust proxy');
 
-    // Middleware that transforms the raw string of req.body into json
     application.use(bodyParser.json());
+    application.use(cookieParser(config.security.cookies.secrets));
 
     // Load routes
     application.use(config.api.prefix, routes());
@@ -38,7 +39,7 @@ export const configureExpress = (application: express.Application) => {
     application.use(errors()); // celebrate validation
     application.use((err: any, req: Request, res: Response, next: NextFunction) => {
         if (!(err instanceof ApiError)) {
-            Log.error(err);
+            Log.error('Unrecognized error.', err);
             err = new ApiError('Unrecognized error.', 500, err);
         }
         if (err instanceof ApiError) {

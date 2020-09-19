@@ -37,7 +37,7 @@ export const establishDatabaseConnection = async (): Promise<Connection> => {
             Log.info('Database connection: attempting.');
             return await attempt();
         } catch (error) {
-            Log.error(error);
+            Log.error('Database connection error', error);
             await sleep(5000)
         }
     }

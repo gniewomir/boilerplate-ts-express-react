@@ -84,7 +84,8 @@ export const config = {
         authentication: {
             jwt: {
                 secret: process.env.JWT_SECRET,
-                token_expiration_in_minutes: 5
+                token_expiration_in_minutes: 10,
+                refresh_token_expiration_in_minutes: 60
             },
             whitelist: [
                 {
@@ -93,9 +94,19 @@ export const config = {
                 },
                 {
                     method: "POST",
+                    route: `${apiPrefix}/token/refresh`
+                },
+                {
+                    method: "POST",
                     route: `${apiPrefix}/user`
                 }
             ] as HttpRouteList
+        },
+        cookies: {
+            refresh_token_cookie_name: 'refresh_token',
+            secrets: [
+                process.env.COOKIES_SECRET
+            ]
         }
     },
     api: {

@@ -24,7 +24,7 @@ export class UserService implements IUserService {
             throw new InvalidAuthentication('user not found');
         }
         await this.passwordService.verifyPassword(credentials.password, user.password, user.salt);
-        return await this.authenticationService.createAuthentication(user);
+        return await this.authenticationService.createUserAuthentication(user);
     }
 
     public async authenticateById(id: number): Promise<IAuthentication> {
@@ -32,11 +32,11 @@ export class UserService implements IUserService {
         if (!user) {
             throw new InvalidAuthentication('user not found');
         }
-        return await this.authenticationService.createAuthentication(user);
+        return await this.authenticationService.createUserAuthentication(user);
     }
 
     public async revokeAuthentication(token: string): Promise<undefined> {
-        return await this.authenticationService.revokeAuthentication(token);
+        return await this.authenticationService.revokeToken(token);
     }
 
     public async register(input: IUserRegistrationInputDTO): Promise<IUserDto> {

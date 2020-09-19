@@ -29,7 +29,7 @@ describe('The token repository', () => {
     describe('blacklist', () => {
         it('saves token to database as blacklisted', async () => {
             const {subject, user} = await getSubjectAndUser();
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
             const token = authentication.getToken();
             const expirationDate = new Date(token.payload.exp * 1000);
             await subject.blacklist(token.token, user.id, expirationDate);
@@ -47,7 +47,7 @@ describe('The token repository', () => {
     describe('isBlacklisted', () => {
         it('returns true when provided with blacklisted token', async () => {
             const {subject, user} = await getSubjectAndUser();
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
             const token = authentication.getToken();
             await subject.blacklist(token.token, user.id, new Date(token.payload.exp * 1000));
             const blacklisted = await subject.isBlacklisted(token.token);
@@ -55,7 +55,7 @@ describe('The token repository', () => {
         });
         it('returns false when provided with non existent token', async () => {
             const {subject, user} = await getSubjectAndUser();
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
             const token = authentication.getToken();
             const blacklisted = await subject.isBlacklisted(token.token);
             expect(blacklisted).toBe(false);
@@ -65,7 +65,7 @@ describe('The token repository', () => {
     describe('exist', () => {
         it('returns true when provided with existing token', async () => {
             const {subject, user} = await getSubjectAndUser();
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
             const token = authentication.getToken();
             await subject.blacklist(token.token, user.id, new Date(token.payload.exp * 1000));
             const exists = await subject.exist(token.token);
@@ -73,7 +73,7 @@ describe('The token repository', () => {
         });
         it('returns false when provided with non existent token', async () => {
             const {subject, user} = await getSubjectAndUser();
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
             const token = authentication.getToken();
             const exists = await subject.exist(token.token);
             expect(exists).toBe(false);
@@ -83,7 +83,7 @@ describe('The token repository', () => {
     describe('find', () => {
         it('returns token when token exists', async () => {
             const {subject, user} = await getSubjectAndUser();
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
             const token = authentication.getToken();
             await subject.blacklist(token.token, user.id, new Date(token.payload.exp * 1000));
             const entity = await subject.find(token.token);
@@ -92,7 +92,7 @@ describe('The token repository', () => {
         });
         it('returns undefined when token not exists', async () => {
             const {subject, user} = await getSubjectAndUser();
-            const authentication = await Container.get(AuthenticationService).createAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
             const token = authentication.getToken();
             const entity = await subject.find(token.token);
             expect(entity).not.toBeInstanceOf(Token);

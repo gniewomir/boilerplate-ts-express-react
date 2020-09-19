@@ -1,7 +1,7 @@
 import {IAuthentication, IToken} from "../../type/authentication";
 import {IUserDto} from "../../../domain/type/user";
 import {IPermission} from "../../type/authorization";
-import {SuperAdminPermission} from "../../permission/SuperAdminPermission";
+import {AdminPermission} from "../../permission/AdminPermission";
 import {Sealed} from "../../../util";
 import cloneDeep from "lodash/cloneDeep";
 
@@ -22,7 +22,7 @@ export class Authentication implements IAuthentication {
     }
 
     public granted(permission: IPermission): boolean {
-        return this.hasPermission(permission) || this.hasPermission(new SuperAdminPermission());
+        return this.hasPermission(permission) || this.hasPermission(new AdminPermission());
     }
 
     public getToken(): IToken | null {

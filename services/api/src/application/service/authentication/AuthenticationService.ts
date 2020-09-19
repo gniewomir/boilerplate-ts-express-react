@@ -13,6 +13,9 @@ import {Authentication} from "./Authentication";
 import {PasswordService} from "../password/PasswordService";
 import {ResourceCrudPermission} from "../../permission/ResourceCrudPermission";
 import {IPermission} from "../../type/authorization";
+import {AuthenticatePermission} from "../../permission/AuthenticatePermission";
+import {Forbidden} from "../../error/Forbidden";
+import {AuthenticationRefreshPermission} from "../../permission/AuthenticationRefreshPermission";
 
 @Service()
 export class AuthenticationService implements IAuthenticationService {
@@ -24,10 +27,10 @@ export class AuthenticationService implements IAuthenticationService {
     ) {
     }
 
-    private static createToken(user: IUserDto, permissions: PermissionsList): IToken {
+    private static createToken(user: IUserDto, permissions: PermissionsList, expirationInMinutes: number): IToken {
         const payload = {
             userId: user.id,
-            exp: Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60),
+            exp: Math.floor(Date.now() / 1000) + (expirationInMinutes * 60),
             permissions
         } as ITokenPayload;
         return {
@@ -71,24 +74,47 @@ export class AuthenticationService implements IAuthenticationService {
                 }
             );
         } catch (error) {
+            if (error instanceof InvalidAuthentication || error instanceof Forbidden) {
+                throw error;
+            }
             throw new InvalidAuthentication(error.message, error);
         }
     }
 
-    public async createAuthentication(user: IUserDto): Promise<IAuthentication> {
+    public async createAuthentication(user: IUserDto, permissions: PermissionsList, expirationInMinutes: number): Promise<IAuthentication> {
         return AuthenticationService.createAuthenticationObject(
             true,
             user,
             AuthenticationService.createToken(
                 user,
-                AuthenticationService.createPermissionsList(
-                    new ResourceCrudPermission('GET', this.userRepository, user.id)
-                )
+                permissions,
+                expirationInMinutes
             )
         );
     }
 
-    public async revokeAuthentication(token: string): Promise<undefined> {
+    public async createUserAuthentication(user: IUserDto): Promise<IAuthentication> {
+        return this.createAuthentication(
+            user,
+            AuthenticationService.createPermissionsList(
+                new ResourceCrudPermission('GET', this.userRepository, user.id),
+                new AuthenticatePermission()
+            ),
+            config.security.authentication.jwt.token_expiration_in_minutes
+        );
+    }
+
+    public async createRefreshTokenAuthentication(user: IUserDto): Promise<IAuthentication> {
+        return this.createAuthentication(
+            user,
+            AuthenticationService.createPermissionsList(
+                new AuthenticationRefreshPermission()
+            ),
+            config.security.authentication.jwt.refresh_token_expiration_in_minutes
+        );
+    }
+
+    public async revokeToken(token: string): Promise<undefined> {
         try {
             const authentication = await this.checkAuthentication(token);
             const {payload} = authentication.getToken();

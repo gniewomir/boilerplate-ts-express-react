@@ -2,9 +2,9 @@ import {IError} from "../type/error";
 
 export class ApiError implements IError {
 
-    private readonly statusCode: number;
-    private readonly message: string;
-    private readonly previous: any;
+    readonly statusCode: number;
+    readonly message: string;
+    readonly previous: any;
 
     constructor(message: string, statusCode: number = 500, previous?: any) {
         this.statusCode = statusCode;
