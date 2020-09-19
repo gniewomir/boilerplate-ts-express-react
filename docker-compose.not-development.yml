@@ -42,6 +42,7 @@ services:
       - DB_PASSWORD=password_we_cannot_use_outside_local_machine
       - DB_NAME=boilerplate
       - JWT_SECRET=NOT_DEVELOPMENT_ONLY_JWT_SECRET
+      - COOKIES_SECRET=NOT_DEVELOPMENT_ONLY_COOKIES_SECRET
       - TESTING_DB_HOST=testing
       - TESTING_DB_PORT=5432
       - TESTING_DB_USER=testing
