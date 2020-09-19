@@ -17,7 +17,7 @@ export class TokenRepository implements ITokenRepository {
     }
 
     public async findByUser(userId: number): Promise<Token[]> {
-        return await this.connection.manager.find(Token,{ where: {user: userId}, relations: ["user"] });
+        return await this.connection.manager.find(Token, {where: {user: userId}, relations: ["user"]});
     }
 
     public async blacklist(token: string, userId: number, expiration: Date): Promise<Token> {
