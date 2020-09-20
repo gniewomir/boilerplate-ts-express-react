@@ -143,6 +143,7 @@ describe('User routes', () => {
                 .expect(403);
         });
     });
+
     describe(`PATCH ${config.api.prefix}/user`, () => {
         it('should update user', async () => {
             const application = await app();
@@ -174,5 +175,46 @@ describe('User routes', () => {
                     expect(response.body.email).toStrictEqual(newEmail);
                 });
         });
+        it('should reject empty password', async () => {
+            const application = await app();
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
+
+            await request(application)
+                .patch(`${config.api.prefix}/user/${user.id}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .send({
+                    password: ''
+                })
+                .expect(400);
+        });
+        it('should reject too short password', async () => {
+            const application = await app();
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password(config.security.authentication.passwords.min_length);
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
+
+            await request(application)
+                .patch(`${config.api.prefix}/user/${user.id}`)
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .send({
+                    password: faker.internet.password(config.security.authentication.passwords.min_length - 1)
+                })
+                .expect(400);
+        });
+
     });
 });

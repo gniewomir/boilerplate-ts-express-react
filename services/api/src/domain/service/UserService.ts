@@ -19,6 +19,12 @@ export class UserService implements IUserService {
     }
 
     public async authenticateByCredentials(credentials: IUserLoginInputDTO): Promise<IAuthentication> {
+        if (!credentials.email) {
+            throw new UnprocessableEntity('Email cannot be empty', 'password');
+        }
+        if (!credentials.password) {
+            throw new UnprocessableEntity('Password cannot be empty', 'password');
+        }
         const user = await this.userRepository.findByEmail(credentials.email);
         if (!user) {
             throw new InvalidAuthentication('user not found');
@@ -40,16 +46,28 @@ export class UserService implements IUserService {
     }
 
     public async register(input: IUserRegistrationInputDTO): Promise<IUserDto> {
+        if (!input.email) {
+            throw new UnprocessableEntity('Email cannot be empty', 'email');
+        }
         if (await this.userRepository.findByEmail(input.email)) {
             throw new UnprocessableEntity('User already exists', 'email');
+        }
+        if (!input.password) {
+            throw new UnprocessableEntity('Password cannot be empty', 'password');
         }
         const user = await this.userRepository.createAndSave(input.name, input.email, input.password);
         return user.toDTO();
     }
 
     public async update(userId: number, input: IUserUpdateInputDTO): Promise<IUserDto> {
-        if (input.email && await this.userRepository.findByEmail(input.email)) {
+        if ('email' in input && input.email === '') {
+            throw new UnprocessableEntity('Email cannot be empty', 'email');
+        }
+        if ('email' in input && await this.userRepository.findByEmail(input.email)) {
             throw new UnprocessableEntity('Email already taken', 'email');
+        }
+        if ('password' in input && input.password === '') {
+            throw new UnprocessableEntity('Password cannot be empty', 'password');
         }
         const user = await this.userRepository.update(userId, input);
         return user.toDTO();

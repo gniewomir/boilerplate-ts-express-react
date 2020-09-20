@@ -84,6 +84,9 @@ export const config = {
     },
     security: {
         authentication: {
+            passwords: {
+                min_length: 12
+            },
             jwt: {
                 secret: process.env.JWT_SECRET,
                 token_expiration_in_minutes: 1,

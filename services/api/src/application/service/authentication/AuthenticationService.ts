@@ -129,6 +129,9 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async authenticateResponse(token: string, res: Response): Promise<Response> {
+        if (!token) {
+            throw new InvalidAuthentication('Token cannot be empty.');
+        }
         res.locals.authentication = await this.checkAuthentication(token);
         return undefined;
     }

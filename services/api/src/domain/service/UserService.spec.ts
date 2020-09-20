@@ -44,6 +44,20 @@ describe('User service', () => {
             expect(authentication.isAuthenticated()).toBe(true);
             expect(authentication.getUser().id).toBe(user.id);
         });
+        it('must reject empty password', async () => {
+            const {subject, user} = await getTestSubjectAndUser();
+            expect.assertions(2)
+            try {
+                await subject.authenticateByCredentials(
+                    {
+                        email: user.email,
+                        password: ''
+                    });
+            } catch (error) {
+                expect(error).toBeInstanceOf(UnprocessableEntity)
+                expect(error.getMessage()).toContain('Password cannot be empty')
+            }
+        });
     });
     describe('authenticateById', () => {
         it('authenticates user', async () => {
@@ -122,6 +136,48 @@ describe('User service', () => {
             });
             const dto = subject.find(user.id)
             expect(dto).not.toBeInstanceOf(User);
+        });
+    });
+    describe('update', () => {
+        it('throws on empty password', async () => {
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            expect.assertions(1);
+            try {
+                await Container.get(UserService).update(user.id, {
+                    name,
+                    email,
+                    password: ''
+                });
+            } catch (error) {
+                expect(error).toBeInstanceOf(UnprocessableEntity);
+            }
+        });
+        it('throws on empty email', async () => {
+            const name = faker.name.findName();
+            const email = faker.internet.email();
+            const password = faker.internet.password();
+            const user = await Container.get(UserService).register({
+                name,
+                email,
+                password
+            });
+            expect.assertions(1);
+            try {
+                await Container.get(UserService).update(user.id, {
+                    name,
+                    email: '',
+                    password
+                });
+            } catch (error) {
+                expect(error).toBeInstanceOf(UnprocessableEntity);
+            }
         });
     });
 });
