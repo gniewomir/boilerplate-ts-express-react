@@ -37,18 +37,22 @@ export const configureExpress = (application: express.Application) => {
 
     // error handler
     application.use(errors()); // celebrate validation
-    application.use((err: any, req: Request, res: Response, next: NextFunction) => {
-        if (!(err instanceof ApiError)) {
-            Log.error('Unrecognized error.', err);
-            err = new ApiError('Unrecognized error.', 500, err);
+    application.use((error: any, req: Request, res: Response, next: NextFunction) => {
+        if (!(error instanceof ApiError)) {
+            if (config.env === 'development') {
+                throw error;
+            } else {
+                Log.error('Unrecognized error.', error);
+            }
+            error = new ApiError('Unrecognized error.', 500, error);
         }
-        if (err instanceof ApiError) {
+        if (error instanceof ApiError) {
             return res
-                .status(err.getHttpStatusCode())
-                .send(err.getAsLiteral())
+                .status(error.getHttpStatusCode())
+                .send(error.getAsLiteral())
                 .end();
         }
-        return next(err);
+        return next(error);
     });
 
     Log.info('Express configured.');
