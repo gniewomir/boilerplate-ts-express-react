@@ -21,6 +21,7 @@ export class Api {
 
     public async GetUserByRefreshToken(): Promise<IUserResponse> {
         const response = await this.PostTokenRefresh();
+        // @ts-ignore
         if ('statusCode' in response && response['statusCode'] !== 201) {
             throw response;
         }
