@@ -71,7 +71,7 @@ export class TokenController extends Controller {
             refreshTokenAuthentication.getToken().token,
             {
                 ...this.refreshCookieDefaults,
-                expires: new Date(refreshTokenAuthentication.getToken().payload.exp)
+                expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
             }
         );
         return {
