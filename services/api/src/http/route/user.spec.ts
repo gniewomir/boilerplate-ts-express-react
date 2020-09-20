@@ -7,7 +7,6 @@ import {UserRepository} from "../../database/repository/UserRepository";
 import {UserService} from "../../domain/service/UserService";
 import {getConnection} from "typeorm";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {Log} from "../../application/loader/logger";
 
 afterAll(async () => {
     const connection = getConnection();

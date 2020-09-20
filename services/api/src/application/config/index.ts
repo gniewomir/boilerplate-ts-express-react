@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import {HttpRouteList} from "../type/http";
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
+import {CookieOptions} from "express-serve-static-core";
 
 dotenv.config();
 
@@ -85,7 +86,7 @@ export const config = {
         authentication: {
             jwt: {
                 secret: process.env.JWT_SECRET,
-                token_expiration_in_minutes: 10,
+                token_expiration_in_minutes: 1,
                 refresh_token_expiration_in_minutes: 60
             },
             whitelist: [
@@ -105,6 +106,13 @@ export const config = {
         },
         cookies: {
             refresh_token_cookie_name: 'refresh_token',
+            default: {
+                signed: true,
+                httpOnly: true,
+                secure: process.env.NODE_ENV !== 'development',
+                sameSite: 'strict',
+                domain: process.env.PUBLIC_API_DOMAIN,
+            } as CookieOptions,
             secrets: [
                 process.env.COOKIES_SECRET
             ]

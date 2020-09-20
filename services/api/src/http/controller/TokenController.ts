@@ -16,11 +16,7 @@ import {AuthenticatePermission} from "../../application/permission/AuthenticateP
 export class TokenController extends Controller {
 
     private readonly refreshCookieDefaults = {
-        signed: true,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        domain: `${config.api.public_domain}`,
+        ...config.security.cookies.default,
         path: `${config.api.prefix}/token`,
     } as CookieOptions
 
@@ -43,12 +39,13 @@ export class TokenController extends Controller {
         }
 
         const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(newAuthentication.getUser())
+
         res.cookie(
             config.security.cookies.refresh_token_cookie_name,
             refreshTokenAuthentication.getToken().token,
             {
                 ...this.refreshCookieDefaults,
-                expires: new Date(refreshTokenAuthentication.getToken().payload.exp)
+                expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
             }
         );
 

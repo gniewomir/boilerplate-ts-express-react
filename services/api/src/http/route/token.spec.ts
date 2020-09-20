@@ -62,7 +62,7 @@ describe('Token routes', () => {
                     expect(authenticated.getUser().email).toBe(email);
                 });
         })
-        it('should set refresh token cookie', async () => {
+        it('should set refresh token cookie expiring in future', async () => {
             const application = await app();
             const repository = Container.get(UserRepository) as IUserRepository;
             const email = faker.internet.email();
@@ -81,12 +81,20 @@ describe('Token routes', () => {
                     const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
                     const authenticated = await authenticationService.checkAuthentication(response.body.token);
                     expect(authenticated.getUser().email).toBe(email);
-                    expect(response.headers['set-cookie'][0]).toContain(config.security.cookies.refresh_token_cookie_name)
+                    expect(response.headers['set-cookie'][0]).toContain(`${config.security.cookies.refresh_token_cookie_name}=s%3`)
                     expect(response.headers['set-cookie'][0]).toContain(`Domain=${config.api.public_domain};`)
                     expect(response.headers['set-cookie'][0]).toContain(`Path=${config.api.prefix}/token;`)
                     expect(response.headers['set-cookie'][0]).toContain('HttpOnly;')
                     expect(response.headers['set-cookie'][0]).toContain('Secure;')
                     expect(response.headers['set-cookie'][0]).toContain('SameSite=Strict')
+
+                    response.headers['set-cookie'][0].split(';').forEach((val: string) => {
+                        const name = val.split('=')[0];
+                        if (name === 'Expires') {
+                            expect((new Date(val.split('=')[1])) > (new Date())).toBe(true)
+                        }
+                    })
+
                 });
         })
     });
