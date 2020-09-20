@@ -4,6 +4,7 @@ export const config = {
         url: process.env.REACT_APP_API_URL as string
     },
     website: {
+        name: 'Boilerplate Admin',
         copyright: {
             name: 'Gniewomir Świechowski',
             link: 'mailto:gniewomir.swiechowski@gmail.com'
@@ -13,6 +14,10 @@ export const config = {
         login: {
             name: 'Login',
             path: '/login'
+        },
+        password_reset: {
+            name: 'Password reset',
+            path: '/password_reset'
         },
         register: {
             name: 'Register',
