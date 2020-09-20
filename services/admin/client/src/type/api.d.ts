@@ -26,7 +26,7 @@ export interface IApiError {
     statusCode: number,
     error: string,
     message: string,
-    validation: ValidationErrors
+    validation: ApiValidationErrors
 }
 
 type PermissionsList = string[]
@@ -42,4 +42,4 @@ export interface IToken {
     payload: ITokenPayload
 }
 
-export type ValidationErrors = { [id: string]: string }
+export type ApiValidationErrors = { [id: string]: string }
