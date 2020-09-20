@@ -15,6 +15,9 @@ export class BadRequest extends ApiError implements IErrorValidation {
     }
 
     getAsLiteral(): object {
-        return this.getValidationErrors();
+        return {
+            ...super.getAsLiteral(),
+            validation: this.getValidationErrors()
+        };
     }
 }
