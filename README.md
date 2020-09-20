@@ -1,4 +1,4 @@
-This project wad started as a recruitment task, but it started to take shape of kind-off boilerplate/learning project, so I will treat it as one in near future. Improving it as my understanding of Type Script, layered architecture, CQRS and DDD grows. Maybe it will be of some use to someone, but for now only supported platform will be linux.    
+This project started as a recruitment task, but it started to take shape of kind-off boilerplate/learning project, so I will treat it as one in near future. Improving it as my understanding of Type Script, layered architecture, CQRS and DDD grows. Maybe it will be of some use to someone, but for now only supported platform will be linux.    
 
 # Setup
 
