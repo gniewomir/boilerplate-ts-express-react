@@ -1,7 +1,7 @@
-import {Button} from "@material-ui/core";
 import React from "react";
-import {IRoutableProps} from "../../type/IRoutableProps";
+import {config} from "../../config";
+import {Redirect} from "react-router";
 
-export default (props: IRoutableProps) => {
-    return <Button variant="contained" color="primary">Example button</Button>;
+export const Home = () => {
+    return <Redirect to={config.routes.profile.path}/>;
 }
