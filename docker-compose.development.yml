@@ -23,8 +23,6 @@ services:
       - services/postgres/.env.testing
     volumes:
       - data-testing:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
     networks:
       - internal
 

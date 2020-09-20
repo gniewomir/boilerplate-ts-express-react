@@ -8,7 +8,6 @@ install: https://github.com/nvm-sh/nvm
 # ensure correct version of node is available locally
 # all package.json scripts should work both on host and in container 
 nvm install v14.9.0
-nvm use v14.9.0
 
 # ensure public network is available
 docker network create web | true
@@ -21,13 +20,13 @@ cp services/admin/.env.dist services/admin/.env
 cp services/admin/client/.env.dist services/admin/client/.env
 ```
 
-## App development setup
+## Development setup
 
 ```shell script
 # in project root directory
 docker-compose -f docker-compose.yml -f docker-compose.development.yml up -d --build --force-recreate --remove-orphans
-docker-compose exec api npm run db:drop || true
-docker-compose exec api npm run db:migrate
+docker-compose exec api npm run db:refresh
+docker-compose exec api npm run db:testing:refresh
 
 # ensure we are good to go
 
@@ -39,20 +38,19 @@ curl localhost:8000
 docker-compose exec api npm run test
 
 docker-compose logs -f
-
 ```
 
 NOTE:
 - api should recompile and restart on changes
 - admin has hot module reload enabled 
 
-## App not-development setup
+## Not-development setup
  
 ```shell script
 # in project root directory
 docker-compose -f docker-compose.yml -f docker-compose.not-development.yml up -d --build --force-recreate --remove-orphans
-docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js schema:drop
-docker-compose exec api ./node_modules/typeorm/cli.js --config dist/application/config/typeorm.cli.js migration:run
+docker-compose exec api npm run db:notdev:refresh
+docker-compose exec api npm run db:notdev:testing:refresh
 
 # ensure we are good to go
 
@@ -61,7 +59,7 @@ curl localhost:8000/api/status
 # should return html or just go to localhost:8000 in your browser   
 curl localhost:8000
 # test api
-docker-compose exec api npm run test:nobuild
+docker-compose exec api npm run test:notdev
 
 docker-compose logs -f
 ```

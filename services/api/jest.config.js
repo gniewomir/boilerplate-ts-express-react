@@ -1,4 +1,4 @@
-module.exports = process.env.RUNNING_IN_CONTAINER !== 'true'  ? {
+module.exports = process.env.RUNNING_IN_CONTAINER !== 'true' ? {
     roots: ['<rootDir>/src'],
     transform: {
         '^.+\\.tsx?$': 'ts-jest',

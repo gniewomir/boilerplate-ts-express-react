@@ -30,7 +30,7 @@ export const config = {
         connections: {
             default: {
                 type: "postgres",
-                host: process.env.DB_HOST,
+                host: process.env.RUNNING_IN_CONTAINER === 'true' ? process.env.DB_HOST : 'localhost',
                 port: parseInt(process.env.DB_PORT, 10),
                 username: process.env.DB_USER,
                 password: process.env.DB_PASSWORD,
@@ -57,7 +57,7 @@ export const config = {
             testing: {
                 type: "postgres",
                 host: process.env.RUNNING_IN_CONTAINER === 'true' ? process.env.TESTING_DB_HOST : 'localhost',
-                port: process.env.RUNNING_IN_CONTAINER === 'true' ? parseInt(process.env.TESTING_DB_PORT, 10) : 5433,
+                port: process.env.RUNNING_IN_CONTAINER === 'true' ? parseInt(process.env.TESTING_DB_PORT, 10) : 5442,
                 username: process.env.TESTING_DB_USER,
                 password: process.env.TESTING_DB_PASSWORD,
                 database: process.env.TESTING_DB_NAME,
