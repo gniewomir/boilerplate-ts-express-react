@@ -1,3 +1,5 @@
+This project wad started as a recruitment task, but it started to take shape of kind-off boilerplate/learning project, so I will treat it as one in near future. Improving it as my understanding of Type Script, layered architecture, CQRS and DDD grows. Maybe it will be of some use to someone, but for now only supported platform will be linux.    
+
 # Setup
 
 ## Project setup
@@ -79,21 +81,19 @@ curl --location --request POST 'http://localhost:8000/api/user' \
 ```
 
 # Todo
-* Project: Postman collection with automatic request authentication
+* Project: Postman collection with automatic request authentication as testing way
 * Project: Changelog
 * Project: What is the best way of sharing code (types?) between TS services?
+* Api: Finish separating application layers, CQRS?
 * Api: Timestamps for entities (updated/created)
-* Api: Add a way of enforcing response shape
 * Api: Add a way of loading fixtures
-* Api: Add refresh tokens 
-    * add refresh tokens with longer lifetime which will allow only obtaining a new token
-    * revoking any user token should also revoke all refresh tokens
-    * consider how to log out from other browser tabs/devices ref: https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/
+* Api: Depend on token IAT claim and user logged out/logged in time instead blacklist?
+* Api: Revoking any user token should also revoke all refresh tokens
+* Api: To consider: https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/
 * Api: Remove expired and blacklisted tokens from database
 * Api: Queue?
     * mailer
     * email confirmation
-* Api: CQRS?
 
 # Links
 * Structure: https://softwareontheroad.com/ideal-nodejs-project-structure/
