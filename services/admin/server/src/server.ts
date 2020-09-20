@@ -9,7 +9,7 @@ app.get('/status', (req: Request, res: Response) => {
     return res.status(200).send('OK');
 });
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
     res.sendFile('/app/client/build/index.html');
 });
 
