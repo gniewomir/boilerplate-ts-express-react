@@ -4,7 +4,7 @@ import {AuthenticationService} from "../../application/service/authentication/Au
 
 export const forAuthenticated = (conditionalMiddleware: RequestHandler): RequestHandler => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const authentication = Container.get(AuthenticationService).authenticationFromResponse(res);
+        const authentication = Container.get(AuthenticationService).getAuthenticationFromResponse(res);
         if (authentication.isAuthenticated()) {
             return conditionalMiddleware(req, res, next);
         }

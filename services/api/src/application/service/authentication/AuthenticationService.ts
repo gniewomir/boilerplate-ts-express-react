@@ -5,16 +5,15 @@ import {IUserDto} from "../../../domain/type/user";
 import {IAuthentication, IToken, ITokenPayload, PermissionsList} from "../../type/authentication";
 import {config} from "../../config";
 import jwt from "jsonwebtoken";
-import {InternalServerError} from "../../error/InternalServerError";
 import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {Response} from "express";
 import {Authentication} from "./Authentication";
 import {PasswordService} from "../password/PasswordService";
 import {ResourceCrudPermission} from "../../permission/ResourceCrudPermission";
 import {IPermission} from "../../type/authorization";
-import {AuthenticatePermission} from "../../permission/AuthenticatePermission";
+import {UseCredentialsPermission} from "../../permission/UseCredentialsPermission";
 import {Forbidden} from "../../error/Forbidden";
-import {AuthenticationRefreshPermission} from "../../permission/AuthenticationRefreshPermission";
+import {UseRefreshTokenPermission} from "../../permission/UseRefreshTokenPermission";
 
 export interface IAuthenticationService {
 
@@ -30,7 +29,7 @@ export interface IAuthenticationService {
 
     authenticateResponse(token: string, res: Response): Promise<Response>;
 
-    authenticationFromResponse(res: Response): IAuthentication;
+    getAuthenticationFromResponse(res: Response): IAuthentication;
 
 }
 
@@ -45,9 +44,11 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     private static createToken(user: IUserDto, permissions: PermissionsList, expirationInMinutes: number): IToken {
+        const now = Date.now();
         const payload = {
             userId: user.id,
-            exp: Math.floor(Date.now() / 1000) + (expirationInMinutes * 60),
+            exp: Math.floor(now / 1000) + (expirationInMinutes * 60),
+            iat: now / 1000,
             permissions
         } as ITokenPayload;
         return {
@@ -65,13 +66,6 @@ export class AuthenticationService implements IAuthenticationService {
         })
     }
 
-    private static createAuthenticationObject(authenticated: boolean, user: IUserDto | null, token: IToken | null): IAuthentication {
-        if (authenticated && (user === null || token === null)) {
-            throw new InternalServerError('Creating successful authentication require both user and token.');
-        }
-        return Object.seal(new Authentication(authenticated, token, user));
-    }
-
     public async checkAuthentication(token: string): Promise<IAuthentication> {
         try {
             const payload = jwt.verify(token, config.security.authentication.jwt.secret) as ITokenPayload;
@@ -82,13 +76,14 @@ export class AuthenticationService implements IAuthenticationService {
             if (await this.tokenRepository.isBlacklisted(token)) {
                 throw new InvalidAuthentication('jwt blacklisted');
             }
-            return AuthenticationService.createAuthenticationObject(
-                true,
-                user.toDTO(),
-                {
-                    token,
-                    payload
-                }
+            return Object.seal(
+                new Authentication(
+                    {
+                        token,
+                        payload
+                    },
+                    user.toDTO()
+                )
             );
         } catch (error) {
             if (error instanceof InvalidAuthentication || error instanceof Forbidden) {
@@ -99,13 +94,14 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async createAuthentication(user: IUserDto, permissions: PermissionsList, expirationInMinutes: number): Promise<IAuthentication> {
-        return AuthenticationService.createAuthenticationObject(
-            true,
-            user,
-            AuthenticationService.createToken(
-                user,
-                permissions,
-                expirationInMinutes
+        return Object.seal(
+            new Authentication(
+                AuthenticationService.createToken(
+                    user,
+                    permissions,
+                    expirationInMinutes
+                ),
+                user
             )
         );
     }
@@ -116,7 +112,7 @@ export class AuthenticationService implements IAuthenticationService {
             AuthenticationService.createPermissionsList(
                 new ResourceCrudPermission('GET', this.userRepository, user.id),
                 new ResourceCrudPermission('PATCH', this.userRepository, user.id),
-                new AuthenticatePermission()
+                new UseCredentialsPermission()
             ),
             config.security.authentication.jwt.token_expiration_in_minutes
         );
@@ -126,7 +122,7 @@ export class AuthenticationService implements IAuthenticationService {
         return this.createAuthentication(
             user,
             AuthenticationService.createPermissionsList(
-                new AuthenticationRefreshPermission()
+                new UseRefreshTokenPermission()
             ),
             config.security.authentication.jwt.refresh_token_expiration_in_minutes
         );
@@ -150,17 +146,13 @@ export class AuthenticationService implements IAuthenticationService {
             throw new InvalidAuthentication('Token cannot be empty.');
         }
         res.locals.authentication = await this.checkAuthentication(token);
-        return undefined;
+        return res;
     }
 
-    public authenticationFromResponse(res: Response): IAuthentication {
-        if (res.locals.authentication) {
+    public getAuthenticationFromResponse(res: Response): IAuthentication {
+        if (res.locals.authentication && res.locals.authentication instanceof Authentication) {
             return res.locals.authentication;
         }
-        return AuthenticationService.createAuthenticationObject(
-            false,
-            null,
-            null
-        );
+        return Object.seal(new Authentication(null, null));
     }
 }

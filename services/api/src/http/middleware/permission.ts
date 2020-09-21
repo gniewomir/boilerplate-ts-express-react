@@ -6,7 +6,7 @@ import {Forbidden} from "../../application/error/Forbidden";
 
 export const requirePermissions = (...args: IPermission[]): RequestHandler => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const authentication = Container.get(AuthenticationService).authenticationFromResponse(res);
+        const authentication = Container.get(AuthenticationService).getAuthenticationFromResponse(res);
         args.forEach((permission: IPermission) => {
             if (authentication.denied(permission)) {
                 throw new Forbidden(`You lack permission ${permission.toString()}`);

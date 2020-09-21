@@ -5,7 +5,7 @@ import {Forbidden} from "../../application/error/Forbidden";
 
 export const requireUnauthenticated = (message: string): RequestHandler => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const authentication = Container.get(AuthenticationService).authenticationFromResponse(res);
+        const authentication = Container.get(AuthenticationService).getAuthenticationFromResponse(res);
         if (authentication.isAuthenticated()) {
             throw new Forbidden(message);
         }

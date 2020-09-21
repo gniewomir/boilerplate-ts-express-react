@@ -8,11 +8,9 @@ import cloneDeep from "lodash/cloneDeep";
 @Sealed
 export class Authentication implements IAuthentication {
     constructor(
-        private readonly authenticated: boolean,
         private readonly token: IToken | null,
         private readonly user: IUserDto | null,
     ) {
-        this.authenticated = authenticated;
         this.token = token;
         this.user = user;
     }
@@ -34,7 +32,7 @@ export class Authentication implements IAuthentication {
     }
 
     public isAuthenticated(): boolean {
-        return this.authenticated;
+        return !!this.token && !!this.user;
     }
 
     private hasPermission(permission: IPermission): boolean {

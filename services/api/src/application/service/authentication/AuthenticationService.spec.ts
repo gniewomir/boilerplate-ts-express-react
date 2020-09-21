@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {ITokenPayload} from "../../type/authentication";
 import {AuthenticationService} from "./AuthenticationService";
-import {AuthenticatePermission} from "../../permission/AuthenticatePermission";
-import {AuthenticationRefreshPermission} from "../../permission/AuthenticationRefreshPermission";
+import {UseCredentialsPermission} from "../../permission/UseCredentialsPermission";
+import {UseRefreshTokenPermission} from "../../permission/UseRefreshTokenPermission";
 import {
     cleanupTestDatabaseConnection,
     setupTestApplication,
@@ -27,8 +27,8 @@ describe('Authentication service', () => {
             const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const authenticated = await subject.createUserAuthentication(user);
-            expect(authenticated.granted(new AuthenticationRefreshPermission())).toBe(false)
-            expect(authenticated.granted(new AuthenticatePermission())).toBe(true)
+            expect(authenticated.granted(new UseRefreshTokenPermission())).toBe(false)
+            expect(authenticated.granted(new UseCredentialsPermission())).toBe(true)
         });
     });
 
@@ -44,8 +44,8 @@ describe('Authentication service', () => {
             const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const authenticated = await subject.createRefreshTokenAuthentication(user);
-            expect(authenticated.granted(new AuthenticationRefreshPermission())).toBe(true)
-            expect(authenticated.granted(new AuthenticatePermission())).toBe(false)
+            expect(authenticated.granted(new UseRefreshTokenPermission())).toBe(true)
+            expect(authenticated.granted(new UseCredentialsPermission())).toBe(false)
         });
     });
 

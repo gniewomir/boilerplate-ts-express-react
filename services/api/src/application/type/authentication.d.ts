@@ -6,6 +6,7 @@ type PermissionsList = string[]
 export interface ITokenPayload {
     userId: number;
     exp: number;
+    iat: number;
     permissions: PermissionsList
 }
 

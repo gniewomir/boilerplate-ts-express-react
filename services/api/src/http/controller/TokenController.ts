@@ -7,10 +7,10 @@ import {IApiResponse} from "../type/api";
 import {config} from "../../application/config";
 import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {AuthenticationRefreshPermission} from "../../application/permission/AuthenticationRefreshPermission";
+import {UseRefreshTokenPermission} from "../../application/permission/UseRefreshTokenPermission";
 import {Forbidden} from "../../application/error/Forbidden";
 import {CookieOptions} from "express-serve-static-core";
-import {AuthenticatePermission} from "../../application/permission/AuthenticatePermission";
+import {UseCredentialsPermission} from "../../application/permission/UseCredentialsPermission";
 import {Log} from "../../application/loader/logger";
 
 @Service()
@@ -35,8 +35,8 @@ export class TokenController extends Controller {
                 password: req.body.password
             }
         );
-        if (newAuthentication.denied(new AuthenticatePermission())) {
-            throw new Forbidden(`lack of ${(new AuthenticatePermission()).toString()}`);
+        if (newAuthentication.denied(new UseCredentialsPermission())) {
+            throw new Forbidden(`lack of ${(new UseCredentialsPermission()).toString()}`);
         }
 
         const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(newAuthentication.getUser())
@@ -64,8 +64,8 @@ export class TokenController extends Controller {
             throw new InvalidAuthentication('no refresh token');
         }
         const refreshAuthentication = await this.authenticationService.checkAuthentication(req.signedCookies.refresh_token)
-        if (refreshAuthentication.denied(new AuthenticationRefreshPermission())) {
-            throw new Forbidden(`lack of ${(new AuthenticationRefreshPermission()).toString()}`);
+        if (refreshAuthentication.denied(new UseRefreshTokenPermission())) {
+            throw new Forbidden(`lack of ${(new UseRefreshTokenPermission()).toString()}`);
         }
         const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(refreshAuthentication.getUser())
         res.cookie(

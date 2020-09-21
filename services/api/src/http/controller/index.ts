@@ -19,7 +19,7 @@ export const controller = (routeController: IController) => {
                     const apiResponse = await routeController[method](
                         req,
                         res,
-                        Container.get(AuthenticationService).authenticationFromResponse(res)
+                        Container.get(AuthenticationService).getAuthenticationFromResponse(res)
                     ) as IApiResponse;
                     return res
                         .status(apiResponse.statusCode)
