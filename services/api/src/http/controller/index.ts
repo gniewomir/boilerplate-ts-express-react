@@ -1,8 +1,6 @@
 import {IApiResponse, IController} from "../type/controller";
 import {NextFunction, Request, Response} from "express";
 import {Container} from "typedi";
-import {Entity} from "typeorm";
-import {InternalServerError} from "../../application/error/InternalServerError";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {NotFound} from "../../application/error/NotFound";
 
@@ -22,9 +20,6 @@ export const controller = (routeController: IController) => {
                         res,
                         Container.get(AuthenticationService).authenticationFromResponse(res)
                     ) as IApiResponse;
-                    if (apiResponse.body instanceof Entity) {
-                        throw new InternalServerError('Entities cannot be returned from controllers, use DTO to prevent leaking sensitive data.');
-                    }
                     return res
                         .status(apiResponse.statusCode)
                         .json(apiResponse.body);
