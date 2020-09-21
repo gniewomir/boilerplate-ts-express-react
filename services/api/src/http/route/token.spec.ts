@@ -164,7 +164,7 @@ describe('Token routes', () => {
 
             await request(application)
                 .delete(`${config.api.prefix}/token`)
-                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token+'_invalid_signed_cookie')])
+                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token + '_invalid_signed_cookie')])
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .expect(204);
 
