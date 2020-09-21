@@ -1,10 +1,10 @@
-import {CleanupAfterAll, SetupApplicationUserAndAuthentication} from "../../../test/utility";
+import {cleanupTestDatabaseConnection, setupTestApplicationUserAndAuthentication} from "../../../test/utility";
 
-afterAll(CleanupAfterAll)
+afterAll(cleanupTestDatabaseConnection)
 
 describe('Authentication object', () => {
     it('Is sealed', async () => {
-        const {authentication} = await SetupApplicationUserAndAuthentication();
+        const {authentication} = await setupTestApplicationUserAndAuthentication();
         try {
             // @ts-ignore
             authentication.test = 'test';
@@ -13,7 +13,7 @@ describe('Authentication object', () => {
         }
     });
     it('Is immutable', async () => {
-        const {authentication} = await SetupApplicationUserAndAuthentication();
+        const {authentication} = await setupTestApplicationUserAndAuthentication();
 
         const token = authentication.getToken();
         const user = authentication.getUser();

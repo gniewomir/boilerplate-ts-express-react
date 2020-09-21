@@ -6,7 +6,7 @@ import {TokenRepository} from "../../database/repository/TokenRepository";
 import {User} from "../../database/entity/User";
 import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {getConnection} from "typeorm";
-import {SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
+import {fakeUniqueUserEmail, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../test/utility";
 import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
 
 afterAll(async () => {
@@ -19,7 +19,7 @@ afterAll(async () => {
 describe('User service', () => {
     describe('authenticateByCredentials', () => {
         it('creates valid authentication object', async () => {
-            const {user, plainPassword} = await SetupApplicationUserAndAuthentication();
+            const {user, plainPassword} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(UserService);
             const authentication = await subject.authenticateByCredentials(
                 {
@@ -30,7 +30,7 @@ describe('User service', () => {
             expect(authentication.getUser().id).toBe(user.id);
         });
         it('must reject empty password', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(UserService);
             expect.assertions(2)
             try {
@@ -45,7 +45,7 @@ describe('User service', () => {
             }
         });
         it('must reject invalid password', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(UserService);
             expect.assertions(2)
             try {
@@ -62,7 +62,7 @@ describe('User service', () => {
     });
     describe('authenticateById', () => {
         it('authenticates user', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(UserService);
             const authentication = await subject.authenticateById(user.id);
             expect(authentication.isAuthenticated()).toBe(true);
@@ -71,7 +71,7 @@ describe('User service', () => {
     });
     describe('revokeAuthentication', () => {
         it('revokes user authentication', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(UserService);
             const tokenRepository = Container.get(TokenRepository);
             const authentication = await subject.authenticateById(user.id);
@@ -84,9 +84,9 @@ describe('User service', () => {
     });
     describe('register', () => {
         it('creates new user', async () => {
-            await SetupApplication();
+            await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             await Container.get(UserService).register({
                 name,
@@ -96,9 +96,9 @@ describe('User service', () => {
             await expect(await Container.get(UserRepository).findByEmail(email)).toBeInstanceOf(User);
         });
         it('throws on already existing user', async () => {
-            await SetupApplication();
+            await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             await Container.get(UserService).register({
                 name,
@@ -117,9 +117,9 @@ describe('User service', () => {
             }
         });
         it('returns DTO not entity', async () => {
-            await SetupApplication();
+            await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             const dto = await Container.get(UserService).register({
                 name,
@@ -131,9 +131,9 @@ describe('User service', () => {
     });
     describe('find', () => {
         it('returns DTO not entity', async () => {
-            await SetupApplication();
+            await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             const subject = Container.get(UserService)
             const user = await subject.register({
@@ -147,9 +147,9 @@ describe('User service', () => {
     });
     describe('update', () => {
         it('throws on empty password', async () => {
-            await SetupApplication();
+            await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,
@@ -168,9 +168,9 @@ describe('User service', () => {
             }
         });
         it('throws on empty email', async () => {
-            await SetupApplication();
+            await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,

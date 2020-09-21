@@ -6,16 +6,16 @@ import {
     IAuthenticationService
 } from "../../application/service/authentication/AuthenticationService";
 import {ITokenRepository, TokenRepository} from "../../database/repository/TokenRepository";
-import {CleanupAfterAll, SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
+import {cleanupTestDatabaseConnection, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../test/utility";
 import {SignedCookiePayload} from "../../test/utility/cookie";
 
 
-afterAll(CleanupAfterAll)
+afterAll(cleanupTestDatabaseConnection)
 
 describe('Token routes', () => {
     describe(`POST ${config.api.prefix}/token`, () => {
         it('should return status code 400 and list of errors on invalid request', async () => {
-            const application = await SetupApplication();
+            const application = await setupTestApplication();
             expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token`)
@@ -25,7 +25,7 @@ describe('Token routes', () => {
                 })
         })
         it('should return status code 201 and valid token with credentials matching user', async () => {
-            const {application, user: {email}, plainPassword} = await SetupApplicationUserAndAuthentication();
+            const {application, user: {email}, plainPassword} = await setupTestApplicationUserAndAuthentication();
             expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token`)
@@ -41,7 +41,7 @@ describe('Token routes', () => {
                 });
         })
         it('should set refresh token cookie expiring in future', async () => {
-            const {application, user: {email}, plainPassword} = await SetupApplicationUserAndAuthentication();
+            const {application, user: {email}, plainPassword} = await setupTestApplicationUserAndAuthentication();
             expect.assertions(7);
             await request(application)
                 .post(`${config.api.prefix}/token`)
@@ -74,7 +74,7 @@ describe('Token routes', () => {
 
     describe(`POST ${config.api.prefix}/token/refresh`, () => {
         it('should return status code 201 and valid token with credentials matching user', async () => {
-            const {application, user} = await SetupApplicationUserAndAuthentication();
+            const {application, user} = await setupTestApplicationUserAndAuthentication();
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);
             expect.assertions(1);
@@ -92,7 +92,7 @@ describe('Token routes', () => {
 
     describe(`DELETE ${config.api.prefix}/token`, () => {
         it('should blacklist token used to authenticate request', async () => {
-            const {application, user} = await SetupApplicationUserAndAuthentication();
+            const {application, user} = await setupTestApplicationUserAndAuthentication();
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const authentication = await authenticationService.createUserAuthentication(user);
 
@@ -112,7 +112,7 @@ describe('Token routes', () => {
                 .expect(401);
         })
         it('should blacklist refresh token sent with request', async () => {
-            const {application, user} = await SetupApplicationUserAndAuthentication();
+            const {application, user} = await setupTestApplicationUserAndAuthentication();
             const tokenRepository = Container.get(TokenRepository) as ITokenRepository;
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const authentication = await authenticationService.createUserAuthentication(user);
@@ -137,7 +137,7 @@ describe('Token routes', () => {
             expect(afterUserTokensCount).toBe(2);
         })
         it('should blacklist refresh token sent with request even if authentication was invalid', async () => {
-            const {application, user} = await SetupApplicationUserAndAuthentication();
+            const {application, user} = await setupTestApplicationUserAndAuthentication();
             const tokenRepository = Container.get(TokenRepository) as ITokenRepository;
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);
@@ -156,7 +156,7 @@ describe('Token routes', () => {
             expect(afterUserTokensCount).toBe(1);
         })
         it('should blacklist token used to authenticate request even if refresh token was invalid', async () => {
-            const {authentication, application, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, application, user} = await setupTestApplicationUserAndAuthentication();
             const tokenRepository = Container.get(TokenRepository) as ITokenRepository;
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);

@@ -4,7 +4,7 @@ import {User} from "../entity/User";
 import {establishDatabaseConnection} from "../../application/loader/postgres";
 import {Container} from "typedi";
 import {PasswordService} from "../../application/service/password/PasswordService";
-import {CleanupAfterAll} from "../../test/utility";
+import {cleanupTestDatabaseConnection, fakeUniqueUserEmail} from "../../test/utility";
 
 const getRepository = async (): Promise<IUserRepository> => {
     const postgresConnection = await establishDatabaseConnection();
@@ -14,7 +14,7 @@ const getRepository = async (): Promise<IUserRepository> => {
     );
 }
 
-afterAll(CleanupAfterAll)
+afterAll(cleanupTestDatabaseConnection)
 
 describe('The user repository', () => {
     describe('createAndSave', () => {
@@ -22,7 +22,7 @@ describe('The user repository', () => {
             const repository = await getRepository();
 
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();
             const password = faker.internet.password();
             const user = await repository.createAndSave(name, email, password);
             expect(user).toBeInstanceOf(User);
@@ -38,7 +38,7 @@ describe('The user repository', () => {
             const repository = await getRepository();
 
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();
             const password = faker.internet.password();
             const user = await repository.createAndSave(name, email, password);
 
@@ -59,12 +59,12 @@ describe('The user repository', () => {
             const repository = await getRepository();
 
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();
             const password = faker.internet.password();
             const user = await repository.createAndSave(name, email, password);
 
             const newName = faker.name.findName();
-            const newEmail = faker.internet.email();
+            const newEmail = await fakeUniqueUserEmail();
 
             const userAfterUpdate = await repository.update(
                 user.id,
@@ -87,7 +87,7 @@ describe('The user repository', () => {
             const repository = await getRepository();
 
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();
             const password = faker.internet.password();
             const user = await repository.createAndSave(name, email, password);
             const found = await repository.findById(user.id);
@@ -114,7 +114,7 @@ describe('The user repository', () => {
             const repository = await getRepository();
 
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();
             const password = faker.internet.password();
             const user = await repository.createAndSave(name, email, password);
             const found = await repository.findByEmail(user.email);
@@ -146,7 +146,7 @@ describe('The user repository', () => {
             const repository = await getRepository();
 
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();
             const password = faker.internet.password();
             const user = await repository.createAndSave(name, email, password);
             const exist = await repository.exists(user.id);

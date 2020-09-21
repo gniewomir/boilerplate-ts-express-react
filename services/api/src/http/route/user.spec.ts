@@ -5,16 +5,21 @@ import {Container} from "typedi";
 import {UserRepository} from "../../database/repository/UserRepository";
 import {UserService} from "../../domain/service/UserService";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {CleanupAfterAll, SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
+import {
+    cleanupTestDatabaseConnection,
+    fakeUniqueUserEmail,
+    setupTestApplication,
+    setupTestApplicationUserAndAuthentication
+} from "../../test/utility";
 
-afterAll(CleanupAfterAll)
+afterAll(cleanupTestDatabaseConnection)
 
 describe('User routes', () => {
     describe(`POST ${config.api.prefix}/user`, () => {
         it('should return created user', async () => {
-            const application = await SetupApplication();
+            const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
 
             expect.assertions(1);
@@ -31,7 +36,7 @@ describe('User routes', () => {
                 });
         });
         it('should return validation error', async () => {
-            const application = await SetupApplication();
+            const application = await setupTestApplication();
 
             expect.assertions(1);
             await request(application)
@@ -43,9 +48,9 @@ describe('User routes', () => {
                 });
         });
         it('should return error on existing user', async () => {
-            const application = await SetupApplication();
+            const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
 
             await request(application)
@@ -66,9 +71,9 @@ describe('User routes', () => {
                 .expect(422);
         });
         it('should return error if user is authenticated therefore registered already', async () => {
-            const application = await SetupApplication();
+            const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,
@@ -85,7 +90,7 @@ describe('User routes', () => {
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .send({
                     name: faker.name.findName(),
-                    email: faker.internet.email(),
+                    email: await fakeUniqueUserEmail(),
                     password: faker.internet.password()
                 })
                 .expect(403);
@@ -93,9 +98,9 @@ describe('User routes', () => {
     });
     describe(`GET ${config.api.prefix}/user/:userId`, () => {
         it('should return correct user', async () => {
-            const application = await SetupApplication();
+            const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = faker.internet.email();
+            const email = await fakeUniqueUserEmail();;
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,
@@ -114,10 +119,10 @@ describe('User routes', () => {
                 });
         });
         it('should prevent user from accessing other users', async () => {
-            const {application, authentication} = await SetupApplicationUserAndAuthentication();
+            const {application, authentication} = await setupTestApplicationUserAndAuthentication();
             const otherUser = await Container.get(UserService).register({
                 name: faker.name.findName(),
-                email: faker.internet.email(),
+                email: await fakeUniqueUserEmail(),
                 password: faker.internet.password()
             });
             await request(application)
@@ -129,9 +134,9 @@ describe('User routes', () => {
 
     describe(`PATCH ${config.api.prefix}/user`, () => {
         it('should update user', async () => {
-            const {application, user, authentication} = await SetupApplicationUserAndAuthentication();
+            const {application, user, authentication} = await setupTestApplicationUserAndAuthentication();
             const newName = faker.name.findName();
-            const newEmail = faker.internet.email()
+            const newEmail = await fakeUniqueUserEmail();
 
             expect.assertions(3);
             await request(application)
@@ -149,7 +154,7 @@ describe('User routes', () => {
                 });
         });
         it('should reject empty password', async () => {
-            const {application, user, authentication} = await SetupApplicationUserAndAuthentication();
+            const {application, user, authentication} = await setupTestApplicationUserAndAuthentication();
             await request(application)
                 .patch(`${config.api.prefix}/user/${user.id}`)
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
@@ -159,7 +164,7 @@ describe('User routes', () => {
                 .expect(400);
         });
         it('should reject too short password', async () => {
-            const {application, user, authentication} = await SetupApplicationUserAndAuthentication();
+            const {application, user, authentication} = await setupTestApplicationUserAndAuthentication();
             await request(application)
                 .patch(`${config.api.prefix}/user/${user.id}`)
                 .set('authorization', `Bearer ${authentication.getToken().token}`)

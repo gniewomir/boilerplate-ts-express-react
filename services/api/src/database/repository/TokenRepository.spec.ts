@@ -4,16 +4,16 @@ import {UserRepository} from "./UserRepository";
 import {Token} from "../entity/Token";
 import * as faker from 'faker';
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {CleanupAfterAll, SetupApplicationUserAndAuthentication} from "../../test/utility";
+import {cleanupTestDatabaseConnection, fakeUniqueUserEmail, setupTestApplicationUserAndAuthentication} from "../../test/utility";
 import {TokenExpirationToDate} from "../../test/utility/date";
 
-afterAll(CleanupAfterAll)
+afterAll(cleanupTestDatabaseConnection)
 
 describe('The token repository', () => {
 
     describe('blacklist', () => {
         it('saves token to database as blacklisted', async () => {
-            const {authentication, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, user} = await setupTestApplicationUserAndAuthentication();
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
@@ -33,7 +33,7 @@ describe('The token repository', () => {
 
     describe('isBlacklisted', () => {
         it('returns true when provided with blacklisted token', async () => {
-            const {authentication, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, user} = await setupTestApplicationUserAndAuthentication();
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
@@ -43,7 +43,7 @@ describe('The token repository', () => {
         });
         it('returns false when provided with non existent token', async () => {
             const subject = await Container.get(TokenRepository);
-            const user = await Container.get(UserRepository).createAndSave(faker.name.findName(), faker.internet.email(), faker.internet.password());
+            const user = await Container.get(UserRepository).createAndSave(faker.name.findName(), await fakeUniqueUserEmail(), faker.internet.password());
             const authentication = await Container.get(AuthenticationService).createUserAuthentication(user.toDTO());
             const token = authentication.getToken();
             const blacklisted = await subject.isBlacklisted(token.token);
@@ -53,7 +53,7 @@ describe('The token repository', () => {
 
     describe('exist', () => {
         it('returns true when provided with existing token', async () => {
-            const {authentication, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, user} = await setupTestApplicationUserAndAuthentication();
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
@@ -62,7 +62,7 @@ describe('The token repository', () => {
             expect(exists).toBe(true);
         });
         it('returns false when provided with non existent token', async () => {
-            const {authentication, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, user} = await setupTestApplicationUserAndAuthentication();
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
@@ -73,7 +73,7 @@ describe('The token repository', () => {
 
     describe('find', () => {
         it('returns token when token exists', async () => {
-            const {authentication, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, user} = await setupTestApplicationUserAndAuthentication();
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
@@ -83,7 +83,7 @@ describe('The token repository', () => {
             expect(entity.token).toBe(token.token);
         });
         it('returns undefined when token not exists', async () => {
-            const {authentication, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, user} = await setupTestApplicationUserAndAuthentication();
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
@@ -95,7 +95,7 @@ describe('The token repository', () => {
 
     describe('findByUser', () => {
         it('returns user tokens', async () => {
-            const {authentication, user} = await SetupApplicationUserAndAuthentication();
+            const {authentication, user} = await setupTestApplicationUserAndAuthentication();
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
@@ -107,7 +107,7 @@ describe('The token repository', () => {
             expect(tokens[1].token).toBe('test_second');
         });
         it('returns empty array when no tokes exist for user', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = await Container.get(TokenRepository);
 
             const tokens = await subject.findByUser(user.id);

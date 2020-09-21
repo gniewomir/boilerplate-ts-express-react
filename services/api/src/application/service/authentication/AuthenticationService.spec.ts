@@ -6,21 +6,21 @@ import {ITokenPayload} from "../../type/authentication";
 import {AuthenticationService} from "./AuthenticationService";
 import {AuthenticatePermission} from "../../permission/AuthenticatePermission";
 import {AuthenticationRefreshPermission} from "../../permission/AuthenticationRefreshPermission";
-import {CleanupAfterAll, SetupApplication, SetupApplicationUserAndAuthentication} from "../../../test/utility";
+import {cleanupTestDatabaseConnection, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../../test/utility";
 
-afterAll(CleanupAfterAll)
+afterAll(cleanupTestDatabaseConnection)
 
 describe('Authentication service', () => {
     describe('createUserAuthentication', () => {
         it('returns token when user exists', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const authenticated = await subject.createUserAuthentication(user);
             expect(authenticated.getToken()).toBeTruthy()
             expect(authenticated.getUser().id).toBe(user.id);
         });
         it('contains permission to authenticate, but not to refresh ', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const authenticated = await subject.createUserAuthentication(user);
             expect(authenticated.granted(new AuthenticationRefreshPermission())).toBe(false)
@@ -30,14 +30,14 @@ describe('Authentication service', () => {
 
     describe('createRefreshTokenAuthentication', () => {
         it('returns token when user exists', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const authenticated = await subject.createRefreshTokenAuthentication(user);
             expect(authenticated.getToken()).toBeTruthy()
             expect(authenticated.getUser().id).toBe(user.id);
         });
         it('contains permission to refresh, but not to authenticate', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const authenticated = await subject.createRefreshTokenAuthentication(user);
             expect(authenticated.granted(new AuthenticationRefreshPermission())).toBe(true)
@@ -47,7 +47,7 @@ describe('Authentication service', () => {
 
     describe('checkAuthentication', () => {
         it('reject expired tokens', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const expiration = Math.floor(Date.now() / 1000) - (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
@@ -67,7 +67,7 @@ describe('Authentication service', () => {
             }
         });
         it('reject blacklisted tokens', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const authentication = await subject.createUserAuthentication(user);
 
@@ -82,7 +82,7 @@ describe('Authentication service', () => {
             }
         });
         it('reject token without valid signature', async () => {
-            const {user} = await SetupApplicationUserAndAuthentication();
+            const {user} = await setupTestApplicationUserAndAuthentication();
             const subject = Container.get(AuthenticationService);
             const expiration = Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {
@@ -103,7 +103,7 @@ describe('Authentication service', () => {
         });
 
         it('reject token for non existent user', async () => {
-            await SetupApplication();
+            await setupTestApplication();
             const subject = Container.get(AuthenticationService);
             const expiration = Math.floor(Date.now() / 1000) + (config.security.authentication.jwt.token_expiration_in_minutes * 60);
             const payload = {

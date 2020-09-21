@@ -1,13 +1,13 @@
 import {config} from '../../application/config';
 import request from "supertest";
-import {CleanupAfterAll, SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
+import {cleanupTestDatabaseConnection, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../test/utility";
 
-afterAll(CleanupAfterAll)
+afterAll(cleanupTestDatabaseConnection)
 
 describe('Authenticate middleware', () => {
     it('requires valid token for not whitelisted routes', async () => {
         config.security.authentication.whitelist = [];
-        const application = await SetupApplication();
+        const application = await setupTestApplication();
         await request(application)
             .post(`${config.api.prefix}/token`)
             .expect(401);
@@ -19,7 +19,7 @@ describe('Authenticate middleware', () => {
                 route: `${config.api.prefix}/token`
             }
         ];
-        const application = await SetupApplication();
+        const application = await setupTestApplication();
         await request(application)
             .post(`${config.api.prefix}/token`)
             .expect(400);
@@ -31,7 +31,7 @@ describe('Authenticate middleware', () => {
                 route: `${config.api.prefix}/token`
             }
         ];
-        const application = await SetupApplication();
+        const application = await setupTestApplication();
         await request(application)
             .post(`${config.api.prefix}/token/`)
             .expect(400);
@@ -43,7 +43,7 @@ describe('Authenticate middleware', () => {
                 route: `${config.api.prefix}/token`
             }
         ];
-        const application = await SetupApplication();
+        const application = await setupTestApplication();
         await request(application)
             .post(`${config.api.prefix}/token`)
             .query({
@@ -58,7 +58,7 @@ describe('Authenticate middleware', () => {
                 route: `${config.api.prefix}/token`
             }
         ];
-        const {application, authentication} = await SetupApplicationUserAndAuthentication();
+        const {application, authentication} = await setupTestApplicationUserAndAuthentication();
         await request(application)
             .post(`${config.api.prefix}/token`)
             .set('authorization', `Bearer ${authentication.getToken().token}`)
