@@ -1,4 +1,4 @@
-FROM node:14.9.0-buster AS builder
+FROM node:14.11.0-buster-slim AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:14.9.0-buster AS distribution
+FROM node:14.11.0-buster-slim AS distribution
 
 WORKDIR /app
 

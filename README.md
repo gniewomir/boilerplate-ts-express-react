@@ -9,7 +9,7 @@ install: https://github.com/nvm-sh/nvm
 ```shell script
 # ensure correct version of node is available locally
 # all package.json scripts should work both on host and in container 
-nvm install v14.9.0
+nvm install v14.11.0
 
 # ensure public network is available
 docker network create web | true
