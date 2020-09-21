@@ -5,7 +5,7 @@ import {Token} from "../entity/Token";
 import * as faker from 'faker';
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {cleanupTestDatabaseConnection, fakeUniqueUserEmail, setupTestApplicationUserAndAuthentication} from "../../test/utility";
-import {TokenExpirationToDate} from "../../test/utility/date";
+import {tokenExpirationToDateTestHelper} from "../../test/utility/date";
 
 afterAll(cleanupTestDatabaseConnection)
 
@@ -17,7 +17,7 @@ describe('The token repository', () => {
             const token = authentication.getToken();
             const subject = await Container.get(TokenRepository);
 
-            await subject.blacklist(token.token, user.id, TokenExpirationToDate(token.payload.exp));
+            await subject.blacklist(token.token, user.id, tokenExpirationToDateTestHelper(token.payload.exp));
 
             const entity = await subject.find(token.token);
 
@@ -25,9 +25,9 @@ describe('The token repository', () => {
             expect(entity.token).toBe(token.token);
             expect(entity.blacklisted).toBe(true);
 
-            expect(entity.expiration.getMinutes()).toBe(TokenExpirationToDate(token.payload.exp).getMinutes());
-            expect(entity.expiration.getMonth()).toBe(TokenExpirationToDate(token.payload.exp).getMonth());
-            expect(entity.expiration.getFullYear()).toBe(TokenExpirationToDate(token.payload.exp).getFullYear());
+            expect(entity.expiration.getMinutes()).toBe(tokenExpirationToDateTestHelper(token.payload.exp).getMinutes());
+            expect(entity.expiration.getMonth()).toBe(tokenExpirationToDateTestHelper(token.payload.exp).getMonth());
+            expect(entity.expiration.getFullYear()).toBe(tokenExpirationToDateTestHelper(token.payload.exp).getFullYear());
         });
     });
 

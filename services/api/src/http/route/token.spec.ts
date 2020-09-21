@@ -7,7 +7,7 @@ import {
 } from "../../application/service/authentication/AuthenticationService";
 import {ITokenRepository, TokenRepository} from "../../database/repository/TokenRepository";
 import {cleanupTestDatabaseConnection, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../test/utility";
-import {SignedCookiePayload} from "../../test/utility/cookie";
+import {signedCookiePayloadTestHelper} from "../../test/utility/cookie";
 
 
 afterAll(cleanupTestDatabaseConnection)
@@ -80,7 +80,7 @@ describe('Token routes', () => {
             expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token/refresh`)
-                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token)])
+                .set('Cookie', [signedCookiePayloadTestHelper(refreshTokenAuthentication.getToken().token)])
                 .expect(201)
                 .then(async (response) => {
                     const testAuthenticationService = Container.get(AuthenticationService) as IAuthenticationService;
@@ -127,7 +127,7 @@ describe('Token routes', () => {
 
             await request(application)
                 .delete(`${config.api.prefix}/token`)
-                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token)])
+                .set('Cookie', [signedCookiePayloadTestHelper(refreshTokenAuthentication.getToken().token)])
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .expect(204);
 
@@ -146,7 +146,7 @@ describe('Token routes', () => {
 
             await request(application)
                 .delete(`${config.api.prefix}/token`)
-                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token)])
+                .set('Cookie', [signedCookiePayloadTestHelper(refreshTokenAuthentication.getToken().token)])
                 .set('authorization', `Bearer invalid_token`)
                 .expect(204);
 
@@ -165,7 +165,7 @@ describe('Token routes', () => {
 
             await request(application)
                 .delete(`${config.api.prefix}/token`)
-                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token + '_invalid_signed_cookie')])
+                .set('Cookie', [signedCookiePayloadTestHelper(refreshTokenAuthentication.getToken().token + '_invalid_signed_cookie')])
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .expect(204);
 
