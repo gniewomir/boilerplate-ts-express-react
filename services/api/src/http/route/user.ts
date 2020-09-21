@@ -1,12 +1,13 @@
 import {Router} from 'express';
 import {controller} from "../controller";
 import {Container} from "typedi";
-import {middleware, requireUnauthenticated} from "../middleware";
+import {middleware} from "../middleware";
 import {celebrate, Joi, Segments} from "celebrate";
 import {UserController} from "../controller/UserController";
 import {UserRepository} from "../../database/repository/UserRepository";
 import {requireResourcePermissions} from "../middleware/resource.permission";
 import {config} from "../../application/config";
+import {requireUnauthenticated} from "../middleware/require.unauthenticated";
 
 const route = Router();
 

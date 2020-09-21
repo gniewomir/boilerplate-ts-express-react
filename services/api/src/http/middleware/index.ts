@@ -2,9 +2,6 @@ import {NextFunction, Request, RequestHandler, Response} from "express";
 import cors from "cors";
 import {config} from "../../application/config";
 import {authenticate} from "./authenticate";
-import {Container} from "typedi";
-import {Forbidden} from "../../application/error/Forbidden";
-import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {Log} from "../../application/loader/logger";
 
 const developmentMiddleware = [
@@ -27,32 +24,3 @@ export const middleware = (...args: RequestHandler[]): RequestHandler[] => {
         ...args
     ];
 }
-export const forAuthenticated = (conditionalMiddleware: RequestHandler): RequestHandler => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const authentication = Container.get(AuthenticationService).authenticationFromResponse(res);
-        if (authentication.isAuthenticated()) {
-            return conditionalMiddleware(req, res, next);
-        }
-        next();
-    }
-}
-export const forUnauthenticated = (conditionalMiddleware: RequestHandler): RequestHandler => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const authentication = Container.get(AuthenticationService).authenticationFromResponse(res);
-        if (!authentication.isAuthenticated()) {
-            return conditionalMiddleware(req, res, next);
-        }
-        next();
-    }
-}
-
-export const requireUnauthenticated = (message: string): RequestHandler => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const authentication = Container.get(AuthenticationService).authenticationFromResponse(res);
-        if (authentication.isAuthenticated()) {
-            throw new Forbidden(message);
-        }
-        next();
-    }
-}
-
