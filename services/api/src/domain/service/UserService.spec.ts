@@ -1,31 +1,13 @@
-import {IUserDto} from "../type/user";
-import {setupApplication as app} from "../../application/loader";
 import faker from "faker";
 import {Container} from "typedi";
 import {UserRepository} from "../../database/repository/UserRepository";
 import {UserService} from "./UserService";
-import {IUserService} from "../type/IUserService";
 import {TokenRepository} from "../../database/repository/TokenRepository";
 import {User} from "../../database/entity/User";
 import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {getConnection} from "typeorm";
 import {SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
 import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
-
-const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: IUserDto, password: string }> => {
-    await app();
-
-    const name = faker.name.findName();
-    const email = faker.internet.email();
-    const password = faker.internet.password();
-    const user = await Container.get(UserRepository).createAndSave(name, email, password);
-
-    return {
-        subject: Container.get(UserService),
-        user,
-        password
-    };
-};
 
 afterAll(async () => {
     const connection = getConnection();
