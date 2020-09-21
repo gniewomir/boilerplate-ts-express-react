@@ -57,6 +57,7 @@ export class TokenController extends Controller {
         }
     }
 
+    // noinspection JSUnusedGlobalSymbols
     public async POST_refresh(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
         if (!req.signedCookies || !req.signedCookies.refresh_token) {
             throw new InvalidAuthentication('no refresh token');
