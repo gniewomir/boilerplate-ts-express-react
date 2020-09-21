@@ -43,9 +43,9 @@ docker-compose logs -f
 ```
 
 NOTE:
-- api should recompile and restart on changes
-- admin has hot module reload enabled 
-
+- admin `localhost:8000` has hot module reload enabled
+- api `localhost:8000/api` recompile and restart on changes
+ 
 ## Not-development setup
  
 ```shell script
