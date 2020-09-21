@@ -76,14 +76,12 @@ export class AuthenticationService implements IAuthenticationService {
             if (await this.tokenRepository.isBlacklisted(token)) {
                 throw new InvalidAuthentication('jwt blacklisted');
             }
-            return Object.seal(
-                new Authentication(
-                    {
-                        token,
-                        payload
-                    },
-                    user.toDTO()
-                )
+            return new Authentication(
+                {
+                    token,
+                    payload
+                },
+                user.toDTO()
             );
         } catch (error) {
             if (error instanceof InvalidAuthentication || error instanceof Forbidden) {
@@ -94,15 +92,13 @@ export class AuthenticationService implements IAuthenticationService {
     }
 
     public async createAuthentication(user: IUserDto, permissions: PermissionsList, expirationInMinutes: number): Promise<IAuthentication> {
-        return Object.seal(
-            new Authentication(
-                AuthenticationService.createToken(
-                    user,
-                    permissions,
-                    expirationInMinutes
-                ),
-                user
-            )
+        return new Authentication(
+            AuthenticationService.createToken(
+                user,
+                permissions,
+                expirationInMinutes
+            ),
+            user
         );
     }
 
@@ -153,6 +149,6 @@ export class AuthenticationService implements IAuthenticationService {
         if (res.locals.authentication && res.locals.authentication instanceof Authentication) {
             return res.locals.authentication;
         }
-        return Object.seal(new Authentication(null, null));
+        return new Authentication(null, null);
     }
 }
