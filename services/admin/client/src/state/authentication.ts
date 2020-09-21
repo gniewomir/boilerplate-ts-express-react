@@ -51,7 +51,7 @@ export const LOGIN = createAsyncThunk(
     async (credentials: ILoginCredentialsInput, thunkAPI) => {
         try {
             setInLocalStorage('LOGGED_OUT', false);
-            return await apiConnection.GetUser(await apiConnection.PostToken(credentials));
+            return await apiConnection.PostToken(credentials);
         } catch (error) {
             return thunkAPI.rejectWithValue(error as IApiError);
         }

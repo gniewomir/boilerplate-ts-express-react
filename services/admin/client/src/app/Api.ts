@@ -21,16 +21,21 @@ export class Api {
 
     public async GetUserByRefreshToken(): Promise<IUserResponse> {
         const response = await this.PostTokenRefresh();
-        // @ts-ignore
-        if ('statusCode' in response && response['statusCode'] !== 201) {
+
+        if (!('token' in (response as ITokenResponse))) {
             throw response;
+        } else {
+            const token_response = response as ITokenResponse;
+            const tokenPayload = jwt.decode(token_response.token) as ITokenPayload;
+            if (!tokenPayload.userId) {
+                throw response;
+            }
+            this.token = token_response.token;
+            return await this.GetUser(tokenPayload.userId);
         }
-        const tokenPayload = jwt.decode(response.token) as ITokenPayload;
-        this.token = response.token;
-        return await this.GetUser(tokenPayload.userId);
     }
 
-    public async PostToken(credentials: ILoginCredentialsInput): Promise<number> {
+    public async PostToken(credentials: ILoginCredentialsInput): Promise<IUserResponse> {
         const response = await ky.post(
             `${config.api.url}/token`,
             {
@@ -40,23 +45,27 @@ export class Api {
                     password: credentials.password
                 }
             }
-        ).json() as ITokenResponse;
-        const tokenPayload = jwt.decode(response.token) as ITokenPayload;
-        this.token = response.token;
-        return tokenPayload.userId;
+        ).json();
+
+        if (!('token' in (response as ITokenResponse))) {
+            throw response;
+        } else {
+            const token_response = response as ITokenResponse;
+            const tokenPayload = jwt.decode(token_response.token) as ITokenPayload;
+            if (!tokenPayload.userId) {
+                throw response;
+            }
+            this.token = token_response.token;
+            return await this.GetUser(tokenPayload.userId);
+        }
     }
 
     public async DeleteToken(): Promise<boolean> {
-        try {
-            await ky.delete(
-                `${config.api.url}/token`,
-                this.defaultOptions(!!this.token)
-            ).json();
-        } catch (error) {
-            return false;
-        } finally {
-            this.token = ''
-        }
+        await ky.delete(
+            `${config.api.url}/token`,
+            this.defaultOptions(!!this.token)
+        ).json()
+        this.token = '';
         return true;
     }
 
