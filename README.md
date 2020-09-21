@@ -84,6 +84,7 @@ curl --location --request POST 'http://localhost:8000/api/user' \
 * Project: Postman collection with automatic request authentication as testing way
 * Project: Changelog
 * Project: What is the best way of sharing code (types?) between TS services?
+* Project: SSR React app. 
 * Api: Finish separating application layers, CQRS?
 * Api: Timestamps for entities (updated/created)
 * Api: Add a way of loading fixtures
