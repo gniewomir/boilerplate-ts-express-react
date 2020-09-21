@@ -10,6 +10,7 @@ import {User} from "../../database/entity/User";
 import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {getConnection} from "typeorm";
 import {SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
+import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: IUserDto, password: string }> => {
     await app();
@@ -59,6 +60,21 @@ describe('User service', () => {
             } catch (error) {
                 expect(error).toBeInstanceOf(UnprocessableEntity)
                 expect(error.getMessage()).toContain('Password cannot be empty')
+            }
+        });
+        it('must reject invalid password', async () => {
+            const {user} = await SetupApplicationUserAndAuthentication();
+            const subject = Container.get(UserService);
+            expect.assertions(2)
+            try {
+                await subject.authenticateByCredentials(
+                    {
+                        email: user.email,
+                        password: 'invalid_password_for_sure'
+                    });
+            } catch (error) {
+                expect(error).toBeInstanceOf(InvalidAuthentication)
+                expect(error.getMessage()).toContain('invalid credentials')
             }
         });
     });

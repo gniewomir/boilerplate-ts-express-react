@@ -29,7 +29,10 @@ export class UserService implements IUserService {
         if (!user) {
             throw new InvalidAuthentication('user not found');
         }
-        await this.passwordService.verifyPassword(credentials.password, user.password, user.salt);
+        const valid = await this.passwordService.verifyPassword(credentials.password, user.password, user.salt);
+        if (!valid) {
+            throw new InvalidAuthentication('invalid credentials');
+        }
         return await this.authenticationService.createUserAuthentication(user);
     }
 
