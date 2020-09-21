@@ -3,7 +3,7 @@ import {Connection} from "typeorm";
 import {Service} from "typedi";
 import {InjectConnection} from "typeorm-typedi-extensions";
 import {PasswordService} from "../../application/service/password/PasswordService";
-import {IUserUpdateInputDTO} from "../../domain/type/user";
+import {IUserUpdateInput} from "../../domain/type/user";
 import {IRepository} from "../type/IRepository";
 
 export interface IUserRepository extends IRepository {
@@ -13,7 +13,7 @@ export interface IUserRepository extends IRepository {
 
     createAndSave(email: string, name: string, password: string): Promise<User | undefined>;
 
-    update(userId: number, update: IUserUpdateInputDTO): Promise<User | undefined>;
+    update(userId: number, update: IUserUpdateInput): Promise<User | undefined>;
 
     exists(id: number): Promise<boolean>;
 }
@@ -37,7 +37,7 @@ export class UserRepository implements IUserRepository {
         return this.connection.manager.save(User, user);
     }
 
-    public async update(userId: number, update: IUserUpdateInputDTO): Promise<User | undefined> {
+    public async update(userId: number, update: IUserUpdateInput): Promise<User | undefined> {
         const user = await this.findById(userId);
         update = {
             ...user,

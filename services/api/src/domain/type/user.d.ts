@@ -1,18 +1,18 @@
 import {IDataTransferObject} from "../../database/type/IDataTransferObject";
 
 
-export interface IUserLoginInputDTO {
+export interface IUserLoginInput {
     email: string;
     password: string;
 }
 
-export interface IUserRegistrationInputDTO {
+export interface IUserRegistrationInput {
     name: string;
     email: string;
     password: string;
 }
 
-export interface IUserUpdateInputDTO {
+export interface IUserUpdateInput {
     name?: string;
     email?: string;
     password?: string;

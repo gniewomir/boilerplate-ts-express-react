@@ -2,7 +2,7 @@ import {IAuthentication} from "../../application/type/authentication";
 import {Service} from "typedi";
 import {UserRepository} from "../../database/repository/UserRepository";
 import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
-import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO, IUserUpdateInputDTO} from "../type/user";
+import {IUserDto, IUserLoginInput, IUserRegistrationInput, IUserUpdateInput} from "../type/user";
 import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {PasswordService} from "../../application/service/password/PasswordService";
@@ -10,13 +10,13 @@ import {PasswordService} from "../../application/service/password/PasswordServic
 export interface IUserService {
     authenticateById(id: number): Promise<IAuthentication>;
 
-    authenticateByCredentials(credentials: IUserLoginInputDTO): Promise<IAuthentication>;
+    authenticateByCredentials(credentials: IUserLoginInput): Promise<IAuthentication>;
 
     revokeAuthentication(token: string): Promise<undefined>;
 
-    register(input: IUserRegistrationInputDTO): Promise<IUserDto>;
+    register(input: IUserRegistrationInput): Promise<IUserDto>;
 
-    update(userId: number, input: IUserUpdateInputDTO): Promise<IUserDto>
+    update(userId: number, input: IUserUpdateInput): Promise<IUserDto>
 
     find(id: number): Promise<IUserDto>;
 }
@@ -31,7 +31,7 @@ export class UserService implements IUserService {
     ) {
     }
 
-    public async authenticateByCredentials(credentials: IUserLoginInputDTO): Promise<IAuthentication> {
+    public async authenticateByCredentials(credentials: IUserLoginInput): Promise<IAuthentication> {
         if (!credentials.email) {
             throw new UnprocessableEntity('Email cannot be empty', 'password');
         }
@@ -61,7 +61,7 @@ export class UserService implements IUserService {
         return await this.authenticationService.revokeToken(token);
     }
 
-    public async register(input: IUserRegistrationInputDTO): Promise<IUserDto> {
+    public async register(input: IUserRegistrationInput): Promise<IUserDto> {
         if (!input.email) {
             throw new UnprocessableEntity('Email cannot be empty', 'email');
         }
@@ -75,7 +75,7 @@ export class UserService implements IUserService {
         return user.toDTO();
     }
 
-    public async update(userId: number, input: IUserUpdateInputDTO): Promise<IUserDto> {
+    public async update(userId: number, input: IUserUpdateInput): Promise<IUserDto> {
         if ('email' in input && input.email === '') {
             throw new UnprocessableEntity('Email cannot be empty', 'email');
         }
