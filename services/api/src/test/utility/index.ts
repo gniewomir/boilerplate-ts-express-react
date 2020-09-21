@@ -5,7 +5,6 @@ import {Container} from "typedi";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {UserService} from "../../domain/service/UserService";
 
-
 export const CleanupAfterAll = async () => {
     const connection = getConnection();
     if (connection.isConnected) {

@@ -11,11 +11,12 @@ import {AuthenticationRefreshPermission} from "../../application/permission/Auth
 import {Forbidden} from "../../application/error/Forbidden";
 import {CookieOptions} from "express-serve-static-core";
 import {AuthenticatePermission} from "../../application/permission/AuthenticatePermission";
+import {Log} from "../../application/loader/logger";
 
 @Service()
 export class TokenController extends Controller {
 
-    private readonly refreshCookieDefaults = {
+    private readonly refreshTokenCookieDefaults = {
         ...config.security.cookies.default,
         path: `${config.api.prefix}/token`,
     } as CookieOptions
@@ -44,7 +45,7 @@ export class TokenController extends Controller {
             config.security.cookies.refresh_token_cookie_name,
             refreshTokenAuthentication.getToken().token,
             {
-                ...this.refreshCookieDefaults,
+                ...this.refreshTokenCookieDefaults,
                 expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
             }
         );
@@ -71,7 +72,7 @@ export class TokenController extends Controller {
             config.security.cookies.refresh_token_cookie_name,
             refreshTokenAuthentication.getToken().token,
             {
-                ...this.refreshCookieDefaults,
+                ...this.refreshTokenCookieDefaults,
                 expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
             }
         );
@@ -84,25 +85,27 @@ export class TokenController extends Controller {
     }
 
     public async DELETE(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
-        if (authentication.isAuthenticated()) {
-            await this.userService.revokeAuthentication(authentication.getToken().token);
-        }
         if (req.signedCookies && req.signedCookies.refresh_token) {
             try {
                 await this.authenticationService.revokeToken(req.signedCookies.refresh_token)
             } catch (error) {
-                if (!(error instanceof InvalidAuthentication)) {
-                    throw error;
-                }
+                Log.error(error);
             } finally {
                 res.cookie(
                     config.security.cookies.refresh_token_cookie_name,
                     '',
                     {
-                        ...this.refreshCookieDefaults,
+                        ...this.refreshTokenCookieDefaults,
                         expires: new Date(1970, 1, 1)
                     }
                 );
+            }
+        }
+        if (authentication.isAuthenticated()) {
+            try {
+                await this.userService.revokeAuthentication(authentication.getToken().token);
+            } catch (error) {
+                Log.error(error);
             }
         }
         return {

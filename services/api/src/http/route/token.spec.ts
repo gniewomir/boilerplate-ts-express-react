@@ -135,5 +135,43 @@ describe('Token routes', () => {
             expect(beforeUserTokensCount).toBe(0);
             expect(afterUserTokensCount).toBe(2);
         })
+        it('should blacklist refresh token sent with request even if authentication was invalid', async () => {
+            const {application, user} = await SetupApplicationUserAndAuthentication();
+            const tokenRepository = Container.get(TokenRepository) as ITokenRepository;
+            const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
+            const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);
+
+            const beforeUserTokensCount = (await tokenRepository.findByUser(user.id)).length;
+
+            await request(application)
+                .delete(`${config.api.prefix}/token`)
+                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token)])
+                .set('authorization', `Bearer invalid_token`)
+                .expect(204);
+
+            const afterUserTokensCount = (await tokenRepository.findByUser(user.id)).length;
+
+            expect(beforeUserTokensCount).toBe(0);
+            expect(afterUserTokensCount).toBe(1);
+        })
+        it('should blacklist token used to authenticate request even if refresh token was invalid', async () => {
+            const {authentication, application, user} = await SetupApplicationUserAndAuthentication();
+            const tokenRepository = Container.get(TokenRepository) as ITokenRepository;
+            const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
+            const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);
+
+            const beforeUserTokensCount = (await tokenRepository.findByUser(user.id)).length;
+
+            await request(application)
+                .delete(`${config.api.prefix}/token`)
+                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token+'_invalid_signed_cookie')])
+                .set('authorization', `Bearer ${authentication.getToken().token}`)
+                .expect(204);
+
+            const afterUserTokensCount = (await tokenRepository.findByUser(user.id)).length;
+
+            expect(beforeUserTokensCount).toBe(0);
+            expect(afterUserTokensCount).toBe(1);
+        })
     });
 });

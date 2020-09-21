@@ -98,6 +98,10 @@ export const config = {
                     route: `${apiPrefix}/token`
                 },
                 {
+                    method: "DELETE",
+                    route: `${apiPrefix}/token`
+                },
+                {
                     method: "POST",
                     route: `${apiPrefix}/token/refresh`
                 },
