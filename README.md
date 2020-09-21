@@ -85,7 +85,8 @@ curl --location --request POST 'http://localhost:8000/api/user' \
 * Project: Changelog
 * Project: What is the best way of sharing code (types?) between TS services?
 * Project: SSR React app.
-* Api: Faker may not ensure uniqueness of test data (emails in particular), find solution that does  
+* Api: Faker may not ensure uniqueness of test data (emails in particular, especially with jest workers running in parallel), find solution that does
+* Api: CLI for generating controllers, db entity/repository/mapper combo?   
 * Api: Finish separating application layers, CQRS?
 * Api: Timestamps for entities (updated/created)
 * Api: Add a way of loading fixtures
