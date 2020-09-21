@@ -6,7 +6,11 @@ import {
     IAuthenticationService
 } from "../../application/service/authentication/AuthenticationService";
 import {ITokenRepository, TokenRepository} from "../../database/repository/TokenRepository";
-import {cleanupTestDatabaseConnection, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../test/utility";
+import {
+    cleanupTestDatabaseConnection,
+    setupTestApplication,
+    setupTestApplicationUserAndAuthentication
+} from "../../test/utility";
 import {signedCookiePayloadTestHelper} from "../../test/utility/cookie";
 
 

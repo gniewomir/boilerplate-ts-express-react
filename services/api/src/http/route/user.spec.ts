@@ -19,7 +19,7 @@ describe('User routes', () => {
         it('should return created user', async () => {
             const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
             const password = faker.internet.password();
 
             expect.assertions(1);
@@ -50,7 +50,8 @@ describe('User routes', () => {
         it('should return error on existing user', async () => {
             const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
 
             await request(application)
@@ -73,7 +74,8 @@ describe('User routes', () => {
         it('should return error if user is authenticated therefore registered already', async () => {
             const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,
@@ -100,7 +102,8 @@ describe('User routes', () => {
         it('should return correct user', async () => {
             const application = await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,

@@ -6,7 +6,11 @@ import {ITokenPayload} from "../../type/authentication";
 import {AuthenticationService} from "./AuthenticationService";
 import {AuthenticatePermission} from "../../permission/AuthenticatePermission";
 import {AuthenticationRefreshPermission} from "../../permission/AuthenticationRefreshPermission";
-import {cleanupTestDatabaseConnection, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../../test/utility";
+import {
+    cleanupTestDatabaseConnection,
+    setupTestApplication,
+    setupTestApplicationUserAndAuthentication
+} from "../../../test/utility";
 
 afterAll(cleanupTestDatabaseConnection)
 

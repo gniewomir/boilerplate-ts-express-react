@@ -4,7 +4,11 @@ import {UserRepository} from "./UserRepository";
 import {Token} from "../entity/Token";
 import * as faker from 'faker';
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {cleanupTestDatabaseConnection, fakeUniqueUserEmail, setupTestApplicationUserAndAuthentication} from "../../test/utility";
+import {
+    cleanupTestDatabaseConnection,
+    fakeUniqueUserEmail,
+    setupTestApplicationUserAndAuthentication
+} from "../../test/utility";
 import {tokenExpirationToDateTestHelper} from "../../test/utility/date";
 
 afterAll(cleanupTestDatabaseConnection)

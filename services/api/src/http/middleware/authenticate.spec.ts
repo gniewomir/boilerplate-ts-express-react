@@ -1,6 +1,10 @@
 import {config} from '../../application/config';
 import request from "supertest";
-import {cleanupTestDatabaseConnection, setupTestApplication, setupTestApplicationUserAndAuthentication} from "../../test/utility";
+import {
+    cleanupTestDatabaseConnection,
+    setupTestApplication,
+    setupTestApplicationUserAndAuthentication
+} from "../../test/utility";
 
 afterAll(cleanupTestDatabaseConnection)
 

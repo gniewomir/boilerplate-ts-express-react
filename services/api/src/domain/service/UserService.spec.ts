@@ -86,7 +86,8 @@ describe('User service', () => {
         it('creates new user', async () => {
             await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             await Container.get(UserService).register({
                 name,
@@ -98,7 +99,8 @@ describe('User service', () => {
         it('throws on already existing user', async () => {
             await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             await Container.get(UserService).register({
                 name,
@@ -119,7 +121,8 @@ describe('User service', () => {
         it('returns DTO not entity', async () => {
             await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             const dto = await Container.get(UserService).register({
                 name,
@@ -133,7 +136,8 @@ describe('User service', () => {
         it('returns DTO not entity', async () => {
             await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             const subject = Container.get(UserService)
             const user = await subject.register({
@@ -149,7 +153,8 @@ describe('User service', () => {
         it('throws on empty password', async () => {
             await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,
@@ -170,7 +175,8 @@ describe('User service', () => {
         it('throws on empty email', async () => {
             await setupTestApplication();
             const name = faker.name.findName();
-            const email = await fakeUniqueUserEmail();;
+            const email = await fakeUniqueUserEmail();
+
             const password = faker.internet.password();
             const user = await Container.get(UserService).register({
                 name,
