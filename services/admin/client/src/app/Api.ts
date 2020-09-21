@@ -25,12 +25,12 @@ export class Api {
         if (!('token' in (response as ITokenResponse))) {
             throw response;
         } else {
-            const token_response = response as ITokenResponse;
-            const tokenPayload = jwt.decode(token_response.token) as ITokenPayload;
+            const tokenResponse = response as ITokenResponse;
+            const tokenPayload = jwt.decode(tokenResponse.token) as ITokenPayload;
             if (!tokenPayload.userId) {
                 throw response;
             }
-            this.token = token_response.token;
+            this.token = tokenResponse.token;
             return await this.GetUser(tokenPayload.userId);
         }
     }
@@ -50,12 +50,12 @@ export class Api {
         if (!('token' in (response as ITokenResponse))) {
             throw response;
         } else {
-            const token_response = response as ITokenResponse;
-            const tokenPayload = jwt.decode(token_response.token) as ITokenPayload;
+            const tokenResponse = response as ITokenResponse;
+            const tokenPayload = jwt.decode(tokenResponse.token) as ITokenPayload;
             if (!tokenPayload.userId) {
                 throw response;
             }
-            this.token = token_response.token;
+            this.token = tokenResponse.token;
             return await this.GetUser(tokenPayload.userId);
         }
     }
