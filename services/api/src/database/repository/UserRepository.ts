@@ -68,8 +68,7 @@ export class UserRepository implements IUserRepository {
     }
 
     public async exists(id: number): Promise<boolean> {
-        const user = await this.findById(id);
-        return user !== undefined;
+        return !!await this.findById(id);
     }
 
     public getEntityName(): string {

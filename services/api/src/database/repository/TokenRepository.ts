@@ -50,8 +50,7 @@ export class TokenRepository implements ITokenRepository {
     }
 
     public async exist(token: string): Promise<boolean> {
-        const entity = await this.find(token);
-        return entity !== undefined;
+        return !!await this.find(token);
     }
 
     public async find(token: string): Promise<Token | undefined> {
