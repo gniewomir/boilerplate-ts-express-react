@@ -29,7 +29,6 @@ export const XSCardCentered = ({children, copyright, navigation}: IXSCard) => {
             <CssBaseline/>
             {navigation ? <NavigationConnected/> : null}
             <Container component="main" maxWidth="xs">
-
                 <div className={classes.paper}>
                     {children}
                 </div>
