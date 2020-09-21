@@ -1,8 +1,13 @@
 import {Service} from "typedi";
-import {IPasswordService} from "../../type/IPasswordService";
 import {randomBytes} from "crypto";
 import argon2 from "argon2";
 import {UnprocessableEntity} from "../../error/UnprocessableEntity";
+
+export interface IPasswordService {
+    hashPassword(password: string): Promise<{ hashedPassword: string, salt: string }>;
+
+    verifyPassword(password: string, hashedPassword: string, salt: string): Promise<boolean>;
+}
 
 @Service()
 export class PasswordService implements IPasswordService {

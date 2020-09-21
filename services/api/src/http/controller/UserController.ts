@@ -3,7 +3,7 @@ import {Service} from "typedi";
 import {Request, Response} from "express";
 import {IAuthentication} from "../../application/type/authentication";
 import {UserService} from "../../domain/service/UserService";
-import {IApiResponse} from "../type/controller";
+import {IApiResponse} from "../type/api";
 import {IUserUpdateInputDTO} from "../../domain/type/user";
 
 @Service()

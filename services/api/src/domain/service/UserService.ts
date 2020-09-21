@@ -1,4 +1,3 @@
-import {IUserService} from "../type/IUserService";
 import {IAuthentication} from "../../application/type/authentication";
 import {Service} from "typedi";
 import {UserRepository} from "../../database/repository/UserRepository";
@@ -7,6 +6,20 @@ import {IUserDto, IUserLoginInputDTO, IUserRegistrationInputDTO, IUserUpdateInpu
 import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
 import {PasswordService} from "../../application/service/password/PasswordService";
+
+export interface IUserService {
+    authenticateById(id: number): Promise<IAuthentication>;
+
+    authenticateByCredentials(credentials: IUserLoginInputDTO): Promise<IAuthentication>;
+
+    revokeAuthentication(token: string): Promise<undefined>;
+
+    register(input: IUserRegistrationInputDTO): Promise<IUserDto>;
+
+    update(userId: number, input: IUserUpdateInputDTO): Promise<IUserDto>
+
+    find(id: number): Promise<IUserDto>;
+}
 
 @Service()
 export class UserService implements IUserService {
@@ -33,7 +46,7 @@ export class UserService implements IUserService {
         if (!valid) {
             throw new InvalidAuthentication('invalid credentials');
         }
-        return await this.authenticationService.createUserAuthentication(user);
+        return await this.authenticationService.createUserAuthentication(user.toDTO());
     }
 
     public async authenticateById(id: number): Promise<IAuthentication> {
@@ -41,7 +54,7 @@ export class UserService implements IUserService {
         if (!user) {
             throw new InvalidAuthentication('user not found');
         }
-        return await this.authenticationService.createUserAuthentication(user);
+        return await this.authenticationService.createUserAuthentication(user.toDTO());
     }
 
     public async revokeAuthentication(token: string): Promise<undefined> {

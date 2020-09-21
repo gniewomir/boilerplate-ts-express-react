@@ -2,10 +2,22 @@ import {Service} from "typedi";
 import {Token} from "../entity/Token";
 import {InjectConnection} from "typeorm-typedi-extensions";
 import {Connection} from "typeorm";
-import {ITokenRepository} from "../../application/type/ITokenRepository";
 import {UserRepository} from "./UserRepository";
 import {User} from "../entity/User";
+import {IRepository} from "../type/IRepository";
 
+
+export interface ITokenRepository extends IRepository {
+    blacklist(token: string, userId: number, expiration: Date): Promise<Token | undefined>
+
+    isBlacklisted(token: string): Promise<boolean>
+
+    find(token: string): Promise<Token | undefined>
+
+    findByUser(userId: number): Promise<Token[]>
+
+    exist(token: string): Promise<boolean>
+}
 
 @Service()
 export class TokenRepository implements ITokenRepository {

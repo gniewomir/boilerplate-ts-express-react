@@ -1,10 +1,22 @@
-import {IUserRepository} from "../../domain/type/IUserRepository";
 import {User} from "../entity/User";
 import {Connection} from "typeorm";
 import {Service} from "typedi";
 import {InjectConnection} from "typeorm-typedi-extensions";
 import {PasswordService} from "../../application/service/password/PasswordService";
-import {IUserDto, IUserUpdateInputDTO} from "../../domain/type/user";
+import {IUserUpdateInputDTO} from "../../domain/type/user";
+import {IRepository} from "../type/IRepository";
+
+export interface IUserRepository extends IRepository {
+    findByEmail(email: string): Promise<User | undefined>;
+
+    findById(id: number): Promise<User | undefined>;
+
+    createAndSave(email: string, name: string, password: string): Promise<User | undefined>;
+
+    update(userId: number, update: IUserUpdateInputDTO): Promise<User | undefined>;
+
+    exists(id: number): Promise<boolean>;
+}
 
 @Service()
 export class UserRepository implements IUserRepository {
@@ -28,7 +40,7 @@ export class UserRepository implements IUserRepository {
     public async update(userId: number, update: IUserUpdateInputDTO): Promise<User | undefined> {
         const user = await this.findById(userId);
         update = {
-            ...user as IUserDto,
+            ...user,
             ...update,
         }
         if (update.password) {

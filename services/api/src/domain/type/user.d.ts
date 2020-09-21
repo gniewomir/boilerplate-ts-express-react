@@ -1,4 +1,4 @@
-import {IDTO} from "../../database/type/IDTO";
+import {IDataTransferObject} from "../../database/type/IDataTransferObject";
 
 
 export interface IUserLoginInputDTO {
@@ -18,7 +18,7 @@ export interface IUserUpdateInputDTO {
     password?: string;
 }
 
-export interface IUserDto extends IDTO {
+export interface IUserDto extends IDataTransferObject {
     id: number;
     name: string;
     email: string;

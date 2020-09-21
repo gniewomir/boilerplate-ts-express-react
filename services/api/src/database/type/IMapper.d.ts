@@ -1,5 +1,5 @@
-import {IDTO} from "./IDTO";
+import {IDataTransferObject} from "./IDataTransferObject";
 
 export interface IMapper {
-    toDTO(): IDTO
+    toDTO(): IDataTransferObject
 }

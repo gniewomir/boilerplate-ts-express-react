@@ -44,7 +44,7 @@ describe('The token repository', () => {
         it('returns false when provided with non existent token', async () => {
             const subject = await Container.get(TokenRepository);
             const user = await Container.get(UserRepository).createAndSave(faker.name.findName(), faker.internet.email(), faker.internet.password());
-            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
+            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user.toDTO());
             const token = authentication.getToken();
             const blacklisted = await subject.isBlacklisted(token.token);
             expect(blacklisted).toBe(false);

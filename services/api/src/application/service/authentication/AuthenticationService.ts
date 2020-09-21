@@ -1,5 +1,4 @@
 import {Service} from "typedi";
-import {IAuthenticationService} from "../../type/IAuthenticationService";
 import {UserRepository} from "../../../database/repository/UserRepository";
 import {TokenRepository} from "../../../database/repository/TokenRepository";
 import {IUserDto} from "../../../domain/type/user";
@@ -16,6 +15,24 @@ import {IPermission} from "../../type/authorization";
 import {AuthenticatePermission} from "../../permission/AuthenticatePermission";
 import {Forbidden} from "../../error/Forbidden";
 import {AuthenticationRefreshPermission} from "../../permission/AuthenticationRefreshPermission";
+
+export interface IAuthenticationService {
+
+    checkAuthentication(token: string): Promise<IAuthentication>
+
+    createAuthentication(user: IUserDto, permissions: PermissionsList, tokenExpirationInMinutes: number): Promise<IAuthentication>
+
+    createUserAuthentication(user: IUserDto): Promise<IAuthentication>
+
+    createRefreshTokenAuthentication(user: IUserDto): Promise<IAuthentication>
+
+    revokeToken(token: string): Promise<boolean>
+
+    authenticateResponse(token: string, res: Response): Promise<Response>;
+
+    authenticationFromResponse(res: Response): IAuthentication;
+
+}
 
 @Service()
 export class AuthenticationService implements IAuthenticationService {

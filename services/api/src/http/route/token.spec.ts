@@ -1,10 +1,11 @@
 import request from 'supertest';
 import {Container} from "typedi";
-import {IAuthenticationService} from "../../application/type/IAuthenticationService";
 import {config} from "../../application/config";
-import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {TokenRepository} from "../../database/repository/TokenRepository";
-import {ITokenRepository} from "../../application/type/ITokenRepository";
+import {
+    AuthenticationService,
+    IAuthenticationService
+} from "../../application/service/authentication/AuthenticationService";
+import {ITokenRepository, TokenRepository} from "../../database/repository/TokenRepository";
 import {CleanupAfterAll, SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
 import {SignedCookiePayload} from "../../test/utility/cookie";
 

@@ -78,7 +78,7 @@ describe('User routes', () => {
 
             const authentication = await Container
                 .get(AuthenticationService)
-                .createUserAuthentication(await Container.get(UserRepository).findByEmail(user.email));
+                .createUserAuthentication((await Container.get(UserRepository).findByEmail(user.email)).toDTO());
 
             await request(application)
                 .post(`${config.api.prefix}/user`)
