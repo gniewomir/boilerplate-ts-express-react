@@ -1,38 +1,20 @@
 import request from 'supertest';
-import {setupApplication as app} from '../../application/loader';
 import {Container} from "typedi";
-import {UserRepository} from "../../database/repository/UserRepository";
-import {IUserRepository} from "../../domain/type/IUserRepository";
-import * as faker from 'faker';
 import {IAuthenticationService} from "../../application/type/IAuthenticationService";
 import {config} from "../../application/config";
-import {getConnection} from "typeorm";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import crypto from 'crypto';
 import {TokenRepository} from "../../database/repository/TokenRepository";
 import {ITokenRepository} from "../../application/type/ITokenRepository";
+import {CleanupAfterAll, SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
+import {SignedCookiePayload} from "../../test/utility/cookie";
 
 
-const signedTokenCookie = (token: string) => {
-    const signed = 's:' + token + '.' + crypto
-        .createHmac('sha256', config.security.cookies.secrets[0])
-        .update(token)
-        .digest('base64')
-        .replace(/=+$/, '')
-    return `${config.security.cookies.refresh_token_cookie_name}=${signed};`
-};
-
-afterAll(async () => {
-    const connection = getConnection();
-    if (connection.isConnected) {
-        await connection.close();
-    }
-})
+afterAll(CleanupAfterAll)
 
 describe('Token routes', () => {
     describe(`POST ${config.api.prefix}/token`, () => {
         it('should return status code 400 and list of errors on invalid request', async () => {
-            const application = await app();
+            const application = await SetupApplication();
             expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token`)
@@ -42,18 +24,13 @@ describe('Token routes', () => {
                 })
         })
         it('should return status code 201 and valid token with credentials matching user', async () => {
-            const application = await app();
-            const repository = Container.get(UserRepository) as IUserRepository;
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            await repository.createAndSave(faker.name.findName(), email, password);
-
+            const {application, user: {email}, plainPassword} = await SetupApplicationUserAndAuthentication();
             expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token`)
                 .send({
                     email,
-                    password
+                    password: plainPassword
                 })
                 .expect(201)
                 .then(async (response) => {
@@ -63,18 +40,13 @@ describe('Token routes', () => {
                 });
         })
         it('should set refresh token cookie expiring in future', async () => {
-            const application = await app();
-            const repository = Container.get(UserRepository) as IUserRepository;
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            await repository.createAndSave(faker.name.findName(), email, password);
-
+            const {application, user: {email}, plainPassword} = await SetupApplicationUserAndAuthentication();
             expect.assertions(7);
             await request(application)
                 .post(`${config.api.prefix}/token`)
                 .send({
                     email,
-                    password
+                    password: plainPassword
                 })
                 .expect(201)
                 .then(async (response) => {
@@ -101,34 +73,25 @@ describe('Token routes', () => {
 
     describe(`POST ${config.api.prefix}/token/refresh`, () => {
         it('should return status code 201 and valid token with credentials matching user', async () => {
-            const application = await app();
-            const repository = Container.get(UserRepository) as IUserRepository;
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            const user = await repository.createAndSave(faker.name.findName(), email, password);
+            const {application, user} = await SetupApplicationUserAndAuthentication();
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);
-
             expect.assertions(1);
             await request(application)
                 .post(`${config.api.prefix}/token/refresh`)
-                .set('Cookie', [signedTokenCookie(refreshTokenAuthentication.getToken().token)])
+                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token)])
                 .expect(201)
                 .then(async (response) => {
                     const testAuthenticationService = Container.get(AuthenticationService) as IAuthenticationService;
                     const authenticated = await testAuthenticationService.checkAuthentication(response.body.token);
-                    expect(authenticated.getUser().email).toBe(email);
+                    expect(authenticated.getUser().email).toBe(user.email);
                 });
         })
     });
 
     describe(`DELETE ${config.api.prefix}/token`, () => {
         it('should blacklist token used to authenticate request', async () => {
-            const application = await app();
-            const repository = Container.get(UserRepository) as IUserRepository;
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            const user = await repository.createAndSave(faker.name.findName(), email, password);
+            const {application, user} = await SetupApplicationUserAndAuthentication();
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const authentication = await authenticationService.createUserAuthentication(user);
 
@@ -148,12 +111,8 @@ describe('Token routes', () => {
                 .expect(401);
         })
         it('should blacklist refresh token sent with request', async () => {
-            const application = await app();
-            const userRepository = Container.get(UserRepository) as IUserRepository;
+            const {application, user} = await SetupApplicationUserAndAuthentication();
             const tokenRepository = Container.get(TokenRepository) as ITokenRepository;
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            const user = await userRepository.createAndSave(faker.name.findName(), email, password);
             const authenticationService = Container.get(AuthenticationService) as IAuthenticationService;
             const authentication = await authenticationService.createUserAuthentication(user);
             const refreshTokenAuthentication = await authenticationService.createRefreshTokenAuthentication(user);
@@ -167,7 +126,7 @@ describe('Token routes', () => {
 
             await request(application)
                 .delete(`${config.api.prefix}/token`)
-                .set('Cookie', [signedTokenCookie(refreshTokenAuthentication.getToken().token)])
+                .set('Cookie', [SignedCookiePayload(refreshTokenAuthentication.getToken().token)])
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
                 .expect(204);
 

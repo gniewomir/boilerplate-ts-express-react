@@ -1,24 +1,18 @@
 import request from 'supertest';
-import {setupApplication as app} from '../../application/loader';
 import {config} from "../../application/config";
 import faker from "faker";
 import {Container} from "typedi";
 import {UserRepository} from "../../database/repository/UserRepository";
 import {UserService} from "../../domain/service/UserService";
-import {getConnection} from "typeorm";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
+import {CleanupAfterAll, SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
 
-afterAll(async () => {
-    const connection = getConnection();
-    if (connection.isConnected) {
-        await connection.close();
-    }
-})
+afterAll(CleanupAfterAll)
 
 describe('User routes', () => {
     describe(`POST ${config.api.prefix}/user`, () => {
         it('should return created user', async () => {
-            const application = await app();
+            const application = await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -37,7 +31,7 @@ describe('User routes', () => {
                 });
         });
         it('should return validation error', async () => {
-            const application = await app();
+            const application = await SetupApplication();
 
             expect.assertions(1);
             await request(application)
@@ -49,7 +43,7 @@ describe('User routes', () => {
                 });
         });
         it('should return error on existing user', async () => {
-            const application = await app();
+            const application = await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -72,7 +66,7 @@ describe('User routes', () => {
                 .expect(422);
         });
         it('should return error if user is authenticated therefore registered already', async () => {
-            const application = await app();
+            const application = await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -99,7 +93,7 @@ describe('User routes', () => {
     });
     describe(`GET ${config.api.prefix}/user/:userId`, () => {
         it('should return correct user', async () => {
-            const application = await app();
+            const application = await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -120,23 +114,12 @@ describe('User routes', () => {
                 });
         });
         it('should prevent user from accessing other users', async () => {
-            const application = await app();
-            const name = faker.name.findName();
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            const user = await Container.get(UserService).register({
-                name,
-                email,
-                password
-            });
-            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
-
+            const {application, authentication} = await SetupApplicationUserAndAuthentication();
             const otherUser = await Container.get(UserService).register({
                 name: faker.name.findName(),
                 email: faker.internet.email(),
                 password: faker.internet.password()
             });
-
             await request(application)
                 .get(`${config.api.prefix}/user/${otherUser.id}`)
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
@@ -146,17 +129,7 @@ describe('User routes', () => {
 
     describe(`PATCH ${config.api.prefix}/user`, () => {
         it('should update user', async () => {
-            const application = await app();
-            const name = faker.name.findName();
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            const user = await Container.get(UserService).register({
-                name,
-                email,
-                password
-            });
-            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
-
+            const {application, user, authentication} = await SetupApplicationUserAndAuthentication();
             const newName = faker.name.findName();
             const newEmail = faker.internet.email()
 
@@ -176,17 +149,7 @@ describe('User routes', () => {
                 });
         });
         it('should reject empty password', async () => {
-            const application = await app();
-            const name = faker.name.findName();
-            const email = faker.internet.email();
-            const password = faker.internet.password();
-            const user = await Container.get(UserService).register({
-                name,
-                email,
-                password
-            });
-            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
-
+            const {application, user, authentication} = await SetupApplicationUserAndAuthentication();
             await request(application)
                 .patch(`${config.api.prefix}/user/${user.id}`)
                 .set('authorization', `Bearer ${authentication.getToken().token}`)
@@ -196,17 +159,7 @@ describe('User routes', () => {
                 .expect(400);
         });
         it('should reject too short password', async () => {
-            const application = await app();
-            const name = faker.name.findName();
-            const email = faker.internet.email();
-            const password = faker.internet.password(config.security.authentication.passwords.min_length);
-            const user = await Container.get(UserService).register({
-                name,
-                email,
-                password
-            });
-            const authentication = await Container.get(AuthenticationService).createUserAuthentication(user);
-
+            const {application, user, authentication} = await SetupApplicationUserAndAuthentication();
             await request(application)
                 .patch(`${config.api.prefix}/user/${user.id}`)
                 .set('authorization', `Bearer ${authentication.getToken().token}`)

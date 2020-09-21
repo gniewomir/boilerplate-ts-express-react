@@ -9,6 +9,7 @@ import {TokenRepository} from "../../database/repository/TokenRepository";
 import {User} from "../../database/entity/User";
 import {UnprocessableEntity} from "../../application/error/UnprocessableEntity";
 import {getConnection} from "typeorm";
+import {SetupApplication, SetupApplicationUserAndAuthentication} from "../../test/utility";
 
 const getTestSubjectAndUser = async (): Promise<{ subject: IUserService, user: IUserDto, password: string }> => {
     await app();
@@ -34,18 +35,20 @@ afterAll(async () => {
 
 describe('User service', () => {
     describe('authenticateByCredentials', () => {
-        it('authenticates user', async () => {
-            const {subject, user, password} = await getTestSubjectAndUser();
+        it('creates valid authentication object', async () => {
+            const {user, plainPassword} = await SetupApplicationUserAndAuthentication();
+            const subject = Container.get(UserService);
             const authentication = await subject.authenticateByCredentials(
                 {
                     email: user.email,
-                    password
+                    password: plainPassword
                 });
             expect(authentication.isAuthenticated()).toBe(true);
             expect(authentication.getUser().id).toBe(user.id);
         });
         it('must reject empty password', async () => {
-            const {subject, user} = await getTestSubjectAndUser();
+            const {user} = await SetupApplicationUserAndAuthentication();
+            const subject = Container.get(UserService);
             expect.assertions(2)
             try {
                 await subject.authenticateByCredentials(
@@ -61,7 +64,8 @@ describe('User service', () => {
     });
     describe('authenticateById', () => {
         it('authenticates user', async () => {
-            const {subject, user} = await getTestSubjectAndUser();
+            const {user} = await SetupApplicationUserAndAuthentication();
+            const subject = Container.get(UserService);
             const authentication = await subject.authenticateById(user.id);
             expect(authentication.isAuthenticated()).toBe(true);
             expect(authentication.getUser().id).toBe(user.id);
@@ -69,7 +73,8 @@ describe('User service', () => {
     });
     describe('revokeAuthentication', () => {
         it('revokes user authentication', async () => {
-            const {subject, user} = await getTestSubjectAndUser();
+            const {user} = await SetupApplicationUserAndAuthentication();
+            const subject = Container.get(UserService);
             const tokenRepository = Container.get(TokenRepository);
             const authentication = await subject.authenticateById(user.id);
             expect(authentication.isAuthenticated()).toBe(true);
@@ -81,6 +86,7 @@ describe('User service', () => {
     });
     describe('register', () => {
         it('creates new user', async () => {
+            await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -92,6 +98,7 @@ describe('User service', () => {
             await expect(await Container.get(UserRepository).findByEmail(email)).toBeInstanceOf(User);
         });
         it('throws on already existing user', async () => {
+            await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -112,6 +119,7 @@ describe('User service', () => {
             }
         });
         it('returns DTO not entity', async () => {
+            await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -125,6 +133,7 @@ describe('User service', () => {
     });
     describe('find', () => {
         it('returns DTO not entity', async () => {
+            await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -140,6 +149,7 @@ describe('User service', () => {
     });
     describe('update', () => {
         it('throws on empty password', async () => {
+            await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();
@@ -160,6 +170,7 @@ describe('User service', () => {
             }
         });
         it('throws on empty email', async () => {
+            await SetupApplication();
             const name = faker.name.findName();
             const email = faker.internet.email();
             const password = faker.internet.password();

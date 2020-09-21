@@ -4,8 +4,8 @@ import {User} from "../entity/User";
 import {establishDatabaseConnection} from "../../application/loader/postgres";
 import {IUserRepository} from "../../domain/type/IUserRepository";
 import {Container} from "typedi";
-import {getConnection} from "typeorm";
 import {PasswordService} from "../../application/service/password/PasswordService";
+import {CleanupAfterAll} from "../../test/utility";
 
 const getRepository = async (): Promise<IUserRepository> => {
     const postgresConnection = await establishDatabaseConnection();
@@ -15,13 +15,7 @@ const getRepository = async (): Promise<IUserRepository> => {
     );
 }
 
-afterAll(async () => {
-    const connection = getConnection();
-    if (connection.isConnected) {
-        await connection.close();
-    }
-})
-
+afterAll(CleanupAfterAll)
 
 describe('The user repository', () => {
     describe('createAndSave', () => {

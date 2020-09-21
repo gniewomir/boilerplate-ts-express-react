@@ -1,19 +1,13 @@
 import request from 'supertest';
-import {setupApplication as application} from './index';
 import {config} from "../config";
-import {getConnection} from "typeorm";
+import {CleanupAfterAll, SetupApplication} from "../../test/utility";
 
-afterAll(async () => {
-    const connection = getConnection();
-    if (connection.isConnected) {
-        await connection.close();
-    }
-})
+afterAll(CleanupAfterAll)
 
 describe('The express loader', () => {
     describe(`GET ${config.api.prefix}/status`, () => {
         it('should return status code 200', async () => {
-            const app = await application();
+            const app = await SetupApplication();
             await request(app)
                 .get(`${config.api.prefix}/status`)
                 .expect(200)
@@ -21,7 +15,7 @@ describe('The express loader', () => {
     });
     describe(`HEAD ${config.api.prefix}/status`, () => {
         it('should return status code 200', async () => {
-            const app = await application();
+            const app = await SetupApplication();
             await request(app)
                 .head(`${config.api.prefix}/status`)
                 .expect(200)
