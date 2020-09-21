@@ -276,7 +276,7 @@ export const selectApiValidationErrors = (state: RootState): ApiValidationErrors
 export const selectHasUser = (state: RootState): boolean => selectAuthentication(state).user.id !== 0;
 export const selectHasError = (state: RootState): boolean => selectAuthentication(state).error.statusCode !== noError.statusCode;
 
-export const selectIsPending = (state: RootState): boolean => selectAuthentication(state).pending;
+export const selectIsAuthenticationPending = (state: RootState): boolean => selectAuthentication(state).pending;
 export const selectIsAuthenticated = (state: RootState): boolean => selectHasUser(state);
 export const selectIsLoggedOut = (state: RootState): boolean => selectAuthentication(state).loggedOut;
 

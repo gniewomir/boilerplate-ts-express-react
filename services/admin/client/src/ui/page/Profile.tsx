@@ -3,7 +3,7 @@ import {Action, ThunkDispatch} from "@reduxjs/toolkit";
 import {
     selectApiValidationErrors,
     selectIsAuthenticated,
-    selectIsPending,
+    selectIsAuthenticationPending,
     selectUser,
     UPDATE
 } from "../../state/authentication";
@@ -128,7 +128,7 @@ export const Profile = ({apiValidationErrors, pending, isAuthenticated, user, up
 
 export const ProfileConnected = connect(
     (state: RootState) => ({
-        pending: selectIsPending(state),
+        pending: selectIsAuthenticationPending(state),
         isAuthenticated: selectIsAuthenticated(state),
         apiValidationErrors: selectApiValidationErrors(state),
         user: selectUser(state)

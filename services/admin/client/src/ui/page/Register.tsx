@@ -5,7 +5,7 @@ import {
     selectApiValidationErrors,
     selectHasUser,
     selectIsAuthenticated,
-    selectIsPending,
+    selectIsAuthenticationPending,
     selectUser
 } from "../../state/authentication";
 import React from 'react';
@@ -128,7 +128,7 @@ export const Register = ({isAuthenticated, pending, apiValidationErrors, registe
 
 export const RegisterConnected = connect(
     (state: RootState) => ({
-        pending: selectIsPending(state),
+        pending: selectIsAuthenticationPending(state),
         isAuthenticated: selectIsAuthenticated(state),
         apiValidationErrors: selectApiValidationErrors(state),
         hasUser: selectHasUser(state),

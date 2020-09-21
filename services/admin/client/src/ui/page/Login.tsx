@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import {Action, ThunkDispatch} from "@reduxjs/toolkit";
 import {ApiValidationErrors, ILoginCredentialsInput} from "../../type/api";
-import {LOGIN, selectApiValidationErrors, selectIsAuthenticated, selectIsPending} from "../../state/authentication";
+import {LOGIN, selectApiValidationErrors, selectIsAuthenticated, selectIsAuthenticationPending} from "../../state/authentication";
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -121,7 +121,7 @@ export const Login = ({login, pending, apiValidationErrors, isAuthenticated}: IL
 
 export const LoginConnected = connect(
     (state: RootState) => ({
-        pending: selectIsPending(state),
+        pending: selectIsAuthenticationPending(state),
         isAuthenticated: selectIsAuthenticated(state),
         apiValidationErrors: selectApiValidationErrors(state)
     }),
