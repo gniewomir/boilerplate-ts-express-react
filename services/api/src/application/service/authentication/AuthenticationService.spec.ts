@@ -4,13 +4,13 @@ import jwt from "jsonwebtoken";
 import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {ITokenPayload} from "../../type/authentication";
 import {AuthenticationService} from "./AuthenticationService";
-import {UseCredentialsPermission} from "../../permission/UseCredentialsPermission";
-import {UseRefreshTokenPermission} from "../../permission/UseRefreshTokenPermission";
 import {
     cleanupTestDatabaseConnection,
     setupTestApplication,
     setupTestApplicationUserAndAuthentication
 } from "../../../test/utility";
+import {UseCredentialsPermission} from "../authorization/permission/UseCredentialsPermission";
+import {UseRefreshTokenPermission} from "../authorization/permission/UseRefreshTokenPermission";
 
 afterAll(cleanupTestDatabaseConnection)
 

@@ -1,4 +1,4 @@
-import {IPermission} from "../type/authorization";
+import {IPermission} from "../../../type/authorization";
 
 export abstract class Permission implements IPermission {
     toString(): string {

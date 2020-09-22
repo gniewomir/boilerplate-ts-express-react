@@ -1,7 +1,7 @@
 import {AuthenticationFailed} from "./AuthenticationFailed";
 import {InvalidAuthentication} from "../../error/InvalidAuthentication";
-import {Permission} from "../../permission/Permission";
 import {IPermission} from "../../type/authorization";
+import {Permission} from "../authorization/permission/Permission";
 
 describe('AuthenticationFailed object', () => {
     it('Is sealed', async () => {

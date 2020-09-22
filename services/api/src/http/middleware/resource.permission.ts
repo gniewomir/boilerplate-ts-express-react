@@ -2,9 +2,9 @@ import {IRepository} from "../../database/type/IRepository";
 import {NextFunction, Request, RequestHandler, Response} from "express";
 import {Container} from "typedi";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {ResourcePermission} from "../../application/permission/ResourcePermission";
 import {HttpMethod} from "../../application/type/http";
 import {Forbidden} from "../../application/error/Forbidden";
+import {ResourcePermission} from "../../application/service/authorization/permission/ResourcePermission";
 
 export const requireResourcePermissions = (repository: IRepository, entityIdParamName?: string | null): RequestHandler => {
     return (req: Request, res: Response, next: NextFunction) => {

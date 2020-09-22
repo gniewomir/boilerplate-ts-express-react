@@ -1,7 +1,7 @@
 import {Permission} from "./Permission";
-import {IPermission} from "../type/authorization";
-import {HttpMethod} from "../type/http";
-import {IRepository} from "../../database/type/IRepository";
+import {IPermission} from "../../../type/authorization";
+import {HttpMethod} from "../../../type/http";
+import {IRepository} from "../../../../database/type/IRepository";
 
 export class ResourcePermission extends Permission implements IPermission {
 

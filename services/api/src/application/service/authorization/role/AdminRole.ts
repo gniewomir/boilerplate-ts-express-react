@@ -1,8 +1,8 @@
 import {IRole, PermissionsList, Role} from "../../../type/authorization";
 import {AbstractRole} from "./AbstractRole";
-import {IsAdminPermission} from "../../../permission/IsAdminPermission";
-import {UseCredentialsPermission} from "../../../permission/UseCredentialsPermission";
 import {Service} from "typedi";
+import {UseCredentialsPermission} from "../permission/UseCredentialsPermission";
+import {IsAdminPermission} from "../permission/IsAdminPermission";
 
 @Service()
 export class AdminRole extends AbstractRole implements IRole {

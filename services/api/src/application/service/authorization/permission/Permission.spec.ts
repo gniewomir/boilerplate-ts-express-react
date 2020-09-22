@@ -1,6 +1,5 @@
 import {Permission} from "./Permission";
-import {IPermission} from "../type/authorization";
-
+import {IPermission} from "../../../type/authorization";
 
 describe('Permission', () => {
     describe('To string', () => {

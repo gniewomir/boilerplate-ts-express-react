@@ -1,9 +1,9 @@
 import {IRole, PermissionsList, Role} from "../../../type/authorization";
-import {UseCredentialsPermission} from "../../../permission/UseCredentialsPermission";
 import {AbstractRole} from "./AbstractRole";
-import {ResourcePermission} from "../../../permission/ResourcePermission";
 import {UserRepository} from "../../../../database/repository/UserRepository";
 import {Service} from "typedi";
+import {ResourcePermission} from "../permission/ResourcePermission";
+import {UseCredentialsPermission} from "../permission/UseCredentialsPermission";
 
 @Service()
 export class UserRole extends AbstractRole implements IRole {

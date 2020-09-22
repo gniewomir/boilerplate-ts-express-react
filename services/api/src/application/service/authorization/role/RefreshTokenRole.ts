@@ -1,7 +1,7 @@
 import {Service} from "typedi";
 import {AbstractRole} from "./AbstractRole";
 import {IRole, PermissionsList, Role} from "../../../type/authorization";
-import {UseRefreshTokenPermission} from "../../../permission/UseRefreshTokenPermission";
+import {UseRefreshTokenPermission} from "../permission/UseRefreshTokenPermission";
 
 @Service()
 export class RefreshTokenRole extends AbstractRole implements IRole {

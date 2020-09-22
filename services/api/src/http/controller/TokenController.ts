@@ -7,12 +7,12 @@ import {IApiResponse} from "../type/api";
 import {config} from "../../application/config";
 import {InvalidAuthentication} from "../../application/error/InvalidAuthentication";
 import {AuthenticationService} from "../../application/service/authentication/AuthenticationService";
-import {UseRefreshTokenPermission} from "../../application/permission/UseRefreshTokenPermission";
 import {Forbidden} from "../../application/error/Forbidden";
 import {CookieOptions} from "express-serve-static-core";
-import {UseCredentialsPermission} from "../../application/permission/UseCredentialsPermission";
 import {Log} from "../../application/loader/logger";
 import {IUserDto} from "../../domain/type/user";
+import {UseCredentialsPermission} from "../../application/service/authorization/permission/UseCredentialsPermission";
+import {UseRefreshTokenPermission} from "../../application/service/authorization/permission/UseRefreshTokenPermission";
 
 @Service()
 export class TokenController extends Controller {
