@@ -4,6 +4,7 @@ import {IPermission} from "../../type/authorization";
 import {IsAdminPermission} from "../../permission/IsAdminPermission";
 import {Sealed} from "../../../util";
 import cloneDeep from "lodash/cloneDeep";
+import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 
 @Sealed
 export class Authentication implements IAuthentication {
@@ -11,6 +12,9 @@ export class Authentication implements IAuthentication {
         private readonly token: IToken | null,
         private readonly user: IUserDto | null,
     ) {
+        if (token && user && token.payload.userId !== user.id) {
+            throw new InvalidAuthentication('token and user mismatch');
+        }
         this.token = token;
         this.user = user;
     }
@@ -36,7 +40,7 @@ export class Authentication implements IAuthentication {
     }
 
     private hasPermission(permission: IPermission): boolean {
-        return this.token !== null && this.token.payload.permissions.indexOf(permission.toString()) !== -1;
+        return this.isAuthenticated() && this.token.payload.permissions.indexOf(permission.toString()) !== -1;
     }
 
 }
