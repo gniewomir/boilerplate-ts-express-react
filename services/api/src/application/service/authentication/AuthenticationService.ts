@@ -9,7 +9,7 @@ import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {Response} from "express";
 import {Authentication} from "./Authentication";
 import {PasswordService} from "../password/PasswordService";
-import {ResourceCrudPermission} from "../../permission/ResourceCrudPermission";
+import {ResourcePermission} from "../../permission/ResourcePermission";
 import {IPermission} from "../../type/authorization";
 import {UseCredentialsPermission} from "../../permission/UseCredentialsPermission";
 import {Forbidden} from "../../error/Forbidden";
@@ -106,8 +106,8 @@ export class AuthenticationService implements IAuthenticationService {
         return this.createAuthentication(
             user,
             AuthenticationService.createPermissionsList(
-                new ResourceCrudPermission('GET', this.userRepository, user.id),
-                new ResourceCrudPermission('PATCH', this.userRepository, user.id),
+                new ResourcePermission('GET', this.userRepository, user.id),
+                new ResourcePermission('PATCH', this.userRepository, user.id),
                 new UseCredentialsPermission()
             ),
             config.security.authentication.jwt.token_expiration_in_minutes

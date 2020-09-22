@@ -3,7 +3,7 @@ import {IPermission} from "../type/authorization";
 import {HttpMethod} from "../type/http";
 import {IRepository} from "../../database/type/IRepository";
 
-export class ResourceCrudPermission extends Permission implements IPermission {
+export class ResourcePermission extends Permission implements IPermission {
 
     constructor(
         private requestMethod: HttpMethod,
