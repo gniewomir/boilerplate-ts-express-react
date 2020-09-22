@@ -1,7 +1,12 @@
 import {connect} from "react-redux";
 import {Action, ThunkDispatch} from "@reduxjs/toolkit";
 import {ApiValidationErrors, ILoginCredentialsInput} from "../../type/api";
-import {LOGIN, selectApiValidationErrors, selectIsAuthenticated, selectIsAuthenticationPending} from "../../state/authentication";
+import {
+    LOGIN,
+    selectApiValidationErrors,
+    selectIsAuthenticated,
+    selectIsAuthenticationPending
+} from "../../state/authentication";
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';

@@ -29,37 +29,6 @@ export class TokenController extends Controller {
         super();
     }
 
-    private async setRefreshTokenCookie(res: Response, user: IUserDto): Promise<undefined> {
-        const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(user)
-        res.cookie(
-            config.security.cookies.refresh_token_cookie_name,
-            refreshTokenAuthentication.getToken().token,
-            {
-                ...this.refreshTokenCookieDefaults,
-                expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
-            }
-        );
-        return;
-    }
-
-    private async clearRefreshTokenCookie(req: Request, res: Response): Promise<undefined> {
-        try {
-            await this.authenticationService.revokeToken(req.signedCookies.refresh_token)
-        } catch (error) {
-            Log.error(error);
-        } finally {
-            res.cookie(
-                config.security.cookies.refresh_token_cookie_name,
-                '',
-                {
-                    ...this.refreshTokenCookieDefaults,
-                    expires: new Date(1970, 1, 1)
-                }
-            );
-        }
-        return;
-    }
-
     public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
 
         const newAuthentication = await this.userService.authenticateByCredentials(
@@ -119,6 +88,37 @@ export class TokenController extends Controller {
             statusCode: 204,
             body: {}
         }
+    }
+
+    private async setRefreshTokenCookie(res: Response, user: IUserDto): Promise<undefined> {
+        const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(user)
+        res.cookie(
+            config.security.cookies.refresh_token_cookie_name,
+            refreshTokenAuthentication.getToken().token,
+            {
+                ...this.refreshTokenCookieDefaults,
+                expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
+            }
+        );
+        return;
+    }
+
+    private async clearRefreshTokenCookie(req: Request, res: Response): Promise<undefined> {
+        try {
+            await this.authenticationService.revokeToken(req.signedCookies.refresh_token)
+        } catch (error) {
+            Log.error(error);
+        } finally {
+            res.cookie(
+                config.security.cookies.refresh_token_cookie_name,
+                '',
+                {
+                    ...this.refreshTokenCookieDefaults,
+                    expires: new Date(1970, 1, 1)
+                }
+            );
+        }
+        return;
     }
 
 }

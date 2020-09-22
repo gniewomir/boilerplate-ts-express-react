@@ -50,7 +50,7 @@ describe('Token routes', () => {
                 .post(`${config.api.prefix}/token`)
                 .send({
                     email,
-                    password: plainPassword+'invalid_password'
+                    password: plainPassword + 'invalid_password'
                 })
                 .expect(401);
         })
