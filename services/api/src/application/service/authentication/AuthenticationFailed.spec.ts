@@ -1,17 +1,14 @@
-import {cleanupTestDatabaseConnection, setupTestApplicationUserAndAuthentication} from "../../../test/utility";
 import {AuthenticationFailed} from "./AuthenticationFailed";
 import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {Permission} from "../../permission/Permission";
 import {IPermission} from "../../type/authorization";
 
-afterAll(cleanupTestDatabaseConnection)
-
 describe('AuthenticationFailed object', () => {
     it('Is sealed', async () => {
-        const {authentication} = await setupTestApplicationUserAndAuthentication();
+        const subject = new AuthenticationFailed();
         try {
             // @ts-ignore
-            authentication.test = 'test';
+            subject.test = 'test';
         } catch (error) {
             expect(error.name).toBe('TypeError');
         }
@@ -31,6 +28,7 @@ describe('AuthenticationFailed object', () => {
     it('Deny permissions', async () => {
         class TestPermission extends Permission implements IPermission {
         }
+
         expect((new AuthenticationFailed()).granted(new TestPermission())).toBe(false);
         expect((new AuthenticationFailed()).denied(new TestPermission())).toBe(true);
     })
