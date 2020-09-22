@@ -9,10 +9,10 @@ import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 @Sealed
 export class Authentication implements IAuthentication {
     constructor(
-        private readonly token: IToken | null,
-        private readonly user: IUserDto | null,
+        private readonly token: IToken,
+        private readonly user: IUserDto,
     ) {
-        if (token && user && token.payload.userId !== user.id) {
+        if (token.payload.userId !== user.id) {
             throw new InvalidAuthentication('token and user mismatch');
         }
         this.token = token;
@@ -24,19 +24,19 @@ export class Authentication implements IAuthentication {
     }
 
     public granted(permission: IPermission): boolean {
-        return this.hasPermission(permission) || this.hasPermission(new IsAdminPermission());
+        return this.isAuthenticated() && (this.hasPermission(permission) || this.hasPermission(new IsAdminPermission()));
     }
 
-    public getToken(): IToken | null {
+    public getToken(): IToken {
         return cloneDeep(this.token);
     }
 
-    public getUser(): IUserDto | null {
+    public getUser(): IUserDto {
         return cloneDeep(this.user);
     }
 
     public isAuthenticated(): boolean {
-        return !!this.token && !!this.user;
+        return true;
     }
 
     private hasPermission(permission: IPermission): boolean {

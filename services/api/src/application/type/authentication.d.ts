@@ -18,7 +18,7 @@ export interface IToken {
 export interface IAuthentication extends IAuthorization {
     isAuthenticated(): boolean
 
-    getUser(): IUserDto | null;
+    getUser(): IUserDto;
 
-    getToken(): IToken | null;
+    getToken(): IToken;
 }

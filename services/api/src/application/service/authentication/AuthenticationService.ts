@@ -14,6 +14,7 @@ import {IPermission} from "../../type/authorization";
 import {UseCredentialsPermission} from "../../permission/UseCredentialsPermission";
 import {Forbidden} from "../../error/Forbidden";
 import {UseRefreshTokenPermission} from "../../permission/UseRefreshTokenPermission";
+import {AuthenticationFailed} from "./AuthenticationFailed";
 
 export interface IAuthenticationService {
 
@@ -149,6 +150,6 @@ export class AuthenticationService implements IAuthenticationService {
         if (res.locals.authentication && res.locals.authentication instanceof Authentication) {
             return res.locals.authentication;
         }
-        return new Authentication(null, null);
+        return new AuthenticationFailed();
     }
 }
