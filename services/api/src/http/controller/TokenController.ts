@@ -12,6 +12,7 @@ import {Forbidden} from "../../application/error/Forbidden";
 import {CookieOptions} from "express-serve-static-core";
 import {UseCredentialsPermission} from "../../application/permission/UseCredentialsPermission";
 import {Log} from "../../application/loader/logger";
+import {IUserDto} from "../../domain/type/user";
 
 @Service()
 export class TokenController extends Controller {
@@ -28,7 +29,39 @@ export class TokenController extends Controller {
         super();
     }
 
+    private async setRefreshTokenCookie(res: Response, user: IUserDto): Promise<undefined> {
+        const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(user)
+        res.cookie(
+            config.security.cookies.refresh_token_cookie_name,
+            refreshTokenAuthentication.getToken().token,
+            {
+                ...this.refreshTokenCookieDefaults,
+                expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
+            }
+        );
+        return;
+    }
+
+    private async clearRefreshTokenCookie(req: Request, res: Response): Promise<undefined> {
+        try {
+            await this.authenticationService.revokeToken(req.signedCookies.refresh_token)
+        } catch (error) {
+            Log.error(error);
+        } finally {
+            res.cookie(
+                config.security.cookies.refresh_token_cookie_name,
+                '',
+                {
+                    ...this.refreshTokenCookieDefaults,
+                    expires: new Date(1970, 1, 1)
+                }
+            );
+        }
+        return;
+    }
+
     public async POST(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
+
         const newAuthentication = await this.userService.authenticateByCredentials(
             {
                 email: req.body.email,
@@ -39,16 +72,7 @@ export class TokenController extends Controller {
             throw new Forbidden(`lack of ${(new UseCredentialsPermission()).toString()}`);
         }
 
-        const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(newAuthentication.getUser())
-
-        res.cookie(
-            config.security.cookies.refresh_token_cookie_name,
-            refreshTokenAuthentication.getToken().token,
-            {
-                ...this.refreshTokenCookieDefaults,
-                expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
-            }
-        );
+        await this.setRefreshTokenCookie(res, newAuthentication.getUser());
 
         return {
             statusCode: 201,
@@ -60,6 +84,7 @@ export class TokenController extends Controller {
 
     // noinspection JSUnusedGlobalSymbols
     public async POST_refresh(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
+
         if (!req.signedCookies || !req.signedCookies.refresh_token) {
             throw new InvalidAuthentication('no refresh token');
         }
@@ -67,40 +92,21 @@ export class TokenController extends Controller {
         if (refreshAuthentication.denied(new UseRefreshTokenPermission())) {
             throw new Forbidden(`lack of ${(new UseRefreshTokenPermission()).toString()}`);
         }
-        const refreshTokenAuthentication = await this.authenticationService.createRefreshTokenAuthentication(refreshAuthentication.getUser())
-        res.cookie(
-            config.security.cookies.refresh_token_cookie_name,
-            refreshTokenAuthentication.getToken().token,
-            {
-                ...this.refreshTokenCookieDefaults,
-                expires: new Date(refreshTokenAuthentication.getToken().payload.exp * 1000)
-            }
-        );
+
+        await this.setRefreshTokenCookie(res, refreshAuthentication.getUser());
+
         return {
             statusCode: 201,
             body: {
-                token: (await this.userService.authenticateById(refreshTokenAuthentication.getUser().id)).getToken().token
+                token: (await this.userService.authenticateById(refreshAuthentication.getUser().id)).getToken().token
             }
         }
     }
 
     public async DELETE(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
-        if (req.signedCookies && req.signedCookies.refresh_token) {
-            try {
-                await this.authenticationService.revokeToken(req.signedCookies.refresh_token)
-            } catch (error) {
-                Log.error(error);
-            } finally {
-                res.cookie(
-                    config.security.cookies.refresh_token_cookie_name,
-                    '',
-                    {
-                        ...this.refreshTokenCookieDefaults,
-                        expires: new Date(1970, 1, 1)
-                    }
-                );
-            }
-        }
+
+        await this.clearRefreshTokenCookie(req, res);
+
         if (authentication.isAuthenticated()) {
             try {
                 await this.userService.revokeAuthentication(authentication.getToken().token);
@@ -108,6 +114,7 @@ export class TokenController extends Controller {
                 Log.error(error);
             }
         }
+
         return {
             statusCode: 204,
             body: {}

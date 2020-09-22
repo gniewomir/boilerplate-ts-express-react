@@ -44,6 +44,26 @@ describe('Token routes', () => {
                     expect(authenticated.getUser().email).toBe(email);
                 });
         })
+        it('should return status code 401 when password is invalid', async () => {
+            const {application, user: {email}, plainPassword} = await setupTestApplicationUserAndAuthentication();
+            await request(application)
+                .post(`${config.api.prefix}/token`)
+                .send({
+                    email,
+                    password: plainPassword+'invalid_password'
+                })
+                .expect(401);
+        })
+        it('should return status code 401 when email is invalid', async () => {
+            const {application, user: {email}, plainPassword} = await setupTestApplicationUserAndAuthentication();
+            await request(application)
+                .post(`${config.api.prefix}/token`)
+                .send({
+                    email: 'invalidemail@gmail.com',
+                    password: plainPassword
+                })
+                .expect(401);
+        })
         it('should set refresh token cookie expiring in future', async () => {
             const {application, user: {email}, plainPassword} = await setupTestApplicationUserAndAuthentication();
             expect.assertions(7);
