@@ -1,0 +1,65 @@
+version: '3.3'
+
+services:
+
+  postgres:
+    image: ${PROJECT_NAME}-postgres:not-development
+    restart: "no"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password_we_cannot_use_outside_local_machine
+      - POSTGRES_DB=boilerplate
+      - PGDATA=/var/lib/postgresql/data
+    networks:
+      - internal
+
+  testing:
+    image: ${PROJECT_NAME}-postgres:not-development
+    restart: "no"
+    environment:
+      - POSTGRES_USER=testing
+      - POSTGRES_PASSWORD=testing
+      - POSTGRES_DB=testing
+      - PGDATA=/var/lib/postgresql/data
+    networks:
+      - internal
+
+  api:
+    image: ${PROJECT_NAME}-api:not-development
+    restart: "no"
+    environment:
+      - NODE_ENV=not-development
+      - TZ=utc
+      - API_PORT=9000
+      - API_DOMAIN=localhost
+      - PUBLIC_API_PORT=8000
+      - PUBLIC_API_DOMAIN=localhost
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PASSWORD=password_we_cannot_use_outside_local_machine
+      - DB_NAME=boilerplate
+      - JWT_SECRET=NOT_DEVELOPMENT_ONLY_JWT_SECRET
+      - COOKIES_SECRET=NOT_DEVELOPMENT_ONLY_COOKIES_SECRET
+      - TESTING_DB_HOST=testing
+      - TESTING_DB_PORT=5432
+      - TESTING_DB_USER=testing
+      - TESTING_DB_PASSWORD=testing
+      - TESTING_DB_NAME=testing
+
+  admin:
+    image: ${PROJECT_NAME}-admin:not-development
+    environment:
+      - ADMIN_PORT=3000
+    restart: "no"
+
+  webserver:
+    image: ${PROJECT_NAME}-webserver:not-development
+    restart: "no"
+    ports:
+      - "8000:80"
+
+networks:
+  internal:
+  web:
+    external: true
