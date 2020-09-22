@@ -54,7 +54,7 @@ export class TokenController extends Controller {
     // noinspection JSUnusedGlobalSymbols
     public async POST_refresh(req: Request, res: Response, authentication: IAuthentication): Promise<IApiResponse> {
 
-        if (!req.signedCookies || !req.signedCookies.refresh_token) {
+        if (!req.signedCookies || !req.signedCookies[config.security.cookies.refresh_token_cookie_name]) {
             throw new InvalidAuthentication('no refresh token');
         }
         const refreshAuthentication = await this.authenticationService.checkAuthentication(req.signedCookies.refresh_token)
@@ -105,7 +105,7 @@ export class TokenController extends Controller {
 
     private async clearRefreshTokenCookie(req: Request, res: Response): Promise<undefined> {
         try {
-            await this.authenticationService.revokeToken(req.signedCookies.refresh_token)
+            await this.authenticationService.revokeToken(req.signedCookies[config.security.cookies.refresh_token_cookie_name])
         } catch (error) {
             Log.error(error);
         } finally {
