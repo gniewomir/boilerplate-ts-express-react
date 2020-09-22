@@ -9,7 +9,7 @@ import {MethodNotAllowed} from "./MethodNotAllowed";
 import {NotFound} from "./NotFound";
 import {NotImplemented} from "./NotImplemented";
 
-describe('Test errors', () => {
+describe('Errors', () => {
     it('are instances of APiError', () => {
         expect(new ApiError('')).toBeInstanceOf(ApiError);
         expect(new BadRequest({})).toBeInstanceOf(ApiError);
