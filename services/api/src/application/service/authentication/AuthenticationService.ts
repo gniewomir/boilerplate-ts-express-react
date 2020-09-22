@@ -2,19 +2,18 @@ import {Service} from "typedi";
 import {UserRepository} from "../../../database/repository/UserRepository";
 import {TokenRepository} from "../../../database/repository/TokenRepository";
 import {IUserDto} from "../../../domain/type/user";
-import {IAuthentication, IToken, ITokenPayload, PermissionsList} from "../../type/authentication";
+import {IAuthentication, IToken, ITokenPayload} from "../../type/authentication";
 import {config} from "../../config";
 import jwt from "jsonwebtoken";
 import {InvalidAuthentication} from "../../error/InvalidAuthentication";
 import {Response} from "express";
 import {Authentication} from "./Authentication";
 import {PasswordService} from "../password/PasswordService";
-import {ResourcePermission} from "../../permission/ResourcePermission";
-import {IPermission} from "../../type/authorization";
-import {UseCredentialsPermission} from "../../permission/UseCredentialsPermission";
+import {PermissionsList} from "../../type/authorization";
 import {Forbidden} from "../../error/Forbidden";
-import {UseRefreshTokenPermission} from "../../permission/UseRefreshTokenPermission";
 import {AuthenticationFailed} from "./AuthenticationFailed";
+import {UserRole} from "../authorization/role/UserRole";
+import {RefreshTokenRole} from "../authorization/role/RefreshTokenRole";
 
 export interface IAuthenticationService {
 
@@ -26,9 +25,9 @@ export interface IAuthenticationService {
 
     createRefreshTokenAuthentication(user: IUserDto): Promise<IAuthentication>
 
-    revokeToken(token: string): Promise<boolean>
+    revokeToken(token: string): Promise<void>
 
-    authenticateResponse(token: string, res: Response): Promise<Response>;
+    authenticateResponse(token: string, res: Response): Promise<void>;
 
     getAuthenticationFromResponse(res: Response): IAuthentication;
 
@@ -41,6 +40,8 @@ export class AuthenticationService implements IAuthenticationService {
         private passwordService: PasswordService,
         private userRepository: UserRepository,
         private tokenRepository: TokenRepository,
+        private userRole: UserRole,
+        private refreshTokenRole: RefreshTokenRole
     ) {
     }
 
@@ -59,12 +60,6 @@ export class AuthenticationService implements IAuthenticationService {
             ),
             payload
         };
-    }
-
-    private static createPermissionsList(...args: IPermission[]): PermissionsList {
-        return args.map((permission: IPermission): string => {
-            return permission.toString();
-        })
     }
 
     public async checkAuthentication(token: string): Promise<IAuthentication> {
@@ -106,11 +101,7 @@ export class AuthenticationService implements IAuthenticationService {
     public async createUserAuthentication(user: IUserDto): Promise<IAuthentication> {
         return this.createAuthentication(
             user,
-            AuthenticationService.createPermissionsList(
-                new ResourcePermission('GET', this.userRepository, user.id),
-                new ResourcePermission('PATCH', this.userRepository, user.id),
-                new UseCredentialsPermission()
-            ),
+            this.userRole.permissions(user.id),
             config.security.authentication.jwt.token_expiration_in_minutes
         );
     }
@@ -118,14 +109,12 @@ export class AuthenticationService implements IAuthenticationService {
     public async createRefreshTokenAuthentication(user: IUserDto): Promise<IAuthentication> {
         return this.createAuthentication(
             user,
-            AuthenticationService.createPermissionsList(
-                new UseRefreshTokenPermission()
-            ),
+            this.refreshTokenRole.permissions(user.id),
             config.security.authentication.jwt.refresh_token_expiration_in_minutes
         );
     }
 
-    public async revokeToken(token: string): Promise<undefined> {
+    public async revokeToken(token: string): Promise<void> {
         try {
             const authentication = await this.checkAuthentication(token);
             const {payload} = authentication.getToken();
@@ -138,12 +127,11 @@ export class AuthenticationService implements IAuthenticationService {
         }
     }
 
-    public async authenticateResponse(token: string, res: Response): Promise<Response> {
+    public async authenticateResponse(token: string, res: Response): Promise<void> {
         if (!token) {
             throw new InvalidAuthentication('Token cannot be empty.');
         }
         res.locals.authentication = await this.checkAuthentication(token);
-        return res;
     }
 
     public getAuthenticationFromResponse(res: Response): IAuthentication {

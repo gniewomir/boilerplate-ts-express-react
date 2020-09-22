@@ -12,7 +12,7 @@ export interface IUserService {
 
     authenticateByCredentials(credentials: IUserLoginInput): Promise<IAuthentication>;
 
-    revokeAuthentication(token: string): Promise<undefined>;
+    revokeAuthentication(token: string): Promise<void>;
 
     register(input: IUserRegistrationInput): Promise<IUserDto>;
 
@@ -57,7 +57,7 @@ export class UserService implements IUserService {
         return await this.authenticationService.createUserAuthentication(user.toDTO());
     }
 
-    public async revokeAuthentication(token: string): Promise<undefined> {
+    public async revokeAuthentication(token: string): Promise<void> {
         return await this.authenticationService.revokeToken(token);
     }
 

@@ -1,7 +1,5 @@
 import {IUserDto} from "../../domain/type/user";
-import {IAuthorization} from "./authorization";
-
-type PermissionsList = string[]
+import {IAuthorization, PermissionsList} from "./authorization";
 
 export interface ITokenPayload {
     userId: number;
