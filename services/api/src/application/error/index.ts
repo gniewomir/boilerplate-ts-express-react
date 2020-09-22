@@ -4,7 +4,7 @@ import {config} from "../config";
 import {Log} from "../loader/logger";
 
 
-export const errorHandlerMiddleware = () => {
+export const apiErrorsMiddleware = () => {
     return (error: any, req: Request, res: Response, next: NextFunction) => {
         if (!(error instanceof ApiError)) {
             if (config.env === 'development') {

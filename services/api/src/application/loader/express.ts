@@ -4,9 +4,9 @@ import bodyParser from "body-parser";
 import {routes} from '../../http/route';
 import {Log} from "./logger";
 import {NotFound} from "../error/NotFound";
-import {errors} from "celebrate";
+import {errors as celebrateErrorsMiddleware} from "celebrate";
 import cookieParser from "cookie-parser";
-import {errorHandlerMiddleware} from "../error";
+import {apiErrorsMiddleware} from "../error";
 
 export const configureExpress = (application: express.Application) => {
 
@@ -36,8 +36,8 @@ export const configureExpress = (application: express.Application) => {
     });
 
     // error handlers
-    application.use(errors());
-    application.use(errorHandlerMiddleware());
+    application.use(celebrateErrorsMiddleware());
+    application.use(apiErrorsMiddleware());
 
     Log.info('Express configured.');
 
