@@ -81,22 +81,23 @@ curl --location --request POST 'http://localhost:8000/api/user' \
 ```
 
 # Todo
-* Project: Postman collection with automatic request authentication as testing way
 * Project: Changelog
+* Project: HTTPS support on localhost
 * Project: What is the best way of sharing code (types?) between TS services?
-* Project: SSR React app.
-* Api: Faker may not ensure uniqueness of test data (emails in particular, especially with jest workers running in parallel), find solution that does
+* Project: SSR React app for potential customer facing app
+* Api: Faker does not ensure uniqueness of test data (emails in particular, especially with jest workers running in parallel), find solution that does
 * Api: CLI for generating controllers, db entity/repository/mapper combo?   
-* Api: Finish separating application layers, CQRS?
+* Api: Finish separating api application layers, CQRS?
 * Api: Timestamps for entities (updated/created)
 * Api: Add a way of loading fixtures
 * Api: Depend on token IAT claim and user logged out/logged in time instead blacklist?
 * Api: Revoking any user token should also revoke all refresh tokens
 * Api: To consider: https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/
-* Api: Remove expired and blacklisted tokens from database
+* Api: Periodically remove expired tokens from the database?
 * Api: Queue?
     * mailer
-    * email confirmation
+    * password change
+    * email confirmation 
 
 # Links
 * Structure: https://softwareontheroad.com/ideal-nodejs-project-structure/
