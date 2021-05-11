@@ -43,7 +43,7 @@
     "faker": "^5.1.0",
     "jest": "^26.4.2",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "pg": "^8.3.3",
     "reflect-metadata": "^0.1.13",
     "supertest": "^4.0.2",
